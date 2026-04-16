@@ -1,0 +1,310 @@
+% !TeX program = xelatex
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue
+}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=2em}
+\setlist[enumerate]{leftmargin=2em}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible,
+  frame=single,
+  rulecolor=\color{black!20},
+  backgroundcolor=\color{black!2}
+}
+
+\title{毕设论文技术路线：2D-to-3D 多视角编辑 Triplet 数据集构建（基于 \texttt{2d3d\_v2}）}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{quote}
+本文档面向论文撰写，系统性说明本人在毕业设计中采用的\textbf{技术路线}：如何从 2D 参考图与编辑指令出发，自动化构建高质量 \textbf{(source 3D, edited multi-view 2D, target 3D)} triplet 数据集，并通过 Stage1/Stage2 质量控制筛选有效样本，最终生成可训练的数据集 manifest。
+\end{quote}
+
+\tableofcontents
+\vspace{1em}
+
+\section{研究目标与核心挑战}
+
+\subsection{研究目标}
+本课题面向 3D 编辑任务的数据需求，目标是构建一个自动化数据生产 pipeline，生成高质量 triplet：
+\[
+\text{source 3D} \xrightarrow[\text{2D edit}]{\text{instruction}} \text{edited 2D multi-view} \xrightarrow{\text{reconstruction}} \text{target 3D}
+\]
+并输出统一的 \textbf{manifest} 文件，作为训练/评测的数据入口。
+
+\subsection{核心挑战}
+\begin{itemize}
+  \item \textbf{朝向不一致}：3D 生成服务输出的 GLB 朝向随机，导致 ``front/back/left/right/top/bottom'' 的语义不统一，破坏跨样本对齐。
+  \item \textbf{跨视角编辑一致性难}：逐视角编辑易产生几何矛盾（同一部件在不同视角表现不一致），弱化监督信号。
+  \item \textbf{质量不可控}：
+  \begin{itemize}
+    \item 2D 编辑可能偏离指令（或发生非法编辑，如整物替换、材质/纹理变化、表面 logo 修改等）。
+    \item 3D 重建可能无法忠实还原 edited views。
+  \end{itemize}
+  \item \textbf{工程稳定性与可复现}：多阶段依赖外部 API（图像/3D/VLM/LLM）与渲染工具，需可追溯、可重跑、可诊断。
+\end{itemize}
+
+\section{总体技术路线概览}
+
+整体技术路线可以概括为 ``生成 $\rightarrow$ 对齐 $\rightarrow$ 多视角编辑 $\rightarrow$ 两阶段质检 $\rightarrow$ 入库''。
+
+\subsection{端到端流程（文本版）}
+\begin{enumerate}
+  \item T2I 生成 \texttt{source\_image}
+  \item Image-to-3D 生成 \texttt{source\_glb}
+  \item SemanticAlign 对齐得到 \texttt{source\_glb\_aligned}
+  \item 六视角渲染得到 \texttt{source\_views}
+  \item 多视角拼接编辑得到 \texttt{edited\_views} + masks
+  \item Stage1：编辑质量检查（跨视角一致性 + 合法性 + 指令遵循）
+  \item 从 \texttt{edited\_views} 重建 \texttt{target\_glb}
+  \item SemanticAlign 对齐得到 \texttt{target\_glb\_aligned}（与 source 同坐标系/同尺度）
+  \item 六视角渲染得到 \texttt{target\_views}
+  \item Stage2：一致性检查（\texttt{target\_views} 是否还原 \texttt{edited\_views}）
+  \item Stage2 通过样本写入数据集 Manifest
+\end{enumerate}
+
+\subsection{代码入口}
+\begin{itemize}
+  \item \textbf{端到端实验编排}：\texttt{scripts/run\_full\_experiment.py}（按 YAML plan 自动执行全链路并产出 experiment 记录与实验 manifest）
+  \item \textbf{离线批处理}：\texttt{scripts/batch\_process.py}（支持分阶段增量执行：渲染、编辑、重建、质检、补 mask 等）
+\end{itemize}
+
+\section{数据组织与 Manifest 作为“数据接口”}
+
+\subsection{目录结构与命名规则（数据根目录 \texttt{data\_root}）}
+数据根目录示例：
+\begin{itemize}
+  \item \texttt{data\_root = /data-oss/meiguang/xiaoliang/data/2d3d\_data/}
+\end{itemize}
+
+关键目录结构（与 \texttt{data\_manifest\_guide.md} 一致）：
+\begin{lstlisting}
+images/{source_model_id}/image.png
+models_src/{source_model_id}/model_hy3.glb
+models_src/{source_model_id}/model_hy3_aligned.glb
+models_src/{source_model_id}_edit_{edit_id}/model_hy3.glb
+models_src/{source_model_id}_edit_{edit_id}/model_hy3_aligned.glb
+triplets/{source_model_id}/views/hy3/front.png ... bottom.png
+triplets/{source_model_id}/edited/{edit_id}/front.png ... bottom.png
+triplets/{source_model_id}_edit_{edit_id}/views/hy3/front.png ... bottom.png
+\end{lstlisting}
+
+命名约定：
+\begin{itemize}
+  \item \texttt{source\_model\_id}：12 位 hex（例如 \texttt{f2cc271509ca}）
+  \item \texttt{edit\_id}：8 位 hex（例如 \texttt{af82117e}）
+  \item \texttt{target\_model\_id}：固定格式 \texttt{\{source\_model\_id\}\_edit\_\{edit\_id\}}
+  \item \texttt{hy3}：Hunyuan v3 provider 缩写（用于 GLB 文件名与视角渲染目录名）
+\end{itemize}
+
+\subsection{aligned GLB 的论文解释口径}
+为实现 ``跨样本可对齐、source/target 可对齐''，pipeline 引入 aligned 资产：
+\begin{itemize}
+  \item 原始 GLB：\texttt{model\_hy3.glb}（朝向不确定）
+  \item 对齐 GLB：\texttt{model\_hy3\_aligned.glb}（SemanticAlign 输出，标准朝向）
+\end{itemize}
+
+启用几何归一化时，额外落盘 \texttt{norm\_params.json}，用于使 \textbf{source 与 target 在同尺度、同中心、同 framing} 下可比（见第 \ref{sec:semanticalign} 节）。
+
+\subsection{Manifest 的定位}
+Manifest 由脚本 \texttt{scripts/generate\_data\_manifest.py} 生成，核心原则：
+\begin{itemize}
+  \item \textbf{只收录 Stage2 通过的 triplet}（保证 ``target 3D 忠实还原 edited views''）
+  \item 每条样本包含必要资产路径：source image、source/target GLB raw+aligned、source/edited/target 六视角、mask、grid、\texttt{meta.json} 等
+\end{itemize}
+
+在论文写法中，manifest 可定义为 ``数据层与训练/评测层之间的契约（contract）''：训练代码无需理解 pipeline 细节，只需读取 manifest 即可定位全部资产。
+
+\section{造数据流程：Stage0\texorpdfstring{$\sim$}{\string~}Stage2 的实现细节}
+
+\subsection{Stage0：T2I 生成 \texttt{source\_image}}
+\begin{itemize}
+  \item 目标：生成单张高质量参考图 \texttt{images/\{source\_model\_id\}/image.png}
+  \item 代码路径：\texttt{core/image/generator.py}；统一 API：\texttt{utils/image\_api\_client.py}（Response API 异步轮询，Fail Loudly 校验）
+  \item 产物：\texttt{image.png} 与 \texttt{meta.json}（记录 prompt、类别、物体名、实验上下文等）
+\end{itemize}
+
+\subsection{Stage0.5：Image-to-3D 生成 \texttt{source\_glb}}
+输入 \texttt{source\_image}，输出 \texttt{models\_src/\{id\}/model\_\{provider\_id\}.glb}。项目支持 Tripo/Hunyuan/Rodin 三类 provider。
+
+关键工程点（对应实现）：
+\begin{itemize}
+  \item \texttt{core/gen3d/base.py}：将 ``轮询完成'' 与 ``下载重试'' 解耦，避免下载失败导致重复提交任务。
+  \item \texttt{core/gen3d/tripo.py}：针对 Tripo ``下载 URL 过期''，重试时刷新 URL。
+  \item \texttt{core/gen3d/hunyuan.py}：支持 ZIP 解包，并做 GLB/ZIP magic number 校验，防止 HTML 错页落盘。
+\end{itemize}
+
+\subsection{SemanticAlign：语义朝向对齐 + 几何归一化}\label{sec:semanticalign}
+SemanticAlign 将 3D 模型规范化到统一坐标系，为 ``固定视角渲染、跨样本对比、source/target 对齐'' 提供基础。
+
+实现由 \texttt{scripts/run\_render\_batch.py} 驱动，包含：
+\begin{enumerate}
+  \item first-pass 六视角渲染（原始 GLB）
+  \item VLM 判定 semantic front：\texttt{core/render/semantic\_view\_aligner.py}
+  \item 旋转矩阵计算：将 \texttt{semantic\_front\_from} 映射到 canonical front，并做 roll 稳定
+  \item bpy 子进程对齐导出 aligned GLB：\texttt{scripts/bpy\_align\_standalone.py}
+  \begin{itemize}
+    \item 导出 \texttt{model\_*\_aligned.glb}
+    \item 可选 \texttt{normalize\_geometry=true}：计算 bbox center/max\_dim，做 center+scale 归一化，并写入 \texttt{norm\_params.json}
+  \end{itemize}
+  \item final-pass 渲染或 remap：输出 \texttt{triplets/\{id\}/views/\{provider\_id\}/front..bottom.png}
+\end{enumerate}
+
+\subsection{Stage1：六视角渲染 \texttt{source\_views}}
+渲染支持两种后端（由配置选择）：
+\begin{itemize}
+  \item Blender：\texttt{scripts/bpy\_render\_standalone.py} + \texttt{core/render/blender\_script.py}
+  \item WebGL：\texttt{scripts/webgl\_render\_standalone.py} + \texttt{core/render/webgl\_script.py}
+\end{itemize}
+工程策略：Playwright/Chromium 与 bpy 均在子进程运行，避免 hang/崩溃影响主流程；启用归一化时，target 渲染会注入 source 的 fixed radius/center，提高一致性。
+
+\subsection{Stage1：2D 多视角编辑（Multiview Edit）}
+为保证跨视角一致性，采用 ``拼图一次编辑''：
+\begin{itemize}
+  \item 拼接：\texttt{core/image/view\_stitcher.py}（3$\times$2 grid + 标签/边框，\texttt{pad\_to\_square=true}）
+  \item 编辑：\texttt{core/image/multiview\_editor.py}（prompt guardrail + 指令拼装，输出裁回六视角）
+  \item 生成 mask/预览：\texttt{core/image/edit\_artifact\_builder.py}（\texttt{before\_image\_grid.png}、\texttt{target\_image\_grid.png}、per-view masks、\texttt{edit\_mask\_grid.png}）
+\end{itemize}
+
+\subsection{Stage2：从 edited views 重建 target\_glb，并再次对齐与渲染}
+流程同 source，但输入为 edited views：
+\begin{enumerate}
+  \item target gen3d：输出 \texttt{models\_src/\{target\_model\_id\}/model\_*.glb}
+  \item SemanticAlign：
+  \begin{itemize}
+    \item \texttt{share\_rotation\_to\_target=true} 时可复用 source rotation，提升一致性与效率
+    \item \texttt{normalize\_geometry=true} 时读取 source 的 \texttt{norm\_params.json} 复用尺度与 framing
+  \end{itemize}
+  \item target views：输出 \texttt{triplets/\{target\_model\_id\}/views/\{provider\_id\}/front..bottom.png}
+\end{enumerate}
+
+\section{检测与筛选算法：Stage1 与 Stage2}
+
+\subsection{Stage1：编辑质量检查（Edit QC）}
+Stage1 判定 ``edited\_views 是否可作为有效监督信号''，检查三类问题：
+\begin{itemize}
+  \item \textbf{多视角几何一致性}：after 六视角是否自洽，是否出现破碎/漂移/比例异常
+  \item \textbf{指令遵循}：是否完成 remove/replace 的结构编辑
+  \item \textbf{编辑合法性}：拦截整物替换、材质/纹理变化、表面 logo/标签变化等不符合目标的数据
+\end{itemize}
+
+项目提供三种方法，由 \texttt{core/image/edit\_quality\_router.py} 路由：
+\begin{itemize}
+  \item \textbf{grid\_vlm}：\texttt{core/image/edit\_quality\_checker.py}（before/after 拼图一次 VLM 判定）
+  \item \textbf{two\_stage\_recon}：\texttt{core/image/edit\_quality\_checker\_v2.py}（VLM diff $\rightarrow$ LLM judge，并先做 view sanity）
+  \item \textbf{unified\_judge}：\texttt{core/image/edit\_quality\_checker\_unified.py}（单次 VLM 输出结构化 JSON：view\_sanity、legality、following、relabel 等）
+\end{itemize}
+
+\subsection{Stage2：Target 3D 一致性检查（LPIPS / VLM）}
+Stage2 判定 ``target\_views 是否忠实还原 edited\_views''，实现模块：\texttt{core/render/recon\_consistency\_checker.py}。
+\begin{itemize}
+  \item \textbf{LPIPS}：逐视角感知距离计算，按 mean/max 聚合并与阈值比较；可用 \texttt{grayscale} 降低颜色/纹理差异影响。
+  \item \textbf{VLM}：edited grid 与 target render grid 拼图送 VLM 输出 pass/confidence/reason，可选带 source grid 作为上下文。
+\end{itemize}
+
+Stage2 结果写回 \texttt{models\_src/\{target\_model\_id\}/meta.json}（如 \texttt{target\_quality\_check} 与 \texttt{target\_quality\_checks\_by\_provider}）。
+
+\subsection{入库判定与 manifest 生成}
+入库判定口径：
+\begin{itemize}
+  \item \textbf{Stage2 通过} $\Rightarrow$ 有效 triplet $\Rightarrow$ 写入数据集 manifest
+\end{itemize}
+脚本 \texttt{scripts/generate\_data\_manifest.py} 从实验日志提取 Stage2 passed 的 edit，汇总资产路径与缺失统计（\texttt{missing\_assets\_summary} 应接近全 0）。
+
+\section{使用的模型与服务清单（按阶段）}
+清单来自 \texttt{config/config.yaml} 任务映射。为避免泄露敏感信息，本文档不展示任何 API Key。
+
+\subsection{文本模型（LLM / VLM，经 OneAPI 网关）}
+\begin{itemize}
+  \item \textbf{Prompt 优化 / 文本判定（默认）}：\texttt{gpt-5}
+  \item \textbf{VLM 判定（默认）}：
+  \begin{itemize}
+    \item \texttt{gemini-3-flash-preview}（轻量，用于 diff/view\_sanity/grid judge 等）
+    \item \texttt{gemini-3.1-pro-preview}（能力更强，用于 \texttt{unified\_judge} 等结构化判定）
+  \end{itemize}
+\end{itemize}
+
+\subsection{图像生成/编辑模型（Response API）}
+\begin{itemize}
+  \item \textbf{T2I（默认）}：\texttt{gemini-2.5-flash-image}
+  \item \textbf{单视角/引导式编辑（默认）}：\texttt{gemini-2.5-flash-image}
+  \item \textbf{多视角拼接编辑（默认）}：\texttt{gemini-3-pro-image-preview}
+\end{itemize}
+
+\subsection{3D 生成服务（Image-to-3D）}
+\begin{itemize}
+  \item \textbf{Tripo 3D（默认配置）}：\texttt{v3.1-20260211}（provider：\texttt{tripo}）
+  \item \textbf{Hunyuan 3D（可选，经 OneAPI Response API）}：\texttt{hunyuan-3d-pro} / \texttt{hunyuan-3d-3.1-pro}（provider：\texttt{oneapi}）
+  \item \textbf{Rodin（可选，直连外部 API）}：Hyper3D Rodin Gen-2（provider：\texttt{rodin}）
+\end{itemize}
+
+\subsection{渲染引擎}
+\begin{itemize}
+  \item Blender（bpy 子进程）
+  \item WebGL（Headless Chrome + \texttt{model-viewer} + Playwright）
+\end{itemize}
+
+\section{可复现性与工程化保障}
+
+\subsection{Fail Loudly（显性错误策略）}
+\begin{itemize}
+  \item 缺失关键输入（六视角缺图、\texttt{norm\_params.json} 缺字段等）直接报错
+  \item VLM/LLM 输出严格 JSON schema 校验，防止非结构化输出污染数据
+\end{itemize}
+
+\subsection{子进程隔离与超时控制}
+\begin{itemize}
+  \item bpy 渲染：子进程隔离，避免崩溃影响主流程
+  \item WebGL 渲染：子进程隔离，并配置硬超时防 hang
+  \item GLB 对齐：bpy 子进程导出 aligned GLB，避免 bpy 状态污染
+\end{itemize}
+
+\subsection{实验记录与断点恢复}
+\texttt{scripts/run\_full\_experiment.py} 提供：
+\begin{itemize}
+  \item \texttt{execution\_plan.json}：冻结随机选择结果，保证 resume 一致
+  \item \texttt{events.jsonl / object\_records.jsonl / edit\_records.jsonl}：全链路可追溯记录
+  \item \texttt{--resume-experiment-id} 与 \texttt{--repair-experiment-id}：支持中断恢复与统计修复
+\end{itemize}
+
+\section{局限性与改进方向}
+\begin{itemize}
+  \item \textbf{外部服务波动}：图像/3D/VLM API 会随版本与负载变化，需通过日志与 config snapshot 固化实验上下文。
+  \item \textbf{Stage2 指标口径需明确}：LPIPS 与 VLM confidence 的 score 含义不同，统计与阈值解释需分开陈述。
+  \item \textbf{多视角重建输入利用不足}：当前 target 重建常用 front/少量视角输入，未来可更系统地利用全六视角提升一致性。
+\end{itemize}
+
+\section*{参考实现与文档来源（本毕设代码）}
+\begin{itemize}
+  \item 数据集 manifest 定义与字段说明：\texttt{data\_manifest\_guide.md}
+  \item 数据集 manifest 生成脚本：\texttt{2d3d\_v2/scripts/generate\_data\_manifest.py}
+  \item 端到端实验编排：\texttt{2d3d\_v2/scripts/run\_full\_experiment.py}
+  \item 批处理入口：\texttt{2d3d\_v2/scripts/batch\_process.py}
+  \item 语义朝向对齐：\texttt{2d3d\_v2/core/render/semantic\_view\_aligner.py} 与 \texttt{2d3d\_v2/scripts/bpy\_align\_standalone.py}
+  \item 多视角编辑：\texttt{2d3d\_v2/core/image/multiview\_editor.py}、\texttt{2d3d\_v2/core/image/view\_stitcher.py}
+  \item Stage1：\texttt{2d3d\_v2/core/image/edit\_quality\_checker\_*.py}
+  \item Stage2：\texttt{2d3d\_v2/core/render/recon\_consistency\_checker.py}
+\end{itemize}
+
+\end{document}
+

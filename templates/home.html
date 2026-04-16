@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% set page = 'home' %}
+
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+    <div>
+        <h1 class="page-title">Pipeline Overview</h1>
+        <p class="page-desc">Batch processing pipeline for 3D editing dataset generation</p>
+    </div>
+    <div style="display:flex; gap:8px;">
+        <button class="btn btn-success btn-sm" onclick="downloadAllAssets(this)" id="downloadAllBtn">⬇ Download All Assets</button>
+    </div>
+</div>
+
+<div class="grid grid-3 mb-4">
+    <div class="stat-card">
+        <div class="stat-value" id="homeStatPrompts">-</div>
+        <div class="stat-label">Prompts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="homeStatImages">-</div>
+        <div class="stat-label">Images</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="homeStatModels">-</div>
+        <div class="stat-label">3D Models</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Pipeline Stages</div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Stage</th>
+                    <th>Description</th>
+                    <th>CLI Command</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0. Generate Prompts</td>
+                    <td>Create optimized T2I prompts from object categories</td>
+                    <td><code>python scripts/generate_prompts.py --category vehicle --count 10</code></td>
+                </tr>
+                <tr>
+                    <td>1. Generate Images</td>
+                    <td>Generate images from prompts (T2I)</td>
+                    <td><code>python scripts/gen_image.py &lt;prompt_id&gt;</code></td>
+                </tr>
+                <tr>
+                    <td>2. Generate 3D Models</td>
+                    <td>Convert images to 3D models</td>
+                    <td><code>python scripts/gen3d.py &lt;image_id&gt; --provider hunyuan</code></td>
+                </tr>
+                <tr>
+                    <td>3. Render Views</td>
+                    <td>Render 6 standard views from 3D model</td>
+                    <td><code>python scripts/render_views.py &lt;model_id&gt;</code></td>
+                </tr>
+                <tr>
+                    <td>4. Generate Instructions</td>
+                    <td>Create editing instructions (1 Remove + 1 Replace)</td>
+                    <td><code>python scripts/gen_instruction.py &lt;image_id&gt; --mode batch</code></td>
+                </tr>
+                <tr>
+                    <td>5. Apply Edit</td>
+                    <td>Edit views with instruction (front/back/right)</td>
+                    <td><code>python scripts/apply_edit.py --view &lt;model_id&gt; --instruction "..."</code></td>
+                </tr>
+                <tr>
+                    <td>6. Generate Target 3D</td>
+                    <td>Generate 3D from edited views</td>
+                    <td><code>python scripts/gen3d.py &lt;edited_image_id&gt;</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/home/stats');
+        const stats = await res.json();
+        document.getElementById('homeStatPrompts').textContent = stats.prompts ?? '-';
+        document.getElementById('homeStatImages').textContent = stats.images ?? '-';
+        document.getElementById('homeStatModels').textContent = stats.models ?? '-';
+        if (Array.isArray(stats.errors) && stats.errors.length > 0) {
+            showToast(stats.errors[0]);
+        }
+    } catch (err) {
+        console.error('Failed to load home stats:', err);
+        showToast('Failed to load overview stats');
+    }
+});
+</script>
+{% endblock %}

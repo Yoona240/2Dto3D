@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+{% set page = 'prompts' %}
+
+{% block title %}Prompts{% endblock %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title">Prompts</h1>
+            <p class="page-desc">T2I prompts ready for image generation</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" onclick="showGenPromptsModal()">
+                + Gen T2I Prompts
+            </button>
+            <button id="batch-gen-btn" class="btn btn-primary" onclick="batchGenerate()" disabled>
+                Batch Generate (0)
+            </button>
+        </div>
+    </div>
+
+<!-- Generate T2I Prompts Modal -->
+<div id="genPromptsModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:24px; border-radius:8px; max-width:450px; width:90%;">
+        <h3 style="margin-top:0;">Generate T2I Prompts</h3>
+        <p style="color:#666; font-size:14px;">Generate optimized prompts from object categories</p>
+        
+        <div style="margin-bottom:16px;">
+            <label style="display:block; margin-bottom:6px; font-weight:500;">Category</label>
+            <select id="promptCategory" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                <option value="">Random (all categories)</option>
+                <!-- Categories loaded dynamically from API -->
+            </select>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+            <label style="display:block; margin-bottom:6px; font-weight:500;">Count</label>
+            <input type="number" id="promptCount" value="5" min="1" max="50" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+        
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-secondary" onclick="closeGenPromptsModal()">Cancel</button>
+            <button class="btn btn-secondary" onclick="showGeneratePromptsCmd()">Show CMD</button>
+            <button class="btn btn-primary" onclick="generatePrompts()">Generate</button>
+        </div>
+    </div>
+</div>
+
+<!-- Command Display Modal -->
+<div id="commandModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1001; align-items:center; justify-content:center;">
+    <div class="card" style="width: 700px; max-width: 95vw;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="commandModalTitle">Command</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeCommandModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body">
+            <div id="commandModalMessage"></div>
+            <div style="position:relative;">
+                <pre id="commandModalCode" style="background:#1e1e1e; color:#d4d4d4; padding:16px; border-radius:6px; overflow-x:auto; font-size:13px; margin:0; white-space:pre-wrap; word-break:break-all;"></pre>
+                <button class="btn btn-secondary btn-sm" onclick="copyCommand(this)" style="position:absolute; top:8px; right:8px; padding:4px 8px; font-size:11px;">Copy</button>
+            </div>
+            <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeCommandModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding: 0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;"><input type="checkbox" id="select-all" onclick="toggleSelectAll(this)"></th>
+                    <th style="width: 100px;">ID</th>
+                    <th style="width: 150px;">Subject</th>
+                    <th>Prompt</th>
+                    <th style="width: 100px;">Status</th>
+                    <th style="width: 150px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in prompts %}
+                <tr id="row-{{ p.ui_id }}">
+                    <td>
+                        {% if p.can_batch_generate %}
+                        <input type="checkbox" class="prompt-checkbox" value="{{ p.ui_id }}" onclick="updateBatchBtn()">
+                        {% endif %}
+                    </td>
+                    <td>
+                        <code>{{ p.ui_id[:8] }}</code>
+                        <div style="margin-top:4px;">
+                            <span class="badge badge-{{ 'running' if p.schema == 'experiment_prompt' else 'pending' }}">{{ p.schema_label }}</span>
+                        </div>
+                    </td>
+                    <td>{{ p.subject or '-' }}</td>
+                    <td class="prompt-cell" onclick="togglePrompt(this)" style="cursor:pointer;">
+                        <div class="prompt-preview">{{ p.prompt[:100] }}{% if p.prompt|length > 100 %}...{% endif %}</div>
+                        <div class="prompt-full" style="display:none; white-space:pre-wrap; word-break:break-word;">{{ p.prompt }}</div>
+                        {% if p.experiment_id %}
+                        <div style="margin-top:6px; color:#6c757d; font-size:11px;">{{ p.experiment_id }}</div>
+                        {% endif %}
+                        {% if p.prompt|length > 100 %}<small style="color:#6c757d; font-size:11px;">点击展开/收起</small>{% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-{{ p.status_badge_class }}">{{ p.status_label }}</span>
+                    </td>
+                    <td>
+                        {% if p.can_generate_image %}
+                        <button class="btn btn-primary btn-sm" onclick="generateImage('{{ p.ui_id }}', this)">
+                            Generate Image
+                        </button>
+                        {% elif p.can_open_image %}
+                        <a href="/images" class="btn btn-secondary btn-sm">View Image</a>
+                        {% else %}
+                        <span class="text-muted" style="font-size:12px;">No actions</span>
+                        {% endif %}
+                        {% if p.can_delete %}
+                        <button class="btn btn-secondary btn-sm" style="background:#dc3545; border-color:#dc3545; color:#fff;" onclick="deletePrompt('{{ p.ui_id }}')">Delete</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-muted" style="text-align: center; padding: 40px;">
+                        No prompts found. Run: <code>python scripts/generate_prompts.py --count 10</code>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load categories from API on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/categories')
+        .then(res => res.json())
+        .then(data => {
+            const select = document.getElementById('promptCategory');
+            if (data.categories && Array.isArray(data.categories)) {
+                data.categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    select.appendChild(option);
+                });
+            }
+        })
+        .catch(err => console.error('Failed to load categories:', err));
+});
+
+function updateBatchBtn() {
+    const checkboxes = document.querySelectorAll('.prompt-checkbox:checked');
+    const btn = document.getElementById('batch-gen-btn');
+    btn.textContent = `Batch Generate (${checkboxes.length})`;
+    btn.disabled = checkboxes.length === 0;
+}
+
+function toggleSelectAll(source) {
+    const checkboxes = document.querySelectorAll('.prompt-checkbox');
+    for(var i=0, n=checkboxes.length;i<n;i++) {
+        checkboxes[i].checked = source.checked;
+    }
+    updateBatchBtn();
+}
+
+function batchGenerate() {
+    const checkboxes = document.querySelectorAll('.prompt-checkbox:checked');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (ids.length === 0) return;
+    
+    const btn = document.getElementById('batch-gen-btn');
+    btn.disabled = true;
+    btn.textContent = 'Starting...';
+    
+    triggerAction('/api/prompts/batch-generate', { prompt_ids: ids })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                updateBatchBtn();
+                return;
+            }
+            
+            showToast(`Started ${res.count} tasks`);
+            btn.textContent = 'Batch Started';
+            setTimeout(() => {
+                // Refresh page to update statuses (or redirect to tasks)
+                window.location.href = '/tasks';
+            }, 1000);
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+            btn.disabled = false;
+            updateBatchBtn();
+        });
+}
+
+function showGenPromptsModal() {
+    document.getElementById('genPromptsModal').style.display = 'flex';
+}
+
+function closeGenPromptsModal() {
+    document.getElementById('genPromptsModal').style.display = 'none';
+}
+
+function shellQuote(value) {
+    if (value === null || value === undefined || value === '') return "''";
+    return "'" + String(value).replace(/'/g, "'\"'\"'") + "'";
+}
+
+function showGeneratePromptsCmd() {
+    const category = document.getElementById('promptCategory').value;
+    const count = parseInt(document.getElementById('promptCount').value, 10) || 5;
+
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/generate_prompts.py';
+
+    let bashCmd = `${pythonPath} ${scriptPath} --count ${count}`;
+    if (category) {
+        bashCmd += ` --category ${shellQuote(category)}`;
+    }
+
+    closeGenPromptsModal();
+    showCommandModal(
+        'Generate T2I Prompts Command',
+        `<p style="margin-bottom:8px;">Run this command to generate <strong>${count}</strong> prompt(s)` +
+        (category ? ` in category <strong>${category}</strong>` : ' from all categories') +
+        `:</p>`,
+        bashCmd
+    );
+}
+
+function generatePrompts() {
+    const category = document.getElementById('promptCategory').value;
+    const count = parseInt(document.getElementById('promptCount').value) || 5;
+    
+    const modal = document.getElementById('genPromptsModal');
+    const btn = modal.querySelector('.btn-primary');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    
+    // Async submission - don't wait for completion
+    fetch('/api/prompts/generate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ category: category, count: count })
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.error) {
+            showToast('Error: ' + res.error);
+            btn.disabled = false;
+            btn.textContent = 'Generate';
+            return;
+        }
+        
+        showToast(`Task started: generating ${count} prompts in background. Refresh to see.`);
+        closeGenPromptsModal();
+        btn.disabled = false;
+        btn.textContent = 'Generate';
+    })
+    .catch(err => {
+        showToast('Error: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Generate';
+    });
+}
+
+function togglePrompt(cell) {
+    const preview = cell.querySelector('.prompt-preview');
+    const full = cell.querySelector('.prompt-full');
+    if (preview && full) {
+        const isExpanded = full.style.display !== 'none';
+        preview.style.display = isExpanded ? 'block' : 'none';
+        full.style.display = isExpanded ? 'none' : 'block';
+    }
+}
+
+function generateImage(promptId, btn) {
+    btn.disabled = true;
+    btn.textContent = 'Starting...';
+    
+    triggerAction(`/api/prompts/${promptId}/generate-image`)
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                btn.textContent = 'Generate Image';
+                return;
+            }
+            
+            btn.textContent = 'Generating...';
+            showToast('Task started: ' + res.task_id);
+            
+            pollTask(res.task_id, 
+                (task) => {
+                    showToast('Image generated successfully');
+                    const row = document.getElementById('row-' + promptId);
+                    
+                    // Update status
+                    const statusCell = row.cells[4];
+                    statusCell.innerHTML = '<span class="badge badge-completed">completed</span>';
+                    
+                    // Update actions/path
+                    const actionCell = row.cells[5];
+                    if (task.result && task.result.image_path) {
+                        const path = task.result.image_path.replace(/\\/g, '/');
+                        actionCell.innerHTML = `
+                            <a href="/images" class="btn btn-secondary btn-sm">View Image</a>
+                            <button class="btn btn-secondary btn-sm" style="background:#dc3545; border-color:#dc3545; color:#fff; margin-left:6px;" onclick="deletePrompt('${promptId}')">Delete</button>
+                            <div class="text-muted" style="font-size: 11px; margin-top: 4px;">${path}</div>
+                        `;
+                    } else {
+                        btn.textContent = 'Done';
+                    }
+                },
+                (err) => {
+                    showToast('Error: ' + err);
+                    btn.disabled = false;
+                    btn.textContent = 'Retry';
+                }
+            );
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = 'Generate Image';
+        });
+}
+
+function deletePrompt(promptId) {
+    if (!confirm('Delete this prompt AND all generated assets (image / instructions / 3D / renders)?')) return;
+    if (!confirm('This action is irreversible. Confirm delete?')) return;
+
+    fetch(`/api/prompts/${promptId}`, { method: 'DELETE' })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+            showToast('Deleted. Refresh page to update.');
+            // Manual refresh - removed auto reload for stability
+            // setTimeout(() => window.location.reload(), 300);
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+        });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,564 @@
+{% macro render_target_3d(model, batch, group_name, allow_generate, is_failed) -%}
+<div>
+    <div style="font-size:12px; color:#6c757d; margin-bottom:8px; font-weight:500; display:flex; justify-content:space-between; align-items:center;">
+        <span>Target 3D:</span>
+        <div style="display:flex; gap:6px; align-items:center;">
+            {% if batch.target_3d_models %}
+            {% set default_target = batch.target_3d_models[0] %}
+            <button
+                class="btn btn-outline-secondary btn-sm"
+                onclick="showTargetConsistencyCmd('{{ model.id }}', '{{ batch.edit_id }}', '{{ group_name }}', '{{ default_target.id }}', '{{ default_target.provider }}')"
+                style="font-size:11px; padding:4px 10px;"
+                title="Generate Stage2 target consistency check command"
+            >
+                S2 Cmd
+            </button>
+            {% endif %}
+            {% if batch.target_3d_models and allow_generate %}
+            <button class="btn btn-success btn-sm" onclick="generate3DFromEdit('{{ model.id }}', '{{ batch.edit_id }}', this)" style="font-size:11px; padding:4px 10px;">
+                + Add Provider
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if batch.target_3d_models %}
+        {% if batch.target_3d_models|length > 1 %}
+        <div style="display:flex; gap:4px; margin-bottom:8px; flex-wrap:wrap;">
+            {% for target_model in batch.target_3d_models %}
+            <button class="btn btn-sm provider-tab{% if loop.first %} provider-tab-active{% endif %}"
+                    data-group="{{ group_name }}"
+                    data-index="{{ loop.index0 }}"
+                    data-target-id="{{ target_model.id }}"
+                    data-provider="{{ target_model.provider }}"
+                    onclick="switchProviderTab('{{ group_name }}', {{ loop.index0 }}, this)"
+                    style="font-size:11px; padding:3px 10px; text-transform:capitalize; border:1px solid #dee2e6; background:{% if loop.first %}#0d6efd{% else %}#fff{% endif %}; color:{% if loop.first %}#fff{% else %}#495057{% endif %}; border-radius:4px; cursor:pointer;">
+                {{ target_model.provider }}
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for target_model in batch.target_3d_models %}
+        {% set ptqc = target_model.target_quality_check if target_model.target_quality_check else {} %}
+        <div class="provider-panel" data-group="{{ group_name }}" data-index="{{ loop.index0 }}" style="{% if not loop.first %}display:none;{% endif %}">
+            {% if batch.target_3d_models|length == 1 %}
+            <div style="font-size:10px; color:#666; margin-bottom:4px; text-transform:capitalize; font-weight:500;">
+                {{ target_model.provider }}
+            </div>
+            {% endif %}
+            <div style="background:#ffffff; border-radius:8px; height:200px; position:relative; border:1px solid #dee2e6;">
+                <model-viewer
+                    {% if loop.first %}src="/{{ target_model.path }}"{% else %}data-src="/{{ target_model.path }}"{% endif %}
+                    camera-controls
+                    auto-rotate
+                    shadow-intensity="1"
+                    environment-image="neutral"
+                    style="width:100%; height:100%;"
+                ></model-viewer>
+            </div>
+            <div style="margin-top:8px; display:flex; gap:6px;">
+                <button class="btn btn-outline-primary btn-sm" onclick="showTarget3DModal('{{ target_model.id }}', '/{{ target_model.path }}', '{{ target_model.filename }}')" style="flex:1; font-size:12px; padding:6px 12px;">
+                    Full View
+                </button>
+                <a href="/{{ target_model.path }}" download class="btn btn-outline-secondary btn-sm" style="font-size:12px; padding:6px 12px; text-decoration:none;">
+                    DL
+                </a>
+                <button class="btn btn-outline-secondary btn-sm" onclick="showModelPath('{{ target_model.id }}')" style="font-size:12px; padding:6px 12px;" title="Show server path">
+                    Path
+                </button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteTargetProvider('{{ model.id }}', '{{ batch.edit_id }}', '{{ target_model.provider_id }}')" style="font-size:12px; padding:6px 12px;" title="Delete this target provider model">
+                    Del
+                </button>
+            </div>
+            <div style="margin-top:8px; padding:8px; border-radius:6px; border:1px solid {% if ptqc.get('status') == 'passed' %}#c3e6cb{% elif ptqc.get('status') == 'failed_quality' %}#f5c2c7{% else %}#dee2e6{% endif %}; background:{% if ptqc.get('status') == 'passed' %}#f0f7f4{% elif ptqc.get('status') == 'failed_quality' %}#fff5f5{% else %}#f8f9fa{% endif %};">
+                <div style="display:flex; justify-content:space-between; gap:8px; align-items:center;">
+                    <div style="font-size:11px; font-weight:600; color:{% if ptqc.get('status') == 'passed' %}#155724{% elif ptqc.get('status') == 'failed_quality' %}#842029{% else %}#495057{% endif %}; text-transform:capitalize;">
+                        {{ target_model.provider }} Stage 2
+                    </div>
+                    <span class="badge" style="background:{% if ptqc.get('status') == 'passed' %}#198754{% elif ptqc.get('status') == 'failed_quality' %}#dc3545{% else %}#6c757d{% endif %}; color:#fff; font-size:10px;">
+                        {% if ptqc.get('metric') %}{% if ptqc.get('status') == 'failed_quality' %}failed{% elif ptqc.get('status') == 'error_quality_check' %}error{% else %}{{ ptqc.get('status', 'unknown') }}{% endif %}{% else %}not checked{% endif %}
+                    </span>
+                </div>
+                {% if ptqc.get('metric') %}
+                {% if ptqc.get('metric') == 'vlm' %}
+                <div style="font-size:11px; color:#495057; margin-top:2px;">
+                    VLM Judge · confidence {{ ptqc.get('score', '?') }}
+                </div>
+                {% if ptqc.get('vlm_reason') %}
+                <div style="font-size:11px; color:#6c757d; margin-top:4px; font-style:italic;">
+                    "{{ ptqc.get('vlm_reason') }}"
+                </div>
+                {% endif %}
+                {% else %}
+                {% set ptqc_metric_label = 'LPIPS' if ptqc.get('metric') == 'lpips' else ptqc.get('metric', '?') %}
+                <div style="font-size:11px; color:#495057; margin-top:2px;">
+                    {{ ptqc_metric_label }} · score {{ ptqc.get('score', ptqc.get('aggregate_score', '?')) }} / threshold {{ ptqc.get('threshold', '?') }}
+                </div>
+                <div style="font-size:11px; color:#6c757d; margin-top:4px;">
+                    {{ (ptqc.get('input_mode') or 'rgb')|upper }}
+                    {% if ptqc.get('views') %}
+                        · {{ ptqc.get('views')|join(', ') }}
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% else %}
+                <div style="font-size:11px; color:#6c757d; margin-top:2px;">
+                    No Stage 2 result for this provider yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        {% if allow_generate %}
+        <div style="background:#f8f9fa; border-radius:8px; height:200px; display:flex; align-items:center; justify-content:center; border:1px dashed #dee2e6;">
+            <button class="btn btn-success btn-sm" onclick="generate3DFromEdit('{{ model.id }}', '{{ batch.edit_id }}', this)" style="font-size:12px; padding:8px 16px;">
+                Generate Target 3D
+            </button>
+        </div>
+        {% else %}
+        <div style="background:#f8f9fa; border-radius:8px; height:200px; display:flex; align-items:center; justify-content:center; border:1px dashed #dee2e6; color:#6c757d; font-size:12px; text-align:center; padding:12px;">
+            No target 3D yet.<br>Restore to Edited Versions to enable generation.
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+{%- endmacro %}
+
+
+{% macro render_edit_batch(model, batch, index, is_failed=False) -%}
+{% set qc = batch.quality_check if batch.quality_check else {} %}
+{% set group_name = ('failed-target-' ~ batch.edit_id) if is_failed else ('target-' ~ batch.edit_id) %}
+{% set card_bg = '#fff6f6' if is_failed else '#f8f9fa' %}
+{% set card_border = '#f2c6c6' if is_failed else '#e9ecef' %}
+{% set title_color = '#842029' if is_failed else '#495057' %}
+{% set method_name = qc.get('method', '') %}
+{% set stage1_method_label = 'Unified Judge' if method_name == 'unified_judge' else 'Method-2 (Two-Stage Recon)' if method_name == 'two_stage_recon' else 'Method-1 (Grid VLM)' if method_name == 'grid_vlm' else 'unknown method' %}
+{% set sec = qc.get('stage_edit_correctness', {}) if method_name == 'two_stage_recon' else {} %}
+{% set diff = sec.get('diff_result', {}) if sec else {} %}
+{% set judge = sec.get('judge_result', {}) if sec else {} %}
+
+<div class="edit-batch" style="background:{{ card_bg }}; border-radius:8px; padding:18px; margin-bottom:16px; border:1px solid {{ card_border }};">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+        <div style="flex:1;">
+            <div style="font-size:13px; font-weight:600; color:{{ title_color }}; margin-bottom:6px;">
+                {% if is_failed %}Failed{% else %}Edit{% endif %} #{{ index }}
+                {% if batch.source_provider_id %}
+                <span class="badge" style="background:#6c757d; color:#fff; font-size:10px; margin-left:4px; text-transform:none;">from {{ batch.source_provider_id }}</span>
+                {% endif %}
+                {% if batch.target_3d_models %}
+                <span class="badge" style="background:#17a2b8; color:#fff; font-size:11px; margin-left:6px;">{{ batch.target_3d_models|length }} Target 3D</span>
+                {% endif %}
+                {% if batch.instruction_display_source == 'relabel' %}
+                <span class="badge" style="background:#0d6efd; color:#fff; font-size:10px; margin-left:6px;">
+                    Relabeled
+                </span>
+                {% elif batch.instruction_display_status == 'relabel_failed' %}
+                <span class="badge" style="background:#fd7e14; color:#fff; font-size:10px; margin-left:6px;">
+                    Relabel Failed
+                </span>
+                {% endif %}
+                {% if is_failed %}
+                <span class="badge" style="background:#dc3545; color:#fff; font-size:10px; margin-left:6px;">
+                    {{ batch.edit_status }}
+                </span>
+                {% endif %}
+            </div>
+            <div style="font-size:12px; color:#6c757d;" title="{{ batch.instruction_display_text or batch.instruction }}">
+                {{ batch.instruction_display_text or batch.instruction }}
+            </div>
+            {% if is_failed %}
+            <div style="font-size:11px; color:#842029; margin-top:4px;">
+                reason: {{ qc.get('reason', qc.get('error_message', 'quality check failed')) }}
+            </div>
+            {% endif %}
+            {% if qc.get('method') or batch.target_3d_models %}
+            <div style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+                {% if qc.get('method') %}
+                <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                    <span style="font-size:11px; font-weight:600; color:#495057;">Stage 1</span>
+                    <span class="badge" style="background:#6f42c1; color:#fff; font-size:10px;">
+                        {{ stage1_method_label }}
+                    </span>
+                    <span class="badge" style="background:{% if qc.get('status') == 'passed' %}#198754{% elif qc.get('status') == 'failed_quality' %}#dc3545{% else %}#6c757d{% endif %}; color:#fff; font-size:10px;">
+                        {% if qc.get('status') == 'failed_quality' %}failed{% elif qc.get('status') == 'error_quality_check' %}error{% else %}{{ qc.get('status', 'unknown') }}{% endif %}
+                    </span>
+                    {% if method_name == 'grid_vlm' %}
+                    <span style="font-size:11px; color:#6c757d;">
+                        before/after 6-view stitched grids
+                    </span>
+                    {% endif %}
+                    {% if sec.get('checked_views') %}
+                    <span style="font-size:11px; color:#6c757d;">
+                        {{ sec.get('checked_views')|length }} view{% if sec.get('checked_views')|length != 1 %}s{% endif %} checked
+                    </span>
+                    {% endif %}
+                    {% if sec.get('view_policy') %}
+                    <span style="font-size:11px; color:#6c757d;">
+                        policy: {{ sec.get('view_policy') }}
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                    <span style="font-size:11px; font-weight:600; color:#495057;">Stage 2</span>
+                    {% if batch.target_3d_models %}
+                        {% for target_model in batch.target_3d_models %}
+                        {% set summary_tqc = target_model.target_quality_check if target_model.target_quality_check else {} %}
+                        <span style="font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid {% if summary_tqc.get('status') == 'passed' %}#c3e6cb{% elif summary_tqc.get('status') == 'failed_quality' %}#f5c2c7{% else %}#dee2e6{% endif %}; background:{% if summary_tqc.get('status') == 'passed' %}#f0f7f4{% elif summary_tqc.get('status') == 'failed_quality' %}#fff5f5{% else %}#ffffff{% endif %}; color:{% if summary_tqc.get('status') == 'passed' %}#155724{% elif summary_tqc.get('status') == 'failed_quality' %}#842029{% else %}#495057{% endif %}; text-transform:capitalize;">
+                            {{ target_model.provider }} {% if summary_tqc.get('metric') %}{% if summary_tqc.get('status') == 'failed_quality' %}failed{% elif summary_tqc.get('status') == 'error_quality_check' %}error{% else %}{{ summary_tqc.get('status', 'unknown') }}{% endif %}{% else %}not checked{% endif %}
+                        </span>
+                        {% endfor %}
+                    {% else %}
+                    <span style="font-size:11px; color:#6c757d;">
+                        no target 3D
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline-secondary btn-sm" onclick="showEditQualityCheckCmd('{{ model.id }}', '{{ batch.edit_id }}', '{{ qc.get('method', '') }}')" style="font-size:{% if is_failed %}11px{% else %}12px{% endif %}; padding:4px 10px;" title="Generate quality check command">
+                QC Cmd
+            </button>
+            {% if is_failed %}
+            <button class="btn btn-sm" onclick="restoreFailedEdit('{{ model.id }}', '{{ batch.edit_id }}')" style="background:#198754; color:#fff; border:none; font-size:11px; padding:4px 10px;" title="Restore as valid edit">
+                Restore
+            </button>
+            {% endif %}
+            <button class="btn btn-outline-danger btn-sm" onclick="deleteEditBatch('{{ model.id }}', '{{ batch.edit_id }}')" style="font-size:{% if is_failed %}11px{% else %}12px{% endif %}; padding:4px 10px;" title="Delete this {% if is_failed %}failed {% endif %}edit">
+                Del
+            </button>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:10px;">
+        <div>
+            <div style="font-size:12px; color:#6c757d; margin-bottom:8px; font-weight:500;">Edited Views:</div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;">
+                {% for view in batch.views %}
+                <img src="/{{ view.path }}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:6px; border:1px solid #dee2e6; cursor:pointer;" title="{{ view.name }}" onclick="window.open('/{{ view.path }}', '_blank')">
+                {% endfor %}
+            </div>
+
+            {% if batch.target_render_grid or batch.edit_mask %}
+            <div style="margin-top:10px;">
+                <div style="font-size:12px; color:#6c757d; margin-bottom:6px; font-weight:500;">Reference Artifacts:</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                    <div style="background:#fff; border:1px solid #dee2e6; border-radius:6px; padding:6px;">
+                        <div style="font-size:10px; color:#6c757d; margin-bottom:4px;">Target Render Grid</div>
+                        {% if batch.target_render_grid %}
+                        <img src="/{{ batch.target_render_grid }}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:4px; border:1px solid #dee2e6; cursor:pointer;" onclick="window.open('/{{ batch.target_render_grid }}', '_blank')">
+                        {% if batch.target_render_grid_provider %}
+                        <div style="font-size:10px; color:#6c757d; margin-top:4px; text-transform:capitalize;">
+                            provider: {{ batch.target_render_grid_provider }}
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div style="height:100%; min-height:72px; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:11px; border:1px dashed #dee2e6; border-radius:4px;">
+                            Missing
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div style="background:#fff; border:1px solid #dee2e6; border-radius:6px; padding:6px;">
+                        <div style="font-size:10px; color:#6c757d; margin-bottom:4px;">Mask</div>
+                        {% if batch.edit_mask %}
+                        <img src="/{{ batch.edit_mask }}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:4px; border:1px solid #dee2e6; cursor:pointer;" onclick="window.open('/{{ batch.edit_mask }}', '_blank')">
+                        {% else %}
+                        <div style="height:100%; min-height:72px; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:11px; border:1px dashed #dee2e6; border-radius:4px;">
+                            Missing
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if batch.per_view_masks %}
+            <details style="margin-top:10px;">
+                <summary style="font-size:12px; font-weight:600; color:#495057; cursor:pointer;">Mask Views</summary>
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-top:8px;">
+                    {% for view_name in ['front', 'back', 'right', 'left', 'top', 'bottom'] %}
+                    {% set mask_path = batch.per_view_masks.get(view_name) %}
+                    <div style="background:#fff; border:1px solid #dee2e6; border-radius:6px; padding:4px;">
+                        <div style="font-size:10px; color:#6c757d; margin-bottom:3px; text-align:center;">{{ view_name }}</div>
+                        {% if mask_path %}
+                        <img src="/{{ mask_path }}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:4px; border:1px solid #dee2e6; cursor:pointer;" onclick="window.open('/{{ mask_path }}', '_blank')">
+                        {% else %}
+                        <div style="height:100%; min-height:56px; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:10px; border:1px dashed #dee2e6; border-radius:4px;">
+                            Missing
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </details>
+            {% endif %}
+        </div>
+
+        {{ render_target_3d(model, batch, group_name, (not is_failed), is_failed) }}
+    </div>
+
+    {% if qc.get('method') or batch.target_3d_models %}
+    <details{% if is_failed %} open{% endif %} style="margin-top:10px;">
+        <summary style="font-size:12px; font-weight:600; color:#495057; cursor:pointer;">
+            QC Details
+        </summary>
+        <div style="margin-top:10px; display:grid; gap:10px;">
+            <div style="padding:12px; background:#ffffff; border-radius:8px; border:1px solid #dee2e6;">
+                <div style="font-size:12px; font-weight:600; color:#495057; margin-bottom:8px;">
+                    Instruction Semantics
+                </div>
+                <div style="display:grid; gap:8px;">
+                    <div>
+                        <div style="font-size:11px; font-weight:600; color:#6c757d; margin-bottom:2px;">Original Instruction</div>
+                        <div style="font-size:11px; color:#212529; white-space:pre-wrap;">{{ batch.instruction_text_original or batch.instruction }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px; font-weight:600; color:#6c757d; margin-bottom:2px;">Effective Instruction</div>
+                        <div style="font-size:11px; color:#212529; white-space:pre-wrap;">{{ batch.instruction_text_effective or batch.instruction_display_text or batch.instruction }}</div>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                        <span style="font-size:11px; font-weight:600; color:#6c757d;">Display Source</span>
+                        <span class="badge" style="background:{% if batch.instruction_display_source == 'relabel' %}#0d6efd{% else %}#6c757d{% endif %}; color:#fff; font-size:10px;">
+                            {{ batch.instruction_display_source or 'original' }}
+                        </span>
+                        {% if batch.instruction_display_status %}
+                        <span class="badge" style="background:#f1f3f5; color:#495057; font-size:10px; border:1px solid #dee2e6;">
+                            {{ batch.instruction_display_status }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if batch.instruction_text_candidate_rewrite %}
+                    <div>
+                        <div style="font-size:11px; font-weight:600; color:#6c757d; margin-bottom:2px;">Candidate Rewrite</div>
+                        <div style="font-size:11px; color:#212529; white-space:pre-wrap;">{{ batch.instruction_text_candidate_rewrite }}</div>
+                    </div>
+                    {% endif %}
+                    {% if batch.instruction_rewrite_reason %}
+                    <div>
+                        <div style="font-size:11px; font-weight:600; color:#6c757d; margin-bottom:2px;">Relabel Reason</div>
+                        <div style="font-size:11px; color:#495057; white-space:pre-wrap;">{{ batch.instruction_rewrite_reason }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if method_name == 'grid_vlm' %}
+            <div style="padding:12px; background:#f8f5ff; border-radius:8px; border:1px solid #ddd6fe;">
+                <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:6px;">
+                    <div style="font-size:12px; font-weight:600; color:#4a3d75;">Stage 1 · Method-1 (Grid VLM)</div>
+                    <span class="badge" style="background:{% if qc.get('status') == 'passed' %}#198754{% elif qc.get('status') == 'failed_quality' %}#dc3545{% else %}#6c757d{% endif %}; color:#fff; font-size:10px;">
+                        {% if qc.get('status') == 'failed_quality' %}failed{% elif qc.get('status') == 'error_quality_check' %}error{% else %}{{ qc.get('status', 'unknown') }}{% endif %}
+                    </span>
+                </div>
+                <div style="font-size:11px; color:#495057;">
+                    Method-1 checks the edit by comparing before/after stitched 6-view grids in one pass.
+                </div>
+                {% if qc.get('raw_response') %}
+                <details{% if is_failed %} open{% endif %} style="margin-top:8px;">
+                    <summary style="font-size:11px; font-weight:500; color:#495057; cursor:pointer;">Raw judge output</summary>
+                    <div style="font-size:11px; color:#495057; background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:8px; margin-top:4px; white-space:pre-wrap; max-height:200px; overflow-y:auto;">{{ qc.get('raw_response') }}</div>
+                </details>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if sec %}
+            <div style="padding:12px; background:#f1f0f8; border-radius:8px; border:1px solid #d6d3e8;">
+                <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:6px;">
+                    <div style="font-size:12px; font-weight:600; color:#4a3d75;">Stage 1 · Method-2 (Two-Stage Recon)</div>
+                    <span class="badge" style="background:{% if sec.get('status') == 'passed' %}#198754{% elif sec.get('status') == 'failed_quality' %}#dc3545{% else %}#6c757d{% endif %}; color:#fff; font-size:10px;">
+                        {% if sec.get('status') == 'failed_quality' %}failed{% elif sec.get('status') == 'error_quality_check' %}error{% else %}{{ sec.get('status', 'unknown') }}{% endif %}
+                    </span>
+                </div>
+                {% if sec.get('checked_views') %}
+                <div style="font-size:11px; color:#6c757d; margin-bottom:8px;">
+                    Views checked: {{ sec.get('checked_views')|join(', ') }}
+                    {% if sec.get('view_policy') %} (policy: {{ sec.get('view_policy') }}){% endif %}
+                </div>
+                {% endif %}
+                <div style="font-size:11px; color:#495057; margin-bottom:4px;">
+                    <strong>Stage 1A</strong> is the VLM diff step: it describes what changed between the before and after images.
+                </div>
+                {% if diff %}
+                <details{% if sec.get('status') != 'passed' %} open{% endif %} style="margin-bottom:8px;">
+                    <summary style="font-size:11px; font-weight:500; color:#495057; cursor:pointer;">Stage 1A - VLM Diff</summary>
+                    <div style="display:grid; gap:6px; margin-top:4px;">
+                        {% if sec.get('checked_views') %}
+                            {% for view_name in sec.get('checked_views') %}
+                            {% set view_diff = diff.get(view_name, {}) %}
+                            <div style="background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:8px;">
+                                <div style="font-size:11px; font-weight:600; color:#495057; margin-bottom:4px;">{{ view_name }}</div>
+                                <div style="font-size:11px; color:#495057; white-space:pre-wrap; max-height:200px; overflow-y:auto;">{{ view_diff.get('diff_text', '-') }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div style="background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:8px; font-size:11px; color:#495057; white-space:pre-wrap; max-height:200px; overflow-y:auto;">{{ diff.get('diff_text', '-') }}</div>
+                        {% endif %}
+                    </div>
+                </details>
+                {% endif %}
+                <div style="font-size:11px; color:#495057; margin-bottom:4px;">
+                    <strong>Stage 1B</strong> is the LLM judge step: it reads the Stage 1A diff together with the instruction and decides whether the edit is correct.
+                </div>
+                {% if judge %}
+                <details{% if sec.get('status') != 'passed' %} open{% endif %}>
+                    <summary style="font-size:11px; font-weight:500; color:#495057; cursor:pointer;">Stage 1B - LLM Judge</summary>
+                    <div style="display:grid; gap:6px; margin-top:4px;">
+                        {% if sec.get('checked_views') %}
+                            {% for view_name in sec.get('checked_views') %}
+                            {% set view_judge = judge.get(view_name, {}) %}
+                            <div style="background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:8px;">
+                                <div style="display:flex; gap:6px; align-items:center; margin-bottom:4px;">
+                                    <div style="font-size:11px; font-weight:600; color:#495057;">{{ view_name }}</div>
+                                    {% if view_judge.get('decision') %}
+                                    <span class="badge" style="background:{% if view_judge.get('decision') == 'pass' %}#198754{% else %}#dc3545{% endif %}; color:#fff; font-size:10px;">
+                                        {{ view_judge.get('decision') }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div style="font-size:11px; color:#495057; white-space:pre-wrap; max-height:200px; overflow-y:auto;">{{ view_judge.get('reason', '-') }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div style="background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:8px;">
+                            <div style="display:flex; gap:6px; align-items:center; margin-bottom:4px;">
+                                <div style="font-size:11px; font-weight:600; color:#495057;">result</div>
+                                {% if judge.get('decision') %}
+                                <span class="badge" style="background:{% if judge.get('decision') == 'pass' %}#198754{% else %}#dc3545{% endif %}; color:#fff; font-size:10px;">
+                                    {{ judge.get('decision') }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div style="font-size:11px; color:#495057; white-space:pre-wrap; max-height:200px; overflow-y:auto;">{{ judge.get('reason', '-') }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </details>
+                {% endif %}
+                {% if sec.get('relabel_result') %}
+                <details{% if sec.get('status') != 'passed' %} open{% endif %} style="margin-top:8px;">
+                    <summary style="font-size:11px; font-weight:500; color:#495057; cursor:pointer;">Stage 1 Relabel</summary>
+                    <div style="display:grid; gap:6px; margin-top:4px;">
+                        <div style="background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:8px;">
+                            <div style="display:flex; gap:6px; align-items:center; margin-bottom:4px;">
+                                <div style="font-size:11px; font-weight:600; color:#495057;">result</div>
+                                <span class="badge" style="background:{% if sec.get('relabel_result', {}).get('status') == 'rewrite' %}#0d6efd{% else %}#6c757d{% endif %}; color:#fff; font-size:10px;">
+                                    {{ sec.get('relabel_result', {}).get('status', 'unknown') }}
+                                </span>
+                            </div>
+                            {% if sec.get('relabel_result', {}).get('instruction') %}
+                            <div style="font-size:11px; color:#212529; white-space:pre-wrap; margin-bottom:4px;">{{ sec.get('relabel_result', {}).get('instruction') }}</div>
+                            {% endif %}
+                            <div style="font-size:11px; color:#495057; white-space:pre-wrap;">{{ sec.get('relabel_result', {}).get('reason', '-') }}</div>
+                        </div>
+                        {% if sec.get('rejudge_result') %}
+                        <div style="background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:8px;">
+                            <div style="display:flex; gap:6px; align-items:center; margin-bottom:4px;">
+                                <div style="font-size:11px; font-weight:600; color:#495057;">rejudge</div>
+                                {% if sec.get('rejudge_result', {}).get('decision') %}
+                                <span class="badge" style="background:{% if sec.get('rejudge_result', {}).get('decision') == 'pass' %}#198754{% else %}#dc3545{% endif %}; color:#fff; font-size:10px;">
+                                    {{ sec.get('rejudge_result', {}).get('decision') }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div style="font-size:11px; color:#495057; white-space:pre-wrap;">{{ sec.get('rejudge_result', {}).get('reason', '-') }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </details>
+                {% endif %}
+                {% if sec.get('reason') %}
+                <div style="font-size:11px; color:#842029; margin-top:8px;">
+                    {{ sec.get('reason') }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if batch.target_3d_models %}
+            <div style="padding:12px; background:#f0f7f4; border-radius:8px; border:1px solid #c3e6cb;">
+                <div style="font-size:12px; font-weight:600; color:#155724; margin-bottom:8px;">
+                    Stage 2 · Target 3D Consistency
+                </div>
+                <div style="display:grid; gap:8px;">
+                    {% for target_model in batch.target_3d_models %}
+                    {% set detail_tqc = target_model.target_quality_check if target_model.target_quality_check else {} %}
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; padding:10px; border-radius:6px; border:1px solid {% if detail_tqc.get('status') == 'passed' %}#c3e6cb{% elif detail_tqc.get('status') == 'failed_quality' %}#f5c2c7{% else %}#dee2e6{% endif %}; background:#fff;">
+                        <div style="min-width:0;">
+                            <div style="font-size:11px; font-weight:600; color:#495057; text-transform:capitalize;">
+                                {{ target_model.provider }}
+                            </div>
+                            {% if detail_tqc.get('metric') %}
+                            {% if detail_tqc.get('metric') == 'vlm' %}
+                            <div style="font-size:11px; color:#495057; margin-top:2px;">
+                                VLM Judge · confidence {{ detail_tqc.get('score', '?') }} / threshold {{ detail_tqc.get('threshold', '?') }}
+                            </div>
+                            {% if detail_tqc.get('vlm_reason') %}
+                            <div style="font-size:11px; color:#6c757d; margin-top:4px; font-style:italic;">
+                                "{{ detail_tqc.get('vlm_reason') }}"
+                            </div>
+                            {% endif %}
+                            {% if detail_tqc.get('reason') %}
+                            <div style="font-size:11px; color:{% if detail_tqc.get('status') == 'passed' %}#155724{% else %}#842029{% endif %}; margin-top:4px;">
+                                {{ detail_tqc.get('reason') }}
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            {% set detail_metric_label = 'LPIPS' if detail_tqc.get('metric') == 'lpips' else detail_tqc.get('metric', '?') %}
+                            <div style="font-size:11px; color:#495057; margin-top:2px;">
+                                {{ detail_metric_label }} · score {{ detail_tqc.get('score', detail_tqc.get('aggregate_score', '?')) }} / threshold {{ detail_tqc.get('threshold', '?') }}
+                            </div>
+                            <div style="font-size:11px; color:#6c757d; margin-top:4px;">
+                                {{ (detail_tqc.get('input_mode') or 'rgb')|upper }}
+                                {% if detail_tqc.get('views') %}
+                                    · {{ detail_tqc.get('views')|join(', ') }}
+                                {% endif %}
+                            </div>
+                            {% if detail_tqc.get('scores_by_view') %}
+                            <div style="font-size:11px; color:#6c757d; margin-top:4px;">
+                                {% for view, score in detail_tqc.get('scores_by_view', {}).items() %}
+                                    {{ view }}={{ "%.4f"|format(score) }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if detail_tqc.get('reason') %}
+                            <div style="font-size:11px; color:{% if detail_tqc.get('status') == 'passed' %}#155724{% else %}#842029{% endif %}; margin-top:4px;">
+                                {{ detail_tqc.get('reason') }}
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                            {% else %}
+                            <div style="font-size:11px; color:#6c757d; margin-top:2px;">
+                                not checked
+                            </div>
+                            {% endif %}
+                        </div>
+                        <span class="badge" style="background:{% if detail_tqc.get('status') == 'passed' %}#198754{% elif detail_tqc.get('status') == 'failed_quality' %}#dc3545{% else %}#6c757d{% endif %}; color:#fff; font-size:10px; text-transform:none;">
+                            {% if detail_tqc.get('metric') %}{% if detail_tqc.get('status') == 'failed_quality' %}failed{% elif detail_tqc.get('status') == 'error_quality_check' %}error{% else %}{{ detail_tqc.get('status', 'unknown') }}{% endif %}{% else %}not checked{% endif %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if is_failed and qc.get('before_grid_path') and qc.get('after_grid_path') %}
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                    <div style="font-size:11px; color:#6c757d; margin-bottom:4px;">Before Grid</div>
+                    <img src="/{{ qc.get('before_grid_path') }}" style="width:100%; border-radius:6px; border:1px solid #dee2e6; cursor:pointer;" onclick="window.open('/{{ qc.get('before_grid_path') }}', '_blank')">
+                </div>
+                <div>
+                    <div style="font-size:11px; color:#6c757d; margin-bottom:4px;">After Grid</div>
+                    <img src="/{{ qc.get('after_grid_path') }}" style="width:100%; border-radius:6px; border:1px solid #dee2e6; cursor:pointer;" onclick="window.open('/{{ qc.get('after_grid_path') }}', '_blank')">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </details>
+    {% endif %}
+</div>
+{%- endmacro %}

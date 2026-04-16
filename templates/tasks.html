@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% set page = 'tasks' %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Task Queue</h1>
+    <p class="page-desc">Monitor background generation tasks</p>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding: 0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 100px;">Task ID</th>
+                    <th style="width: 100px;">Type</th>
+                    <th>Details</th>
+                    <th style="width: 100px;">Status</th>
+                    <th style="width: 150px;">Created/Completed</th>
+                </tr>
+            </thead>
+            <tbody id="task-table-body">
+                <tr><td colspan="5" class="text-muted" style="text-align: center; padding: 20px;">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateTable() {
+    fetch('/api/tasks/list')
+        .then(r => r.json())
+        .then(tasks => {
+            const tbody = document.getElementById('task-table-body');
+            
+            if (tasks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-muted" style="text-align: center; padding: 40px;">No tasks found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            for (const t of tasks) {
+                let details = '';
+                if (t.type === 't2i') {
+                    details = `<strong>Prompt:</strong> ${t.params.prompt?.substring(0, 50)}...`;
+                } else if (t.type === 'gen3d') {
+                    details = `<strong>Image:</strong> ${t.params.image_id} <span class="badge badge-running">${t.params.provider}</span>`;
+                } else if (t.type === 'instruction') {
+                    details = `<strong>Image:</strong> ${t.params.image_id}`;
+                }
+                
+                if (t.error) {
+                    details += `<div class="text-danger" style="margin-top:4px; font-size:12px;">${t.error}</div>`;
+                }
+                
+                const timeStr = t.completed_at ? 
+                    `Completed: ${new Date(t.completed_at).toLocaleTimeString()}` : 
+                    `Created: ${new Date(t.created_at).toLocaleTimeString()}`;
+                
+                html += `
+                    <tr>
+                        <td><code>${t.id.substring(0,8)}</code></td>
+                        <td>${t.type}</td>
+                        <td>${details}</td>
+                        <td><span class="badge badge-${t.status}">${t.status}</span></td>
+                        <td class="text-muted" style="font-size: 12px;">${timeStr}</td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        });
+}
+
+// Manual refresh only - click the Refresh button to update
+// Auto-polling disabled for stability
+// setInterval(updateTable, 3000);
+updateTable();
+</script>
+{% endblock %}

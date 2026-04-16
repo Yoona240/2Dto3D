@@ -1,0 +1,576 @@
+# 2D to 3D Editing Dataset Pipeline Configuration
+# 重构版本 - 统一 OneAPI Gateway 配置
+
+# =====================================================
+# UNIFIED API GATEWAY (群核 OneAPI)
+# 所有文本、图像生成/编辑统一通过 OneAPI 调用
+# =====================================================
+oneapi:
+  api_key: "sk-TPltNerNsX9kagZN29FfE3B0104c488eB4Bb0388Fe1342B0"
+  base_url: "https://oneapi.qunhequnhe.com" 
+  timeout: 300
+  max_retries: 3
+  
+  # ==================== 文本生成模型 ====================
+  text_models:
+    gpt-5:
+      temperature: 1.0
+      max_tokens: 40000
+    gemini-3-flash-preview:
+      temperature: 1.0
+      max_tokens: 40000
+    gemini-3.1-pro-preview:
+      temperature: 1.0
+      max_tokens: 40000
+  
+  # ==================== 图像生成/编辑模型 (Response API) ====================
+  # 这些模型使用异步 Response API，需要轮询
+  image_models:
+    # Gemini 系列（使用 model-link-alpha 网关）
+    gemini-2.5-flash-image:
+      api_type: "response"
+      base_url: "https://oneapi-beta.qunhequnhe.com" # "http://model-link-alpha.k8s-qunhe.qunhequnhe.com"  # 覆盖全局 oneapi.base_url
+      size: "2048x2048"
+      n: 1
+      poll_interval: 10
+      max_wait_time: 600
+    
+    gemini-3-pro-image-preview:
+      api_type: "response"
+      base_url: "https://oneapi-beta.qunhequnhe.com" # "http://model-link-alpha.k8s-qunhe.qunhequnhe.com"  # 覆盖全局 oneapi.base_url
+      size: "2048x2048"
+      n: 1
+      poll_interval: 10
+      max_wait_time: 600
+    
+    # Imagen 系列
+    imagen-4.0-generate-001:
+      api_type: "response"
+      size: "2048x2048"
+      n: 1
+      poll_interval: 10
+      max_wait_time: 600
+    
+    # 豆包系列
+    doubao-seedream-4.0:
+      api_type: "response"
+      size: "2048x2048"
+      n: 1
+      poll_interval: 10
+      max_wait_time: 300
+    
+    doubao-seedream-4.5:
+      api_type: "response"
+      size: "2048x2048"
+      n: 1
+      poll_interval: 10
+      max_wait_time: 300
+  
+  # ==================== 3D 生成模型 (Response API) ====================
+  gen3d_models:
+    
+    hunyuan-3d-pro: &hunyuan_pro_config
+      api_type: "response"
+      output_format: "GLB"
+      pbr: true
+      face_count: 1000000
+      generate_type: "Normal"
+      polygon_type: "triangle"
+      poll_interval: 30
+      max_wait_time: 600
+      
+      # Image preprocessing for 3D generation
+      # - Original images are NEVER modified (processed to temp directory)
+      # - Default: disabled (set enabled: true to enable foreground cropping)
+      preprocess:
+        enabled: false
+
+    # 与 hunyuan-3d-pro 共享完全相同的配置
+    hunyuan-3d-3.1-pro: *hunyuan_pro_config
+
+# =====================================================
+# EXTERNAL 3D APIs (Direct Connection)
+# =====================================================
+
+
+tripo:
+  # ---------- API 连接配置 ----------
+  api_key: "tsk_IUDxsN9XjZBFXYyruo06qrg8cbqTvnFLsi61UAYKAFJ"
+  base_url: "https://api.tripo3d.ai/v2/openapi"
+  timeout: 120
+  max_retries: 3
+  
+  # ---------- 生成参数 ----------
+  model_version: "v3.1-20260211"
+  geometry_quality: "detailed"
+  output_format: "glb"
+  
+  # Reproducibility seeds (fixed for consistent source/target generation)
+  model_seed: 34071211
+  texture_seed: 20260225
+  
+  # Texture / mesh parameters
+  texture: true
+  pbr: true
+  texture_quality: "standard"      # detailed | standard
+  texture_alignment: "original_image"  # original_image | geometry
+  face_limit: null                  # 1000-20000, null = adaptive
+  export_uv: true
+  
+  # ---------- 视角选择与重映射 ----------
+  # Enable view selection + geometric remapping (default: false for backward compatibility)
+  enable_view_selection: false       # true = use entropy_edge + geometric mapping
+                                    # false = use legacy front/back/left/right directly
+  multiview_strategy: "entropy_edge"     # legacy | entropy_edge (only used when enable_view_selection=true)
+  
+  # New view selection logic: compare top vs front only
+  entropy_diff_threshold: 1.0        # top score must exceed front by this threshold to trigger VLM
+  view_selection_vlm_model: "gemini-3-flash-preview"  # VLM for judging if top is front
+  
+  allow_top_bottom_remap: true
+  top_bottom_target_slot: "front"  # front | left | back | right
+  top_rotation: 0                   # rotate degrees for top view remap
+  bottom_rotation: 0                # rotate degrees for bottom view remap
+  top_flip_horizontal: false
+  bottom_flip_horizontal: false
+
+rodin:
+  api_key: "your_rodin_api_key_here"
+  base_url: "https://api.hyper3d.ai/api/v2"
+  tier: "Gen-2"
+  output_format: "glb"
+  timeout: 120
+  max_retries: 3
+
+# =====================================================
+# TASK CONFIGURATION
+# 指定各任务使用哪个 provider 和模型
+# =====================================================
+
+tasks:
+  # 文本生成任务
+  text_generation:
+    provider: "oneapi"
+    model: "gpt-5"
+    aspect_ratio: null
+
+  # 图像生成任务 (T2I)
+  image_generation:
+    provider: "oneapi"
+    model: "gemini-2.5-flash-image"
+    aspect_ratio: "1:1"  # 支持: 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
+  
+  # 图像编辑任务 (单视角)
+  image_editing:
+    provider: "oneapi"
+    model: "gemini-2.5-flash-image"
+    aspect_ratio: null
+  
+  # 多视角拼接编辑任务
+  multiview_editing:
+    provider: "oneapi"
+    model: "gemini-3-pro-image-preview"
+    aspect_ratio: null
+    guardrail_prompt_enabled: true
+    guardrail_prompt:
+      version: "mv_guardrail_v2"  # text loaded from utils/prompts.py MULTIVIEW_GUARDRAIL_V2
+  
+  # 3D 生成任务
+  gen3d:
+    provider: "tripo"  # tripo | oneapi (for hunyuan)
+    model: "v3.1-20260211"  # tripo model version or hunyuan model name hunyuan-3d-3.1-pro
+    aspect_ratio: null
+  
+  # Guided view editing task (uses gemini-2.5-flash-image for speed)
+  guided_edit:
+    provider: "oneapi"
+    model: "gemini-2.5-flash-image"
+    aspect_ratio: null
+
+  # Edit quality check task (VLM judge for before/after 6-view collage)
+  # Used by Method-1 (grid_vlm) as the single VLM judge
+  edit_quality_check:
+    provider: "oneapi"
+    model: "gemini-3-flash-preview"
+    aspect_ratio: null
+
+  # Method-2 Stage 1A: VLM diff description (image-based, no instruction)
+  edit_quality_check_diff:
+    provider: "oneapi"
+    model: "gemini-3-flash-preview"
+    aspect_ratio: null
+
+  # Method-2 Stage 1B: LLM judge (text-only, instruction + diff result)
+  edit_quality_check_judge:
+    provider: "oneapi"
+    model: "gpt-5"
+    aspect_ratio: null
+
+  # Method-2 View Sanity Check (新 Stage 1A): 跨视角几何一致性检查，fail 直接退出
+  edit_quality_check_view_sanity:
+    provider: "oneapi"
+    model: "gemini-3-flash-preview"
+    aspect_ratio: null
+
+  # Method-3 (unified_judge): 单次 VLM 统一判定（观察+几何+指令遵循+relabel）
+  edit_quality_check_unified:
+    provider: "oneapi"
+    model: "gemini-3.1-pro-preview"
+    aspect_ratio: null
+
+  # Stage2 VLM 一致性检测：判断 target 3D 渲染是否还原了编辑后 2D 外观
+  # 仅在 edit_quality_check.two_stage_recon.stage2_method = "vlm" 时生效
+  target_consistency_judge:
+    provider: "oneapi"
+    model: "gemini-3.1-pro-preview"
+    aspect_ratio: null
+
+# =====================================================
+# EDIT QUALITY CHECK SETTINGS
+# =====================================================
+
+edit_quality_check:
+  enabled: true
+  method: "unified_judge"  # grid_vlm | two_stage_recon | unified_judge
+  save_debug_assets: true
+  temp_dir_name: "_quality_check"
+  max_retries_on_quality_fail: 0
+
+  # Method-2 (two_stage_recon) specific settings
+  # Only read when method = "two_stage_recon"; must be present and valid if selected
+  two_stage_recon:
+    # Stage 1: edit correctness (instruction -> target image)
+    edit_view_policy: "stitched_6"   # front_only | all_6 | stitched_6
+    require_all_views_pass: true    # only used when edit_view_policy = all_6
+    diff_output_format: "json"
+
+    # View Sanity Check (新 Stage 1A): 跨视角几何一致性，fail 直接退出
+    view_sanity_check:
+      enabled: true
+
+    # Stage 2: target image -> target 3D reconstruction consistency
+    # stage2_method controls which checker is used: lpips | vlm
+    stage2_method: "vlm"           # lpips | vlm
+
+    # LPIPS specific (only used when stage2_method = lpips)
+    metric: "lpips"
+    recon_views:
+      - front
+      - back
+      - right
+      - left
+    input_mode: "grayscale"          # rgb | grayscale
+    aggregate: "mean"                 # max | mean
+    threshold: 0.15                 # migration placeholder; recalibrate for LPIPS on real data
+    device: "cpu"                    # cuda | cpu
+    lpips_net: "alex"
+
+    # VLM specific (only used when stage2_method = vlm)
+    vlm_recon:
+      pass_threshold: 0.6   # VLM confidence >= this value required when use_confidence=true
+      use_confidence: false  # false = use pass field only; true = also check confidence >= pass_threshold
+
+  # Method-3 (unified_judge) 专用配置
+  # 单次 VLM 调用同时完成观察、几何检查、指令遵循判定和 relabel
+  unified_judge:
+    # relabel 后是否需要独立 rejudge（复用 two_stage_recon 的 judge LLM）
+    # 建议关闭：unified_judge 的 relabel 已基于图像，可信度足够
+    require_rejudge_after_relabel: false
+    # 证据强度为 weak 时是否直接拒绝通过
+    require_non_weak_evidence: true
+
+edit_artifacts:
+  diff_threshold: 50
+  opening_kernel_size: 5
+
+stage1_relabel:
+  enabled: true
+  require_rejudge_pass: true
+  allow_image_input: true
+  save_raw_response: true
+
+# =====================================================
+# RENDER SETTINGS (Shared + Per Backend)
+# =====================================================
+
+render:
+  # Render backend selection
+  # Options: blender, webgl
+  # blender: Use Blender with Cycles/Eevee engine (traditional, GPU-accelerated)
+  # webgl: Use headless Chrome with model-viewer (better PBR quality, simpler deployment)
+  backend: "webgl"
+  
+  # Shared parameters (used by all backends)
+  image_size: 1024
+  rotation_z: 0
+
+  # Semantic orientation alignment (render views -> VLM decision -> align GLB -> rerender)
+  semantic_alignment:
+    enabled: true
+    vlm_model: "gemini-3-flash-preview"  # Must exist in oneapi.text_models
+    min_confidence: 0.5
+    verify_after_rerender: false
+    save_aligned_glb: true              # normalize_geometry=true 时必须为 true
+    aligned_glb_suffix: "_aligned"
+    save_debug_assets: true
+    temp_dir_name: "_semantic_tmp"
+    normalize_geometry: true            # 旋转后对 GLB 执行 center+scale 归一化并持久化 norm_params.json
+    share_rotation_to_target: false     # target 是否复用 source 旋转矩阵（跳过 VLM）
+    norm_params_filename: "norm_params.json"
+  
+  # Blender rendering settings (only used when backend = "blender")
+  blender:
+    # Blender executable path (null = auto-detect)
+    # Linux: /usr/bin/blender, /snap/bin/blender
+    # macOS: /Applications/Blender.app/Contents/MacOS/Blender
+    # Windows: C:\Program Files\Blender Foundation\Blender 4.3\blender.exe
+    blender_path: null
+    
+    # Use bpy module instead of subprocess (requires bpy installed: pip install bpy)
+    # Recommended for Linux servers without Blender GUI installation
+    use_bpy: true
+    
+    # GPU rendering (auto-detect by default)
+    # Options: auto, OPTIX, CUDA, HIP, METAL, CPU
+    # OPTIX: Best for NVIDIA RTX cards
+    # CUDA: For NVIDIA cards without OptiX
+    # HIP: For AMD cards
+    # METAL: For Apple Silicon
+    # CPU: Force CPU rendering
+    device: "auto"
+    
+    # Blender engine parameters
+    samples: 64        # Reduced from 128 to save GPU memory
+    lighting_mode: "emit"  # emit, flat, studio, hdri, ambient
+  
+  # WebGL rendering settings
+  # Only used when backend = "webgl"
+  webgl:
+    # Chrome/Chromium executable path (null = auto-detect from playwright)
+    chrome_path: null
+    
+    # Environment image for lighting (IBL)
+    # Options: neutral, legacy, or path to .hdr/.exr file
+    environment_image: "neutral"
+    
+    # Shadow intensity (0-2)
+    shadow_intensity: 0.0
+    
+    # Whether to use GPU acceleration in headless Chrome
+    # Disable if encountering WebGL issues
+    use_gpu: false
+
+    # Hard timeout for a single isolated WebGL render subprocess.
+    # Prevents Playwright / Chromium hangs from wedging the parent experiment.
+    subprocess_timeout_seconds: 900
+  
+# =====================================================
+# CONCURRENCY LIMITS
+# =====================================================
+
+concurrency:
+  # 3D generation API rate limits
+  gen3d:
+    hunyuan: 3     # Hunyuan submit path is sensitive to burst pressure
+    tripo: 5       # Tripo conservative limit
+    rodin: 3       # Rodin conservative limit
+
+  # Render concurrency
+  # CPU rendering (SwiftShader): safe to use 2-3 (~300-500MB per Chromium instance)
+  # GPU rendering: set to 1 to avoid OOM unless GPU memory >= 24GB
+  render: 3
+
+  # Text generation concurrency
+  text: 4
+
+  # Image generation conc 
+  image: 6
+
+  # Edit quality check concurrency (independent from image edit worker count)
+  edit_quality_check: 4
+
+  # Recon quality check concurrency (Stage2 metric check; keep conservative)
+  recon_quality_check: 1
+
+  # Refresh-all LPIPS concurrency (remote /seaweedfs is fragile, keep serial)
+  refresh_all_dreamsim: 1
+
+  # Mask backfill concurrency (keep serial to avoid remote FS I/O instability)
+  mask_backfill: 1
+
+# =====================================================
+# RUN FULL EXPERIMENT ORCHESTRATION
+# Only orchestration parameters belong here.
+# API-specific parameters stay in provider/task config sections.
+# =====================================================
+
+run_full_experiment:
+  retry:
+    source_prompt_optimization:
+      max_attempts: 2
+    source_t2i:
+      max_attempts: 2
+    source_gen3d:
+      max_attempts: 2
+    source_render:
+      max_attempts: 1
+    instruction_generation:
+      max_attempts: 2
+    edit_apply:
+      max_attempts: 2
+    stage1_quality_check:
+      max_attempts: 2
+    target_gen3d:
+      max_attempts: 2
+    target_render:
+      max_attempts: 3
+    stage2:
+      max_attempts: 2
+
+  api_lane_control:
+    enabled: true
+    cooldown_seconds: 5
+    recovery_probe_one_by_one: true
+
+  scheduling:
+    object_workers_strategy: "provider_weighted"
+    object_workers_cap: 3
+    provider_pressure_divisor: 2
+
+# =====================================================
+# DEFAULT SETTINGS
+# =====================================================
+
+defaults:
+  poll_interval: 30
+  max_wait_time: 900
+
+# =====================================================
+# WORKSPACE / DATA PATHS
+# Relative to project root, or absolute.
+# =====================================================
+
+workspace:
+  # Pipeline data directory (images, models_src, triplets, prompts, instructions)
+  # qh_k8s (新服务器):
+  pipeline_dir: "/data-oss/meiguang/xiaoliang/data/2d3d_data"
+  # qh_4_4090 (旧服务器):
+  # pipeline_dir: "/seaweedfs/xiaoliang/data/2d3d_data"
+
+  # Python interpreter used by Web UI to launch experiment subprocesses
+  python_interpreter: "/data-koolab-nas/xiaoliang/local_envs/2d3d/bin/python"
+  # qh_4_4090 (旧服务器):
+  # python_interpreter: "/home/xiaoliang/local_envs/2d3d/bin/python"
+
+  # Playwright browser cache path (used by WebGL renderer)
+  # 使用本地磁盘路径避免 OSS/SeaweedFS mmap 问题 (SIGBUS BUS_ADRERR)
+  playwright_browsers_path: "/data-oss/meiguang/xiaoliang/code3/2d3d_v2/.playwright-browsers"
+  # qh_4_4090 (旧服务器):
+  # playwright_browsers_path: "/home/xiaoliang/.playwright-browsers"
+
+  # Logs directory for experiment run logs (app.py / CLI generated commands)
+  # 使用 data-koolab-nas 避免 data-oss flush 问题
+  logs_dir: "/data-koolab-nas/xiaoliang/code3/2d3d_v2/logs"
+  # qh_4_4090 (旧服务器):
+  # logs_dir: "/seaweedfs/xiaoliang/code3/2d3d_v2/logs"
+
+  # SQLite pipeline index DB — 放本地磁盘避免 OSS fsync 问题
+  pipeline_index_db: "/data-koolab-nas/xiaoliang/data/2d3d_data/.pipeline_index.db"
+  # qh_4_4090 (旧服务器):
+  # pipeline_index_db: "/seaweedfs/xiaoliang/data/2d3d_data/.pipeline_index.db"
+
+  # Matrix generation data files (object pool + style definitions)
+  matrix_objects_file: "data/captions/categorized_objects_final_filtered.json"
+  matrix_styles_file: "data/captions/3d_style_final.json"
+
+  # Draco mesh compression — 加速 GLB alignment 导出与 WebGL 渲染加载
+  # 留空表示不启用 Draco（与旧行为一致）
+  draco_library_path: ""
+  draco_decoder_dir: ""
+  # qh_4_4090 (旧服务器，未安装 Draco):
+  # draco_library_path: ""
+  # draco_decoder_dir: ""
+
+# =====================================================
+# EXPORT CONFIGURATION
+# =====================================================
+export:
+  # manifest.json 中路径前缀可选列表（支持新旧服务器迁移）
+  path_prefixes:
+    - "/data-oss/meiguang/xiaoliang/data/2d3d_data"
+    - "/seaweedfs/xiaoliang/data/2d3d_data"
+# =====================================================
+# API REQUEST VALIDATION
+# =====================================================
+
+# This section documents the fail-loudly principle for API request validation.
+# 
+# FAIL-LOUDLY PRINCIPLE:
+# - All required parameters MUST be provided in API requests
+# - Missing required parameters will cause immediate failure with explicit error messages
+# - No silent fallbacks or default values are used in code for required parameters
+# - This ensures scientific reproducibility by making configuration errors visible immediately
+#
+# SINGLE SOURCE OF TRUTH:
+# - Configuration values are defined only in config.yaml
+# - Code never provides default values for parameters defined in configuration
+# - If a parameter is required, it must be explicitly provided by the caller
+
+# Required parameters for each task type
+# These parameters MUST be provided in API requests to /api/task
+# Missing any of these will raise ValueError with descriptive error message
+
+required_params:
+  # Text-to-Image generation task
+  t2i:
+    - prompt_id          # ID of the prompt to use for generation
+  
+  # 3D model generation task
+  gen3d:
+    - image_id           # ID of the source image
+    - image_path         # Path to the source image file
+    - provider           # 3D generation provider (tripo, oneapi, rodin)
+  
+  # Instruction-based image editing task
+  instruction:
+    - image_id           # ID of the image to edit
+    - image_path         # Path to the image file
+    - edit_type          # Type of edit (remove, replace, both)
+  
+  # 3D model rendering task
+  render:
+    - model_id           # ID of the 3D model to render
+    - model_path         # Path to the 3D model file (.glb)
+  
+  # Single image editing task
+  edit:
+    - image_id           # ID of the image to edit
+    - image_path         # Path to the image file
+    - instruction        # Natural language editing instruction
+  
+  # Multi-view editing task (edit specific view of 3D model)
+  edit_view:
+    - model_id           # ID of the 3D model
+    - view_name          # Name of the view to edit (front, back, left, right, top, bottom)
+    - instruction        # Natural language editing instruction
+    - edit_type          # Type of edit (remove, replace, both)
+
+# Optional parameters with documented purposes
+# These parameters have legitimate reasons to be optional
+# Code may use .get() for these, but must document why they are optional
+
+optional_params:
+  gen3d:
+    - remote_task_id     # Only used for task recovery/resumption after restart
+                         # When provided, skips generation and polls existing remote task
+                         # When absent, creates new generation task
+
+language: "en"
+
+# =====================================================
+# DOWNLOAD PROXY
+# 服务器无法直连腾讯 COS 时，通过代理下载 3D 模型文件
+# 设为 null 关闭代理（服务器网络正常后关闭）
+# 示例: "http://localhost:61235"
+# =====================================================
+download_proxy: null

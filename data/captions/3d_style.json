@@ -1,0 +1,144 @@
+{
+  "styles": [
+    {
+      "id": "realistic",
+      "name_zh": "写实",
+      "name_en": "realistic",
+      "weight": 40,
+      "prefix": "Photorealistic product render, hyper-detailed, natural materials,"
+    },
+    {
+      "id": "lowpoly",
+      "name_zh": "低多边形",
+      "name_en": "low-poly",
+      "weight": 10,
+      "prefix": "Low-poly 3D model, faceted geometry, flat shading, minimal polygons,"
+    },
+    {
+      "id": "voxel",
+      "name_zh": "体素",
+      "name_en": "voxel",
+      "weight": 8,
+      "prefix": "Voxel art style, blocky cubic geometry, Minecraft aesthetic,"
+    },
+    {
+      "id": "steampunk",
+      "name_zh": "蒸汽朋克",
+      "name_en": "steampunk",
+      "weight": 7,
+      "prefix": "Steampunk style, brass gears, copper pipes, Victorian machinery,"
+    },
+    {
+      "id": "cartoon",
+      "name_zh": "卡通",
+      "name_en": "cartoon",
+      "weight": 8,
+      "prefix": "3D cartoon style, rounded shapes, bright saturated colors, playful proportions,"
+    },
+    {
+      "id": "wooden",
+      "name_zh": "木质玩具",
+      "name_en": "wooden toy",
+      "weight": 7,
+      "prefix": "Handcrafted wooden toy, natural wood grain, rounded edges, simple geometry,"
+    },
+    {
+      "id": "scifi",
+      "name_zh": "科幻",
+      "name_en": "sci-fi",
+      "weight": 8,
+      "prefix": "Sci-fi concept art, sleek chrome, holographic panels, advanced technology,"
+    },
+    {
+      "id": "fantasy",
+      "name_zh": "奇幻",
+      "name_en": "fantasy",
+      "weight": 8,
+      "prefix": "Fantasy RPG style, ornate details, magical materials, enchanted appearance,"
+    },
+    {
+      "id": "artifact",
+      "name_zh": "历史文物",
+      "name_en": "historical artifact",
+      "weight": 6,
+      "prefix": "Ancient museum artifact, aged patina, weathered stone or bronze, archaeological relic,"
+    },
+    {
+      "id": "chinese",
+      "name_zh": "中式传统",
+      "name_en": "Chinese traditional",
+      "weight": 5,
+      "prefix": "Traditional Chinese style, red lacquer, carved rosewood, Ming dynasty aesthetics, oriental motifs,"
+    },
+    {
+      "id": "greco_roman",
+      "name_zh": "希腊罗马式",
+      "name_en": "Greco-Roman",
+      "weight": 5,
+      "prefix": "Classical Greco-Roman style, marble columns, ionic scrolls, ancient Mediterranean aesthetics,"
+    },
+    {
+      "id": "persian",
+      "name_zh": "波斯阿拉伯式",
+      "name_en": "Persian-Arabian",
+      "weight": 4,
+      "prefix": "Persian-Arabian style, intricate geometric patterns, turquoise tiles, Islamic arabesque motifs,"
+    },
+    {
+      "id": "egyptian",
+      "name_zh": "古埃及式",
+      "name_en": "Ancient Egyptian",
+      "weight": 4,
+      "prefix": "Ancient Egyptian style, hieroglyphic carvings, gold and lapis lazuli, pharaonic motifs,"
+    },
+    {
+      "id": "japanese",
+      "name_zh": "日式传统",
+      "name_en": "Japanese traditional",
+      "weight": 5,
+      "prefix": "Traditional Japanese style, wabi-sabi aesthetics, bamboo and cedar wood, minimalist Zen design,"
+    }
+  ],
+
+  "category_style_mapping": {
+    "_comment": "每个类别列出适用的风格ID列表，随机选择时只从这些风格中选",
+    
+    "Furniture": ["realistic", "lowpoly", "voxel", "steampunk", "cartoon", "wooden", "scifi", "fantasy", "chinese", "greco_roman", "persian", "egyptian", "japanese"],
+    
+    "Lighting & Ceiling": ["realistic", "lowpoly", "steampunk", "cartoon", "scifi", "fantasy", "chinese", "persian", "japanese"],
+    
+    "Kitchen & Dining": ["realistic", "lowpoly", "voxel", "cartoon", "wooden", "chinese", "greco_roman", "persian", "japanese"],
+    
+    "Food & Beverage": ["realistic"],
+    
+    "Bathroom & Personal Care": ["realistic", "lowpoly", "cartoon"],
+    
+    "Medical & Health": ["realistic", "lowpoly", "scifi"],
+    
+    "Vehicles": ["realistic", "lowpoly", "voxel", "steampunk", "cartoon", "wooden", "scifi", "fantasy"],
+    
+    "Electronics & Appliances": ["realistic", "lowpoly", "scifi", "cartoon"],
+    
+    "Clothing & Accessories": ["realistic", "lowpoly", "cartoon", "fantasy", "chinese", "greco_roman", "persian", "egyptian", "japanese"],
+    
+    "Sports, Hobbies & Recreation": ["realistic", "lowpoly", "voxel", "cartoon", "wooden"],
+    
+    "Musical Instruments": ["realistic", "lowpoly", "cartoon", "wooden", "steampunk", "fantasy", "chinese", "japanese"],
+    
+    "Tools, Construction & Garden": ["realistic", "lowpoly", "voxel", "steampunk", "wooden"],
+    
+    "Hardware & Components": ["realistic", "lowpoly", "steampunk", "scifi"],
+    
+    "Office & Stationery": ["realistic", "lowpoly", "cartoon", "wooden"],
+    
+    "Weapons & Military": ["realistic", "lowpoly", "steampunk", "scifi", "fantasy", "artifact", "chinese", "greco_roman", "persian", "egyptian", "japanese"],
+    
+    "Outdoor, Urban & Structures": ["realistic", "lowpoly", "voxel", "steampunk", "fantasy", "artifact", "chinese", "greco_roman", "persian", "egyptian", "japanese"],
+    
+    "Decor, Art & Religion": ["realistic", "lowpoly", "cartoon", "wooden", "fantasy", "artifact", "chinese", "greco_roman", "persian", "egyptian", "japanese"],
+    
+    "Containers & General Items": ["realistic", "lowpoly", "voxel", "cartoon", "wooden", "steampunk"],
+    
+    "Misc": ["realistic", "lowpoly", "voxel", "cartoon", "wooden"]
+  }
+}

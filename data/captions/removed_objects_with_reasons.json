@@ -1,0 +1,7620 @@
+{
+  "Bathroom & Personal Care": [
+    {
+      "object": "Band Aid",
+      "chinese_name": "创可贴",
+      "editability_score": 2,
+      "edit_examples": [
+        "change size/shape of pad",
+        "change color/pattern of adhesive strip"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "adhesive bandage",
+      "chinese_name": "创可贴",
+      "editability_score": 2,
+      "edit_examples": [
+        "change length/width",
+        "change perforation hole pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "bandage",
+      "chinese_name": "绷带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change length/width",
+        "change pad size/position"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "bar soap",
+      "chinese_name": "香皂",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bar shape (oval/rectangular)",
+        "add/deepen logo emboss"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bath mat",
+      "chinese_name": "浴室地垫",
+      "editability_score": 2,
+      "edit_examples": [
+        "change outline shape/size",
+        "change surface texture pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "beauty bar soap",
+      "chinese_name": "香皂",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bar profile",
+        "add embossed/debossed logo or grooves"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "dishwashing bar soap",
+      "chinese_name": "洗碗皂",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bar profile/edges",
+        "add grooves or logo emboss"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hair shampoo",
+      "chinese_name": "洗发水",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bottle cap style",
+        "alter bottle shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely a liquid/substance (the shampoo itself)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hairspray",
+      "chinese_name": "发胶",
+      "editability_score": 3,
+      "edit_examples": [
+        "change cap design",
+        "alter nozzle/spray button",
+        "modify can shape/label coloration"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely a liquid/aerosol substance (the product itself)"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hand glass",
+      "chinese_name": "手持镜",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle length",
+        "alter bowl shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent glass"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hand soap",
+      "chinese_name": "洗手液",
+      "editability_score": 2,
+      "edit_examples": [
+        "change pump style",
+        "alter bottle shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely a liquid/substance (soap)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "herbal toothpaste",
+      "chinese_name": "草本牙膏",
+      "editability_score": 3,
+      "edit_examples": [
+        "change cap type (flip/top/twist)",
+        "alter tube shape/size",
+        "modify label/color design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is a semi-fluid paste substance"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "lip gloss",
+      "chinese_name": "唇彩",
+      "editability_score": 3,
+      "edit_examples": [
+        "change cap/wand design",
+        "alter bottle shape",
+        "modify label/color of casing"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is a liquid/gel substance (the gloss itself)"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "liquid soap",
+      "chinese_name": "沐浴露",
+      "editability_score": 2,
+      "edit_examples": [
+        "change dispenser pump",
+        "alter bottle shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely a liquid/substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "medicine",
+      "chinese_name": "药",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bottle cap",
+        "alter bottle shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object may be liquid/pills without defined single form; amorphous as a standalone item"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "nailfile",
+      "chinese_name": "指甲锉",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle shape/color",
+        "alter grit pattern/edge profile"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "onion shampoo",
+      "chinese_name": "洋葱洗发水",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bottle cap style",
+        "alter bottle shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely a liquid/substance (the shampoo itself)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "perfume",
+      "chinese_name": "香水",
+      "editability_score": 1,
+      "edit_examples": [
+        "change liquid color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "protein shampoo",
+      "chinese_name": "蛋白洗发水",
+      "editability_score": 2,
+      "edit_examples": [
+        "change liquid color",
+        "adjust fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "razor blade",
+      "chinese_name": "剃刀片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change edge count",
+        "add/remove safety slot pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "safety razor blade",
+      "chinese_name": "安全刀片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cutout pattern",
+        "modify corner shape/edge guards"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "shampoo",
+      "chinese_name": "洗发水",
+      "editability_score": 1,
+      "edit_examples": [
+        "change liquid color/opacity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "shaving cream",
+      "chinese_name": "剃须膏",
+      "editability_score": 1,
+      "edit_examples": [
+        "adjust foam shape (amorphous)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless substance",
+        "entirely a liquid/foam"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "soap",
+      "chinese_name": "肥皂",
+      "editability_score": 1,
+      "edit_examples": [
+        "change liquid color/opacity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "soap bar",
+      "chinese_name": "香皂",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bar shape",
+        "add embossed logo"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sponge",
+      "chinese_name": "海绵",
+      "editability_score": 2,
+      "edit_examples": [
+        "change overall shape",
+        "alter pore texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tissue paper",
+      "chinese_name": "面巾纸",
+      "editability_score": 1,
+      "edit_examples": [
+        "change sheet size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "toilet tissue",
+      "chinese_name": "卫生纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "change sheet color/pattern",
+        "change roll size/ply texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "toothpaste",
+      "chinese_name": "牙膏",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color of paste stripe",
+        "change viscosity/shape of dispensed paste blob"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is a fluid/paste substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "vaseline",
+      "chinese_name": "凡士林",
+      "editability_score": 1,
+      "edit_examples": [
+        "change blob size/shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is an amorphous semi-fluid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    }
+  ],
+  "Clothing & Accessories": [
+    {
+      "object": "bandanna",
+      "chinese_name": "头巾",
+      "editability_score": 2,
+      "edit_examples": [
+        "change knot style",
+        "add decorative trim or tassels"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bangle",
+      "chinese_name": "手镯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cross-section shape",
+        "add engraved pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bobbin",
+      "chinese_name": "线轴",
+      "editability_score": 2,
+      "edit_examples": [
+        "change flange diameter",
+        "alter core width"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bobby pin",
+      "chinese_name": "发夹",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tip covers color/shape",
+        "alter wave pattern or length"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "breechcloth",
+      "chinese_name": "缠腰布",
+      "editability_score": 2,
+      "edit_examples": [
+        "change panel length/shape",
+        "add decorative fringe/beads"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "button",
+      "chinese_name": "纽扣",
+      "editability_score": 2,
+      "edit_examples": [
+        "change number of holes/shank",
+        "alter rim thickness/engraving"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chain",
+      "chinese_name": "链子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change link thickness/size",
+        "change chain length"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cincture",
+      "chinese_name": "束带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change buckle style",
+        "adjust length or add holes"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "dome umbrella",
+      "chinese_name": "圆顶伞",
+      "editability_score": 4,
+      "edit_examples": [
+        "change canopy panel count/shape",
+        "modify handle grip style",
+        "alter tip caps and ferrule",
+        "add trim/edge features or window panels"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The canopy is often mostly transparent (clear dome umbrellas), making the majority surface transparent/translucent"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "energy wristband",
+      "chinese_name": "能量手环",
+      "editability_score": 2,
+      "edit_examples": [
+        "change band thickness/texture",
+        "change emblem/print area"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hairnet",
+      "chinese_name": "发网",
+      "editability_score": 2,
+      "edit_examples": [
+        "change elastic band",
+        "alter mesh density"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hairpin",
+      "chinese_name": "发簪",
+      "editability_score": 2,
+      "edit_examples": [
+        "change ornament/topper shape",
+        "alter prong count/length"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "handkerchief",
+      "chinese_name": "手帕",
+      "editability_score": 2,
+      "edit_examples": [
+        "change embroidery/monogram",
+        "add decorative edging"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "headband",
+      "chinese_name": "发带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/pattern of band",
+        "add/remove decorative bow or emblem"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hoop earring",
+      "chinese_name": "圈式耳环",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hoop thickness/diameter",
+        "add or remove a small charm"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "jewelry",
+      "chinese_name": "首饰",
+      "editability_score": 2,
+      "edit_examples": [
+        "change metal color/finish",
+        "add/remove a gemstone or pendant"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "knitting needle",
+      "chinese_name": "编织针",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tip shape",
+        "alter end cap/stopper design"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "lanyard",
+      "chinese_name": "挂绳",
+      "editability_score": 2,
+      "edit_examples": [
+        "change clip type",
+        "change strap width/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "latex glove",
+      "chinese_name": "乳胶手套",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cuff length",
+        "change color or add texture/grip"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "leather",
+      "chinese_name": "皮革",
+      "editability_score": 1,
+      "edit_examples": [
+        "change surface color",
+        "adjust surface texture/grain"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is an amorphous material without defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "mesh hairnet",
+      "chinese_name": "网状发网",
+      "editability_score": 2,
+      "edit_examples": [
+        "change elastic band width/color",
+        "adjust mesh density/size"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "motorcycle helmet visor",
+      "chinese_name": "摩托头盔面罩",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tint/iridium finish",
+        "add pinlock posts or tear-off mounts"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pearl earring",
+      "chinese_name": "珍珠耳环",
+      "editability_score": 2,
+      "edit_examples": [
+        "change pearl size/color",
+        "change stud/post or hook design"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "ring",
+      "chinese_name": "戒指",
+      "editability_score": 2,
+      "edit_examples": [
+        "change gemstone size/shape",
+        "change band thickness/engraving"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "safety pin",
+      "chinese_name": "安全别针",
+      "editability_score": 2,
+      "edit_examples": [
+        "change clasp shape",
+        "change pin length/thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sewing bobbin",
+      "chinese_name": "梭芯",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change flange shape",
+        "Adjust core diameter"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sewing machine bobbin",
+      "chinese_name": "梭芯",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change hole pattern/venting",
+        "Adjust flange thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sweatband",
+      "chinese_name": "护腕",
+      "editability_score": 2,
+      "edit_examples": [
+        "change width/thickness",
+        "add logo panel or texture pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tag",
+      "chinese_name": "标签",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hole position",
+        "change shape/size"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tartan",
+      "chinese_name": "格子呢",
+      "editability_score": 1,
+      "edit_examples": [
+        "change pattern colors"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tassels",
+      "chinese_name": "流苏",
+      "editability_score": 2,
+      "edit_examples": [
+        "change strand length",
+        "alter cap shape/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "thread",
+      "chinese_name": "线",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model",
+        "amorphous/thin filament with little 3D form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "veil",
+      "chinese_name": "面纱",
+      "editability_score": 3,
+      "edit_examples": [
+        "change length/layers",
+        "add lace edging",
+        "add comb/tiara attachment"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly transparent/translucent fabric"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "wire choker",
+      "chinese_name": "金属颈圈",
+      "editability_score": 2,
+      "edit_examples": [
+        "change clasp style",
+        "adjust pendant/ornament presence"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "wire coat hanger",
+      "chinese_name": "铁衣架",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hook shape",
+        "add/remove notches or foam padding"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "wire hanger",
+      "chinese_name": "铁衣架",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hook shape",
+        "add shoulder notches or lower bar"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Containers & General Items": [
+    {
+      "object": "bottle cap",
+      "chinese_name": "瓶盖",
+      "editability_score": 2,
+      "edit_examples": [
+        "change knurling/ridges",
+        "alter top logo/emboss"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cylinder",
+      "chinese_name": "圆柱体",
+      "editability_score": 1,
+      "edit_examples": [
+        "change height/diameter"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "garbage",
+      "chinese_name": "垃圾",
+      "editability_score": 1,
+      "edit_examples": [
+        "change amorphous pile shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hand warmer pouch",
+      "chinese_name": "暖手袋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change pouch print/color",
+        "change size/shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "trash bag",
+      "chinese_name": "垃圾袋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bag size/shape (tall kitchen vs. contractor)",
+        "add/remove drawstring ties"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly transparent/translucent flexible plastic sheet"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "water bottle cap",
+      "chinese_name": "水瓶盖",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cap type (sports spout vs. screw cap)",
+        "add/remove tamper ring"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Decor, Art & Religion": [
+    {
+      "object": "Bible",
+      "chinese_name": "圣经",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change cover color/material",
+        "Add or remove a bookmark ribbon"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "abstract sculpture",
+      "chinese_name": "抽象雕塑",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change overall shape deformation",
+        "Change material/finish"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bead",
+      "chinese_name": "珠子",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change bead color",
+        "Change hole size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "birthday candle",
+      "chinese_name": "生日蜡烛",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change color/striping",
+        "Change flame size or add holder"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "brass plaque",
+      "chinese_name": "黄铜牌",
+      "editability_score": 2,
+      "edit_examples": [
+        "change engraved text",
+        "add mounting holes or frame"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cigarette",
+      "chinese_name": "香烟",
+      "editability_score": 2,
+      "edit_examples": [
+        "change filter color/length",
+        "add lit ember/ash tip"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crape",
+      "chinese_name": "绉纱",
+      "editability_score": 1,
+      "edit_examples": [
+        "N/A"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cross",
+      "chinese_name": "十字架",
+      "editability_score": 2,
+      "edit_examples": [
+        "change proportions of vertical/horizontal bars",
+        "add engraved pattern or bevels"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crystal",
+      "chinese_name": "水晶",
+      "editability_score": 2,
+      "edit_examples": [
+        "change crystal shape/facet arrangement",
+        "change color/opacity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "crystal vase",
+      "chinese_name": "水晶花瓶",
+      "editability_score": 4,
+      "edit_examples": [
+        "change vase shape (neck/body)",
+        "add/remove cut patterns",
+        "add handles or base ring",
+        "change rim profile"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "feather",
+      "chinese_name": "羽毛",
+      "editability_score": 2,
+      "edit_examples": [
+        "change length/curvature",
+        "change color pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "gemstone",
+      "chinese_name": "宝石",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change cut/facet style",
+        "Change color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "gift wrap",
+      "chinese_name": "礼品包装纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change pattern/color",
+        "Change roll width/length"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "jewel",
+      "chinese_name": "宝石",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cut/shape",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "marble",
+      "chinese_name": "大理石",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color swirl pattern",
+        "change size/diameter"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "matchbox cover",
+      "chinese_name": "火柴盒壳",
+      "editability_score": 2,
+      "edit_examples": [
+        "change artwork/branding",
+        "change cutout/shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "painting",
+      "chinese_name": "绘画",
+      "editability_score": 3,
+      "edit_examples": [
+        "change frame design",
+        "adjust canvas size/aspect",
+        "swap hanging hardware",
+        "retexture artwork image"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is primarily a flat 2D sheet (canvas/artwork)"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "plaque",
+      "chinese_name": "匾牌",
+      "editability_score": 2,
+      "edit_examples": [
+        "change border/frame",
+        "retexture surface engraving"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is primarily a flat 2D sheet or slab with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "poker (fire stirring tool)",
+      "chinese_name": "火钩",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change handle shape/material",
+        "Add or remove hook at the tip"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pompom",
+      "chinese_name": "绒球",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change color of strands",
+        "Adjust density/size of pompom"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pottery",
+      "chinese_name": "陶器",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape of vessel body",
+        "Change glaze color/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "rug tassel",
+      "chinese_name": "地毯穗",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change tassel length/density",
+        "Change color of strands"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sculpture",
+      "chinese_name": "雕塑",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change material/finish",
+        "Alter abstract form slightly"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "statue",
+      "chinese_name": "雕像",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change base/plinth style",
+        "Alter pose slightly"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tapestry",
+      "chinese_name": "挂毯",
+      "editability_score": 3,
+      "edit_examples": [
+        "change hanging rod style",
+        "add/remove fringe",
+        "alter border trim/hem"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "teardrop gemstone",
+      "chinese_name": "水滴形宝石",
+      "editability_score": 2,
+      "edit_examples": [
+        "change facet pattern",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "teardrop-shaped gemstone",
+      "chinese_name": "水滴形宝石",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cut/faceting",
+        "change color/transparency"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tinsel",
+      "chinese_name": "金属丝彩带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change strand density/width",
+        "change color/metallic finish"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form when standalone"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    }
+  ],
+  "Electronics & Appliances": [
+    {
+      "object": "aa battery",
+      "chinese_name": "5号电池",
+      "editability_score": 2,
+      "edit_examples": [
+        "change label design/color",
+        "alter terminal cap shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "battery",
+      "chinese_name": "电池",
+      "editability_score": 2,
+      "edit_examples": [
+        "change terminal style",
+        "change label color/text"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "control",
+      "chinese_name": "控制器",
+      "editability_score": 2,
+      "edit_examples": [
+        "change knob shape",
+        "change label/markings"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "igniter",
+      "chinese_name": "点火器",
+      "editability_score": 2,
+      "edit_examples": [
+        "change trigger/button shape",
+        "alter nozzle/electrode tip shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mousepad",
+      "chinese_name": "鼠标垫",
+      "editability_score": 2,
+      "edit_examples": [
+        "change overall shape/size",
+        "add wrist rest"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "phonograph record",
+      "chinese_name": "留声机唱片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change label design",
+        "alter edge profile or thickness"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely or mostly a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "vinyl record",
+      "chinese_name": "黑胶唱片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change label design",
+        "alter edge thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Food & Beverage": [
+    {
+      "object": "Tabasco sauce",
+      "chinese_name": "塔巴斯科辣酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change liquid color/spiciness label conceptually",
+        "Adjust viscosity splash shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "alcohol",
+      "chinese_name": "酒精",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change liquid color",
+        "Change fill amount of fluid"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "almond",
+      "chinese_name": "杏仁",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shell texture/ridges",
+        "Change color/roast level"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "apple cider vinegar",
+      "chinese_name": "苹果醋",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change liquid color",
+        "Change turbidity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "apple juice",
+      "chinese_name": "苹果汁",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change liquid color/clarity",
+        "Change fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "applesauce",
+      "chinese_name": "苹果酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change smoothness/chunkiness",
+        "Change mound shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Amorphous/shapeless food paste"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "baby carrot",
+      "chinese_name": "小胡萝卜",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change length/thickness",
+        "Add/remove surface ridges"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bait",
+      "chinese_name": "诱饵",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape (lure vs worm)",
+        "Change color/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "batter",
+      "chinese_name": "面糊",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change thickness/viscosity",
+        "Change surface swirl pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Amorphous/shapeless semi-liquid"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "bean",
+      "chinese_name": "豆子",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change size/shape of bean",
+        "Change color/spotting"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "beef (food)",
+      "chinese_name": "牛肉",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change cut shape (steak vs ground mound)",
+        "Change marbling/trim fat amount"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "beer",
+      "chinese_name": "啤酒",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change color/opacity of liquid",
+        "Adjust foam head amount"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a liquid/porous substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "biscuit",
+      "chinese_name": "饼干",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change surface texture (cracks)",
+        "Alter shape thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bread crumb",
+      "chinese_name": "面包屑",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change size of crumb"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is too small to be a standalone 3D model",
+        "Amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "bubble gum",
+      "chinese_name": "泡泡糖",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape (stick/cube/ball)",
+        "Alter wrapper presence/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "caramel candy",
+      "chinese_name": "太妃糖",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape (cube vs. wrapped piece)",
+        "Change wrapper color/ends twist"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "carrot stick",
+      "chinese_name": "胡萝卜条",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change length/cross-section size",
+        "Add dip smear or remove it"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cashew",
+      "chinese_name": "腰果",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change roast/color",
+        "Change curvature/size"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cayenne (spice)",
+      "chinese_name": "红辣椒粉",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change pile shape/amount"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless powder"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "chickpea",
+      "chinese_name": "鹰嘴豆",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change count (single vs. cluster)",
+        "Adjust roasted vs. raw texture/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chili sauce",
+      "chinese_name": "辣椒酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change blob/pour shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/fluid substance",
+        "amorphous/shapeless"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "chocolate cookie",
+      "chinese_name": "巧克力饼干",
+      "editability_score": 2,
+      "edit_examples": [
+        "add icing pattern",
+        "change shape (round to heart)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chocolate fudge",
+      "chinese_name": "巧克力软糖",
+      "editability_score": 2,
+      "edit_examples": [
+        "add nut pieces on top",
+        "cut into different shaped pieces"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chocolate milk",
+      "chinese_name": "巧克力牛奶",
+      "editability_score": 2,
+      "edit_examples": [
+        "change container type (glass vs. bottle)",
+        "add/remove straw"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a liquid, fluid, or pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "chocolate milkshake",
+      "chinese_name": "巧克力奶昔",
+      "editability_score": 3,
+      "edit_examples": [
+        "add whipped cream topping",
+        "add/remove straw",
+        "add chocolate drizzle or cherry on top"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a liquid, fluid, or pourable substance"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "chocolate mousse",
+      "chinese_name": "巧克力慕斯",
+      "editability_score": 3,
+      "edit_examples": [
+        "add whipped cream dollop",
+        "add chocolate shavings",
+        "change serving vessel shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "chocolate pudding",
+      "chinese_name": "巧克力布丁",
+      "editability_score": 3,
+      "edit_examples": [
+        "add whipped cream topping",
+        "add chocolate shavings",
+        "change serving cup style"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cider",
+      "chinese_name": "苹果酒",
+      "editability_score": 2,
+      "edit_examples": [
+        "change container (mug, bottle)",
+        "add/remove cinnamon stick garnish"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a liquid, fluid, or pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cocoa (beverage)",
+      "chinese_name": "可可饮料",
+      "editability_score": 3,
+      "edit_examples": [
+        "add marshmallows on top",
+        "add whipped cream swirl",
+        "add/cahnge mug style"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a liquid, fluid, or pourable substance"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "coleslaw",
+      "chinese_name": "凉拌卷心菜",
+      "editability_score": 3,
+      "edit_examples": [
+        "change bowl/container style",
+        "add/remove carrot shreds",
+        "adjust dressing amount/visibility"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cookie",
+      "chinese_name": "曲奇",
+      "editability_score": 2,
+      "edit_examples": [
+        "add icing pattern",
+        "change shape (round to star)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cookie crumb",
+      "chinese_name": "曲奇碎",
+      "editability_score": 1,
+      "edit_examples": [
+        "change crumb size",
+        "change color shade"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is too small to be a standalone 3D model",
+        "The object is amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cooking oil",
+      "chinese_name": "食用油",
+      "editability_score": 1,
+      "edit_examples": [
+        "change bottle cap color (if modeling container)",
+        "add a label to the bottle (if container included)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid, fluid, or pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cornbread",
+      "chinese_name": "玉米面包",
+      "editability_score": 2,
+      "edit_examples": [
+        "change crust color",
+        "cut a slice out"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cornbread crouton",
+      "chinese_name": "玉米面包丁",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cube size",
+        "alter browning on sides"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cornbread mix",
+      "chinese_name": "玉米面包预拌粉",
+      "editability_score": 1,
+      "edit_examples": [
+        "change packet label (if packaging modeled)",
+        "change packet shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless powder without defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cornmeal",
+      "chinese_name": "玉米面",
+      "editability_score": 1,
+      "edit_examples": [
+        "change pile shape",
+        "change packaging label (if bag modeled)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless powder without defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "crabmeat",
+      "chinese_name": "蟹肉",
+      "editability_score": 1,
+      "edit_examples": [
+        "change mound shape",
+        "adjust color tone"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "crisp (potato chip)",
+      "chinese_name": "薯片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change chip curvature",
+        "change seasoning coverage"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crouton",
+      "chinese_name": "面包丁",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cube size/shape",
+        "adjust browning on faces"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crumb",
+      "chinese_name": "碎屑",
+      "editability_score": 1,
+      "edit_examples": [
+        "change size",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model",
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cucumber salad",
+      "chinese_name": "黄瓜沙拉",
+      "editability_score": 2,
+      "edit_examples": [
+        "change number of slices",
+        "change dressing coverage"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous mixture of small pieces with no single defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "dessert gelatin",
+      "chinese_name": "果冻",
+      "editability_score": 2,
+      "edit_examples": [
+        "change mold shape",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly transparent/translucent"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "dried coconut",
+      "chinese_name": "椰蓉",
+      "editability_score": 2,
+      "edit_examples": [
+        "change flake size",
+        "change pile shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless small pieces without a single defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "dried ginger",
+      "chinese_name": "干姜",
+      "editability_score": 2,
+      "edit_examples": [
+        "change slice thickness",
+        "change pile arrangement"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous set of small slices without a single defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "egg",
+      "chinese_name": "鸡蛋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shell color",
+        "crack/remove shell portion"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "egg roll",
+      "chinese_name": "春卷",
+      "editability_score": 2,
+      "edit_examples": [
+        "change filling color/texture",
+        "alter wrapper crispness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "egg yolk",
+      "chinese_name": "蛋黄",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color hue",
+        "change size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with minimal defined parts"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "flatbread",
+      "chinese_name": "馕",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shape (round/oval)",
+        "change surface bubbled texture/charring"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "frozen corn",
+      "chinese_name": "冷冻玉米",
+      "editability_score": 2,
+      "edit_examples": [
+        "change kernel count/arrangement",
+        "change frost coverage"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model when represented as individual kernels",
+        "amorphous pile of small pieces"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "fruit jam",
+      "chinese_name": "果酱",
+      "editability_score": 2,
+      "edit_examples": [
+        "change jar label",
+        "change lid color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/semiliquid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "fruit juice",
+      "chinese_name": "果汁",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color (orange/apple)",
+        "change opacity/pulp amount"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "fruit spread jam",
+      "chinese_name": "果酱",
+      "editability_score": 2,
+      "edit_examples": [
+        "change jar label",
+        "change lid color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a semiliquid spread"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "fudge",
+      "chinese_name": "软糖",
+      "editability_score": 1,
+      "edit_examples": [
+        "change overall shape",
+        "change color/flavor"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "fudge candy",
+      "chinese_name": "软糖",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/flavor",
+        "add nuts as a feature"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "gala apple",
+      "chinese_name": "嘎啦苹果",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/skin pattern",
+        "add/remove stem/leaf"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "garlic clove",
+      "chinese_name": "蒜瓣",
+      "editability_score": 2,
+      "edit_examples": [
+        "change clove color",
+        "add/remove skin layer"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "garlic pickle",
+      "chinese_name": "蒜腌菜",
+      "editability_score": 2,
+      "edit_examples": [
+        "change brine color",
+        "add/remove spices in jar"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "gelatin",
+      "chinese_name": "明胶",
+      "editability_score": 1,
+      "edit_examples": [
+        "change overall shape",
+        "change color/translucency"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly transparent/translucent",
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "gelatine",
+      "chinese_name": "明胶",
+      "editability_score": 1,
+      "edit_examples": [
+        "change overall shape",
+        "change color/translucency"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly transparent/translucent",
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "granny smith apple",
+      "chinese_name": "青蛇果",
+      "editability_score": 2,
+      "edit_examples": [
+        "change skin color/shade",
+        "add/remove stem/leaf"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "grape",
+      "chinese_name": "葡萄",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color (green/purple/red)",
+        "add/remove stem attachment point"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "grape tomato",
+      "chinese_name": "圣女果",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/ripeness",
+        "add/remove calyx/stem"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "green bean",
+      "chinese_name": "四季豆",
+      "editability_score": 2,
+      "edit_examples": [
+        "change curvature/length",
+        "add/remove stem cap"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "grits",
+      "chinese_name": "玉米糊",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color",
+        "change overall mound shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "ground beef",
+      "chinese_name": "牛肉末",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color",
+        "change pile shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hamburger bun",
+      "chinese_name": "汉堡面包",
+      "editability_score": 2,
+      "edit_examples": [
+        "remove sesame seeds",
+        "change bun shape/size"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hamburger patty",
+      "chinese_name": "汉堡肉饼",
+      "editability_score": 2,
+      "edit_examples": [
+        "change thickness/diameter",
+        "alter surface grill marks"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hard-boiled egg yolk",
+      "chinese_name": "熟蛋黄",
+      "editability_score": 1,
+      "edit_examples": [
+        "change yolk color/texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "honey",
+      "chinese_name": "蜂蜜",
+      "editability_score": 1,
+      "edit_examples": [
+        "change viscosity/amount"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid or pourable substance",
+        "amorphous/shapeless"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hot cocoa mix",
+      "chinese_name": "热可可粉",
+      "editability_score": 1,
+      "edit_examples": [
+        "change amount/heap shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless (powder)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hot dog bun",
+      "chinese_name": "热狗面包",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bun length/width",
+        "add or remove sesame seeds"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hot sauce",
+      "chinese_name": "辣酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color/opacity of liquid"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid or pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "hummus",
+      "chinese_name": "鹰嘴豆泥",
+      "editability_score": 1,
+      "edit_examples": [
+        "change serving shape/swirls"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless paste"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "icecream",
+      "chinese_name": "冰淇淋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change scoop count/shape",
+        "change flavor/color swirls"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless (soft/frozen cream)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "jam",
+      "chinese_name": "果酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "change mound shape/amount"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless spread"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "jelly bean",
+      "chinese_name": "软心豆豆",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "change size/shape slightly"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "ketchup",
+      "chinese_name": "番茄酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "change dollop shape/amount"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid or pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "legume",
+      "chinese_name": "豆类",
+      "editability_score": 2,
+      "edit_examples": [
+        "change pod length/shape",
+        "change seed count if pod is shown"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "lemon slice",
+      "chinese_name": "柠檬片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change thickness",
+        "alter number of visible segments/seeds"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "lemonade",
+      "chinese_name": "柠檬水",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color/opacity or add ice slices (if allowed)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid or pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "lentil",
+      "chinese_name": "扁豆",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color shade",
+        "scale overall size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "limeade",
+      "chinese_name": "青柠汽水",
+      "editability_score": 1,
+      "edit_examples": [
+        "change liquid color",
+        "adjust opacity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "liqueur",
+      "chinese_name": "利口酒",
+      "editability_score": 1,
+      "edit_examples": [
+        "change liquid color",
+        "change clarity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "liquor",
+      "chinese_name": "烈酒",
+      "editability_score": 1,
+      "edit_examples": [
+        "change liquid color",
+        "change clarity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "martini",
+      "chinese_name": "马提尼",
+      "editability_score": 2,
+      "edit_examples": [
+        "change liquid color/clarity",
+        "add/remove olive garnish"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly a liquid; typically relies on transparent glass vessel as primary visual"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "mashed potato",
+      "chinese_name": "土豆泥",
+      "editability_score": 2,
+      "edit_examples": [
+        "change mound shape",
+        "add butter pat or chives"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless food with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "meatball",
+      "chinese_name": "肉丸",
+      "editability_score": 2,
+      "edit_examples": [
+        "change surface texture/crispness",
+        "change size"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "milk",
+      "chinese_name": "牛奶",
+      "editability_score": 1,
+      "edit_examples": [
+        "change opacity/foaminess",
+        "change color tint"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "milk chocolate",
+      "chinese_name": "牛奶巧克力",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bar surface gloss",
+        "change overall shape/form"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mint candy",
+      "chinese_name": "薄荷糖",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shape (disc/lozenge)",
+        "change color/striping pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mint candy tablet",
+      "chinese_name": "薄荷片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tablet shape (round to square)",
+        "change color or imprint"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mixed fruit jam",
+      "chinese_name": "什锦果酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "change jar label (if jar included)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a semi-liquid spread, amorphous with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "nectarine",
+      "chinese_name": "油桃",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color ripeness gradient",
+        "add/remove leaf or stem"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "nut",
+      "chinese_name": "坚果",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shell texture",
+        "switch nut type (almond vs walnut)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "olive oil",
+      "chinese_name": "橄榄油",
+      "editability_score": 1,
+      "edit_examples": [
+        "change oil tint"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "orange (fruit)",
+      "chinese_name": "橙子",
+      "editability_score": 2,
+      "edit_examples": [
+        "add/remove leaf and stem",
+        "change peel texture or cut into wedges"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "orange juice",
+      "chinese_name": "橙汁",
+      "editability_score": 1,
+      "edit_examples": [
+        "change pulp level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "ostrich egg",
+      "chinese_name": "鸵鸟蛋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shell color/pattern",
+        "add stand or holder"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "patty (food)",
+      "chinese_name": "肉饼",
+      "editability_score": 2,
+      "edit_examples": [
+        "change thickness/shape",
+        "add grill marks"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pea",
+      "chinese_name": "豌豆",
+      "editability_score": 1,
+      "edit_examples": [
+        "change size or color shade"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pea (food)",
+      "chinese_name": "豌豆",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color shade",
+        "scale size slightly"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "peanut",
+      "chinese_name": "花生",
+      "editability_score": 2,
+      "edit_examples": [
+        "toggle shell on/off",
+        "change shell texture/ridges"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "peanut butter",
+      "chinese_name": "花生酱",
+      "editability_score": 1,
+      "edit_examples": [
+        "change surface swirl pattern",
+        "adjust overall shape blob"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pecan nut",
+      "chinese_name": "碧根果",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shell texture/ridges",
+        "adjust nut halves presence"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "peppercorns",
+      "chinese_name": "胡椒粒",
+      "editability_score": 1,
+      "edit_examples": [
+        "change count",
+        "change color (black/green/pink)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pistachio nut",
+      "chinese_name": "开心果",
+      "editability_score": 3,
+      "edit_examples": [
+        "toggle shell open/closed or shelled nut",
+        "change shell color/texture",
+        "adjust kernel color/size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pistachios",
+      "chinese_name": "开心果",
+      "editability_score": 2,
+      "edit_examples": [
+        "change count and arrangement",
+        "toggle shells open/closed"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pop (soda)",
+      "chinese_name": "汽水",
+      "editability_score": 2,
+      "edit_examples": [
+        "change liquid color/flavor",
+        "adjust fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid, pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "prune",
+      "chinese_name": "西梅干",
+      "editability_score": 2,
+      "edit_examples": [
+        "change size/shape",
+        "adjust surface wrinkle depth/gloss"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pudding",
+      "chinese_name": "布丁",
+      "editability_score": 2,
+      "edit_examples": [
+        "change flavor/color",
+        "adjust serving shape (scoop vs cup mold)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a soft liquid/gel with amorphous shape"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "raisin",
+      "chinese_name": "葡萄干",
+      "editability_score": 2,
+      "edit_examples": [
+        "change size/shape",
+        "adjust wrinkle depth and glossiness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "rice vinegar",
+      "chinese_name": "米醋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change liquid color/clarity",
+        "adjust fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid, pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "root beer",
+      "chinese_name": "沙士",
+      "editability_score": 2,
+      "edit_examples": [
+        "change liquid color/foam head amount",
+        "adjust carbonation bubble intensity"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid, pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "salami",
+      "chinese_name": "萨拉米",
+      "editability_score": 2,
+      "edit_examples": [
+        "change casing color/texture",
+        "slice thickness adjustment/remove end slice"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "salsa",
+      "chinese_name": "沙沙酱",
+      "editability_score": 2,
+      "edit_examples": [
+        "change spiciness/color",
+        "remove visible onion chunks"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly a liquid/semiliquid substance",
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "saltine cracker",
+      "chinese_name": "苏打饼干",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hole pattern",
+        "change color/browning"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sausage",
+      "chinese_name": "香肠",
+      "editability_score": 2,
+      "edit_examples": [
+        "remove casing segment/twist",
+        "change grill marks/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sausage ring",
+      "chinese_name": "圆肠",
+      "editability_score": 2,
+      "edit_examples": [
+        "cut and remove a segment",
+        "change casing color/gloss"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "shaved coconut",
+      "chinese_name": "椰丝",
+      "editability_score": 1,
+      "edit_examples": [
+        "change flake color",
+        "remove some flakes"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form",
+        "too small individual pieces for standalone model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "sherbert",
+      "chinese_name": "冰沙",
+      "editability_score": 2,
+      "edit_examples": [
+        "change scoop color/flavor",
+        "remove a scoop from stack"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless semi-frozen substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "shortbread cookie",
+      "chinese_name": "黄油酥饼",
+      "editability_score": 2,
+      "edit_examples": [
+        "change embossed pattern",
+        "change browning/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "smoothie",
+      "chinese_name": "冰沙",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/flavor",
+        "adjust fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/semiliquid substance",
+        "amorphous/shapeless"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "soda",
+      "chinese_name": "汽水",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/carbonation bubbles",
+        "adjust fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid",
+        "amorphous in standalone form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "soup",
+      "chinese_name": "汤",
+      "editability_score": 2,
+      "edit_examples": [
+        "change broth color",
+        "remove floating ingredient pieces"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/semiliquid substance",
+        "amorphous/shapeless without container"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "sour cream",
+      "chinese_name": "酸奶油",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/whip texture",
+        "adjust scoop shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless dairy substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "soya milk",
+      "chinese_name": "豆浆",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/opacity",
+        "adjust fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid",
+        "amorphous without container"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "sriracha sauce",
+      "chinese_name": "是拉差辣酱",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bottle cap color/style",
+        "adjust label design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a liquid/fluids if modeling the sauce itself"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "stew",
+      "chinese_name": "炖菜",
+      "editability_score": 3,
+      "edit_examples": [
+        "change ingredient pieces (add/remove carrots/potatoes/meat chunks)",
+        "adjust broth thickness/amount",
+        "change bowl presence or garnish like herbs"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is largely a liquid with amorphous shape"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "strawberry jam",
+      "chinese_name": "草莓酱",
+      "editability_score": 2,
+      "edit_examples": [
+        "adjust chunkiness (whole fruit pieces vs smooth)",
+        "change color/tint"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Amorphous/semi-liquid substance without defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "strawberry milkshake",
+      "chinese_name": "草莓奶昔",
+      "editability_score": 4,
+      "edit_examples": [
+        "change cup type (plastic, glass, paper)",
+        "add/remove whipped cream topping",
+        "change straw type/color",
+        "adjust shake color/thickness or add syrup drizzle"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The primary object (milkshake) is a liquid/semi-liquid"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tequila",
+      "chinese_name": "龙舌兰",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bottle shape/cap",
+        "alter label design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object (tequila liquid) is a transparent liquid"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tofu",
+      "chinese_name": "豆腐",
+      "editability_score": 2,
+      "edit_examples": [
+        "cut into cubes/slabs",
+        "change surface seasoning/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tortilla",
+      "chinese_name": "玉米饼",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shape/size (round to oval)",
+        "add char marks/toppings"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "truffle",
+      "chinese_name": "松露",
+      "editability_score": 2,
+      "edit_examples": [
+        "change surface texture/warts",
+        "slice to reveal interior pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "vanilla milkshake",
+      "chinese_name": "香草奶昔",
+      "editability_score": 3,
+      "edit_examples": [
+        "change cup type",
+        "add/remove whipped cream topping",
+        "add a straw or cherry"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "vegetable soup",
+      "chinese_name": "蔬菜汤",
+      "editability_score": 4,
+      "edit_examples": [
+        "add/remove vegetable chunks",
+        "change broth color",
+        "add noodles or herbs",
+        "adjust chunk sizes"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "vinegar",
+      "chinese_name": "醋",
+      "editability_score": 1,
+      "edit_examples": [
+        "change liquid color",
+        "change fill level"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "vodka",
+      "chinese_name": "伏特加",
+      "editability_score": 1,
+      "edit_examples": [
+        "change fill level",
+        "add bubbles/impurities"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is entirely a liquid/fluid substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "whipped cream",
+      "chinese_name": "鲜奶油",
+      "editability_score": 2,
+      "edit_examples": [
+        "change dollop shape",
+        "change amount or add swirl pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "whipped topping",
+      "chinese_name": "奶油霜",
+      "editability_score": 2,
+      "edit_examples": [
+        "change dollop size/shape",
+        "add sprinkles/cherry"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "zucchini",
+      "chinese_name": "西葫芦",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change color shade (light/dark green)",
+        "Adjust length/curvature"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Furniture": [
+    {
+      "object": "aquarium",
+      "chinese_name": "鱼缸",
+      "editability_score": 3,
+      "edit_examples": [
+        "change frame color/material",
+        "add/remove internal decorations (plants, rocks)",
+        "add/modify lid and lighting unit"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent (glass tank)"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "bedpan",
+      "chinese_name": "便盆",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/material",
+        "adjust rim shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bedspread",
+      "chinese_name": "床罩",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/pattern",
+        "adjust quilting/texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "blanket",
+      "chinese_name": "毯子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/pattern",
+        "add fringe/trim"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "fishbowl",
+      "chinese_name": "鱼缸",
+      "editability_score": 3,
+      "edit_examples": [
+        "change bowl shape/size",
+        "add/remove decorative elements inside",
+        "add a small lid/stand"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent (glass bowl)"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "heart pillow",
+      "chinese_name": "爱心枕",
+      "editability_score": 2,
+      "edit_examples": [
+        "change fabric color/pattern",
+        "add/remove decorative piping or tassels"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mattress",
+      "chinese_name": "床垫",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change surface quilting pattern",
+        "Adjust corner shape or thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pillow",
+      "chinese_name": "枕头",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change cover color/pattern",
+        "Alter shape (square/bolster)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pouf",
+      "chinese_name": "坐墩",
+      "editability_score": 2,
+      "edit_examples": [
+        "change fabric color/texture",
+        "add decorative seams or buttons"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "quilt",
+      "chinese_name": "被子",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change pattern/colors",
+        "Add/remove border edging"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "runner (carpet)",
+      "chinese_name": "长条地毯",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change length/width",
+        "Change pattern/color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "shower curtain",
+      "chinese_name": "浴帘",
+      "editability_score": 3,
+      "edit_examples": [
+        "Change pattern/color",
+        "Modify grommets/rings style",
+        "Add weighted hem or liner"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is primarily a thin flexible sheet with minimal 3D structure",
+        "Often mostly transparent/translucent material"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "throw pillow",
+      "chinese_name": "抱枕",
+      "editability_score": 2,
+      "edit_examples": [
+        "change fabric color/pattern",
+        "add/remove tassels or piping"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "wall hanging quilt",
+      "chinese_name": "挂毯被",
+      "editability_score": 2,
+      "edit_examples": [
+        "change patchwork pattern/colors",
+        "add hanging rod loops or border trim"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    }
+  ],
+  "Hardware & Components": [
+    {
+      "object": "bolt",
+      "chinese_name": "螺栓",
+      "editability_score": 2,
+      "edit_examples": [
+        "change head shape (hex to square)",
+        "adjust thread length/pitch"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "coil",
+      "chinese_name": "线圈",
+      "editability_score": 2,
+      "edit_examples": [
+        "change coil pitch/diameter",
+        "add end hooks or terminals"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "coil spring",
+      "chinese_name": "螺旋弹簧",
+      "editability_score": 2,
+      "edit_examples": [
+        "change coil diameter/pitch",
+        "change end type (closed/open/ground)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "keycard",
+      "chinese_name": "房卡",
+      "editability_score": 2,
+      "edit_examples": [
+        "change printed design/color",
+        "add cutout slot shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "spoon handle",
+      "chinese_name": "勺柄",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle profile/engraving",
+        "change material/finish/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "spring coil",
+      "chinese_name": "弹簧",
+      "editability_score": 2,
+      "edit_examples": [
+        "change coil count/pitch",
+        "change wire diameter"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tire reflector",
+      "chinese_name": "轮胎反光片",
+      "editability_score": 2,
+      "edit_examples": [
+        "change reflector shape",
+        "change color of reflective lens"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Kitchen & Dining": [
+    {
+      "object": "Dixie cup",
+      "chinese_name": "一次性纸杯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/pattern of the cup",
+        "add/remove a lid or straw hole"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "banana peeler",
+      "chinese_name": "剥蕉器",
+      "editability_score": 2,
+      "edit_examples": [
+        "change blade/edge shape",
+        "modify handle color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bottle opener",
+      "chinese_name": "开瓶器",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle shape/material",
+        "modify opener head cutout style"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bowl",
+      "chinese_name": "碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bowl profile/foot",
+        "add decorative rim or handles"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "butter",
+      "chinese_name": "黄油",
+      "editability_score": 1,
+      "edit_examples": [
+        "change overall block shape",
+        "emboss/deboss a logo"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless or food substance without defined rigid form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "butter stick",
+      "chinese_name": "黄油条",
+      "editability_score": 1,
+      "edit_examples": [
+        "change size/length",
+        "round or bevel the edges"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form",
+        "entirely a soft, moldable food substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "champagne cork",
+      "chinese_name": "香槟塞",
+      "editability_score": 2,
+      "edit_examples": [
+        "change top shape/profile",
+        "change cork color/texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chinaware",
+      "chinese_name": "瓷器",
+      "editability_score": 2,
+      "edit_examples": [
+        "change pattern/decals",
+        "modify rim profile"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chopping board",
+      "chinese_name": "砧板",
+      "editability_score": 2,
+      "edit_examples": [
+        "add juice groove or handle hole",
+        "change shape or add feet"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chopstick",
+      "chinese_name": "筷子",
+      "editability_score": 1,
+      "edit_examples": [
+        "change tip shape",
+        "add decorative cap"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "clay bowl",
+      "chinese_name": "陶碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim shape",
+        "add foot ring"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cleansing agent",
+      "chinese_name": "清洁剂",
+      "editability_score": 1,
+      "edit_examples": [
+        "change overall volume shape (if modeled as liquid mound)",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/gel substance",
+        "amorphous/shapeless"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "coaster",
+      "chinese_name": "杯垫",
+      "editability_score": 1,
+      "edit_examples": [
+        "change shape",
+        "add pattern/engraving"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "coffee cup saucer",
+      "chinese_name": "咖啡杯碟",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim or well shape",
+        "add decorative relief or foot ring"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "condiment",
+      "chinese_name": "调味品",
+      "editability_score": 1,
+      "edit_examples": [
+        "change dollop shape",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/semisolid food substance",
+        "amorphous/shapeless"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cork (bottle plug)",
+      "chinese_name": "软木塞",
+      "editability_score": 1,
+      "edit_examples": [
+        "change taper/shape",
+        "add top cap"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crystal bowl",
+      "chinese_name": "水晶碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cut pattern",
+        "change rim shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent (crystal glass)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "crystal wineglass",
+      "chinese_name": "水晶酒杯",
+      "editability_score": 3,
+      "edit_examples": [
+        "change bowl shape",
+        "change stem length",
+        "change base diameter or add cut pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent (crystal glass)"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cutting board",
+      "chinese_name": "切菜板",
+      "editability_score": 2,
+      "edit_examples": [
+        "add juice groove",
+        "add handle hole or feet"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "detergent pods",
+      "chinese_name": "洗衣凝珠",
+      "editability_score": 2,
+      "edit_examples": [
+        "change pod shape",
+        "change compartment pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous or small consumable units lacking defined structure for standalone model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "dish",
+      "chinese_name": "盘子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim style",
+        "change color/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "dishwasher detergent liquid",
+      "chinese_name": "洗碗机洗涤液",
+      "editability_score": 1,
+      "edit_examples": [
+        "change volume (splash/level)",
+        "change color of liquid"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a liquid/fluids substance",
+        "amorphous/shapeless with no defined form"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "enamel bowl",
+      "chinese_name": "搪瓷碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim color",
+        "change bowl depth/diameter"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "flute glass",
+      "chinese_name": "香槟杯",
+      "editability_score": 3,
+      "edit_examples": [
+        "change stem length",
+        "change base diameter/shape",
+        "adjust bowl shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "glass (drink container)",
+      "chinese_name": "玻璃杯",
+      "editability_score": 3,
+      "edit_examples": [
+        "change body shape",
+        "add base/foot style",
+        "add decorative etching or color band"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent/translucent"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "ice gel pack",
+      "chinese_name": "冰凝胶袋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change outer pouch shape",
+        "add/remove fabric sleeve/strap"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly soft, amorphous pouch with fluid/gel interior"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "laundry detergent",
+      "chinese_name": "洗衣液",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bottle shape",
+        "change cap/measuring cup design"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "laundry detergent pod",
+      "chinese_name": "洗衣凝珠",
+      "editability_score": 1,
+      "edit_examples": [
+        "change pod shape",
+        "change color swirl pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "small, mostly gel-filled soft pod with amorphous interior and thin film"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "mixing bowl",
+      "chinese_name": "搅拌碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bowl size/shape",
+        "add/remove non-slip base ring"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mustard",
+      "chinese_name": "芥末",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change bottle cap color/style",
+        "Change label graphics/text"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is a liquid/paste as the primary item"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "napkin",
+      "chinese_name": "餐巾",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color/pattern",
+        "fold style variation"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "paper plate",
+      "chinese_name": "纸盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim pattern",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "place mat",
+      "chinese_name": "餐垫",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color/pattern",
+        "round vs rectangular shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "plate",
+      "chinese_name": "盘子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim width",
+        "change color/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "platter",
+      "chinese_name": "大盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim/handles",
+        "change shape (oval/rectangular)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "porcelain bowl",
+      "chinese_name": "瓷碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change glaze color/pattern",
+        "Change rim profile"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "potholder",
+      "chinese_name": "隔热垫",
+      "editability_score": 2,
+      "edit_examples": [
+        "change loop/hook placement",
+        "change quilting pattern/shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "ramekin bowl",
+      "chinese_name": "烤盅",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change fluting/ridge pattern",
+        "Change glaze color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "salad bowl",
+      "chinese_name": "沙拉碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change rim shape",
+        "Change material/finish"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "salad plate",
+      "chinese_name": "沙拉盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim width/shape",
+        "change color/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "saucer",
+      "chinese_name": "茶托",
+      "editability_score": 2,
+      "edit_examples": [
+        "change well size/ridge",
+        "change rim design/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "scalloped bowl",
+      "chinese_name": "扇形边碗",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change scallop frequency/depth",
+        "Change glaze color/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "scalloped platter",
+      "chinese_name": "扇形托盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change scallop edge profile",
+        "Change surface pattern/finish"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "shot glass",
+      "chinese_name": "小酒杯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change body shape (tapered/straight)",
+        "add thick base or logo relief"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly transparent/translucent glass vessel"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "skewer",
+      "chinese_name": "串签",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tip shape",
+        "add handle loop/paddle"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "solo cup",
+      "chinese_name": "一次性塑料杯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "add/remove ridges"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "soupspoon",
+      "chinese_name": "汤勺",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle style",
+        "modify bowl depth/shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "spoon",
+      "chinese_name": "勺子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle style",
+        "modify bowl shape/size"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "spork",
+      "chinese_name": "勺叉",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tine count/length",
+        "modify handle profile"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "stemless wineglass",
+      "chinese_name": "无柄酒杯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bowl profile",
+        "apply etched pattern"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly transparent glass vessel"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "stemmed wineglass",
+      "chinese_name": "高脚酒杯",
+      "editability_score": 3,
+      "edit_examples": [
+        "change bowl shape",
+        "modify stem length/ornament",
+        "alter base diameter/thickness"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly transparent glass vessel"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "stirrer",
+      "chinese_name": "搅拌棒",
+      "editability_score": 2,
+      "edit_examples": [
+        "change paddle/fin shape",
+        "add handle knob/loop"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "straw (for drinking)",
+      "chinese_name": "吸管",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change length/diameter",
+        "Add/remove bendable corrugation"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "styrofoam cup",
+      "chinese_name": "泡沫杯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change size/taper",
+        "add printed logo"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tinfoil",
+      "chinese_name": "锡纸",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change sheet size",
+        "Change crumple state"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is entirely a flat 2D sheet with no fixed 3D structure",
+        "Amorphous/shapeless when crumpled"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "toothpick",
+      "chinese_name": "牙签",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change tip profile",
+        "Change length"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "toothpick skewer",
+      "chinese_name": "牙签串",
+      "editability_score": 1,
+      "edit_examples": [
+        "change length",
+        "add decorative end"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small as standalone object"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "utensil",
+      "chinese_name": "餐具",
+      "editability_score": 1,
+      "edit_examples": [
+        "change overall length",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "water cooler",
+      "chinese_name": "饮水机",
+      "editability_score": 5,
+      "edit_examples": [
+        "Change hot/cold spouts",
+        "Replace drip tray",
+        "Modify bottle shape/cap",
+        "Add side panel vents",
+        "Alter control buttons/indicators"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Major component (bottle) is transparent/translucent and comprises the majority visual surface in many designs"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "water cup",
+      "chinese_name": "水杯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shape/taper",
+        "add logo or texture band"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "water pitcher",
+      "chinese_name": "水壶",
+      "editability_score": 4,
+      "edit_examples": [
+        "change handle shape",
+        "modify spout and lid design",
+        "add filter cartridge compartment",
+        "alter body profile/texture"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly transparent container if glass/plastic"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "wine cork",
+      "chinese_name": "酒塞",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cork length/diameter",
+        "add printed logo or top cap color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "wineglass",
+      "chinese_name": "酒杯",
+      "editability_score": 4,
+      "edit_examples": [
+        "Change bowl shape/size",
+        "Modify stem length/profile",
+        "Alter foot/base diameter",
+        "Add etching or tint"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is mostly transparent glass"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    }
+  ],
+  "Lighting & Ceiling": [
+    {
+      "object": "lampshade",
+      "chinese_name": "灯罩",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shade shape",
+        "change shade material/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Medical & Health": [
+    {
+      "object": "bandage cast",
+      "chinese_name": "石膏绷带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change wrap pattern/texture",
+        "add removable strap or thumb support"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cast",
+      "chinese_name": "石膏",
+      "editability_score": 2,
+      "edit_examples": [
+        "change cast color/texture",
+        "add/remove strap or padding"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "dropper",
+      "chinese_name": "滴管",
+      "editability_score": 4,
+      "edit_examples": [
+        "change rubber bulb shape",
+        "modify cap design/knurling",
+        "alter pipette length/tip",
+        "add measurement markings/dropper guard"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent glass"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "dropper bottle",
+      "chinese_name": "滴管瓶",
+      "editability_score": 4,
+      "edit_examples": [
+        "change bottle shape/volume",
+        "modify cap/dropper assembly",
+        "alter label design",
+        "add child-resistant features or collar"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent glass or clear plastic"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "dropper pipette",
+      "chinese_name": "滴液管",
+      "editability_score": 3,
+      "edit_examples": [
+        "change bulb shape",
+        "alter pipette length/tip",
+        "add measurement markings"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent glass"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "eyedropper",
+      "chinese_name": "滴眼管",
+      "editability_score": 4,
+      "edit_examples": [
+        "change rubber bulb size/texture",
+        "modify cap or grip ring",
+        "alter glass tube length/tip",
+        "add volume markings or guard"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent glass"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "eyepatch",
+      "chinese_name": "眼罩",
+      "editability_score": 2,
+      "edit_examples": [
+        "change patch shape/material",
+        "alter strap length/buckle"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "medical dropper",
+      "chinese_name": "医用滴管",
+      "editability_score": 4,
+      "edit_examples": [
+        "change bulb style/material",
+        "modify cap knurling/color",
+        "alter pipette length/tip",
+        "add dosage markings or protector"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent glass"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "mercury thermometer",
+      "chinese_name": "水银温度计",
+      "editability_score": 3,
+      "edit_examples": [
+        "change protective case/cap",
+        "alter scale markings/background",
+        "modify bulb shape at tip"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is mostly transparent glass"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tape",
+      "chinese_name": "胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change roll width/diameter",
+        "alter core color or add dispenser"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tape cast",
+      "chinese_name": "胶带固定",
+      "editability_score": 2,
+      "edit_examples": [
+        "change wrap pattern/coverage",
+        "alter color/texture of tape material"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Misc": [
+    {
+      "object": "bamboo",
+      "chinese_name": "竹子",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change number of nodes/segments on the stalk",
+        "Change color/texture of the stalk"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bob",
+      "chinese_name": "砝码",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change size/shape of the bob weight",
+        "Change attachment loop style"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cone",
+      "chinese_name": "圆锥",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change height/angle of the cone"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cornice",
+      "chinese_name": "檐口",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change profile shape",
+        "Add/remove decorative dentils"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cover",
+      "chinese_name": "盖子",
+      "editability_score": 2,
+      "edit_examples": [
+        "Add handle/knob",
+        "Change hinge or latch presence/style"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crystal ball pendulum",
+      "chinese_name": "水晶球摆锤",
+      "editability_score": 3,
+      "edit_examples": [
+        "Change chain length/links",
+        "Change cap/setting design",
+        "Change bob shape/size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is mostly transparent/translucent (crystal sphere as primary body)"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cube",
+      "chinese_name": "立方体",
+      "editability_score": 1,
+      "edit_examples": [
+        "Bevel or chamfer edges"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "fish food",
+      "chinese_name": "鱼粮",
+      "editability_score": 1,
+      "edit_examples": [
+        "change granule size",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form",
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "flap",
+      "chinese_name": "翻盖",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape/size of flap",
+        "Add/remove fastener (button/velcro)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "freshener",
+      "chinese_name": "清新剂",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change hanger/string style",
+        "Change shape of the freshener body"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "gargle",
+      "chinese_name": "漱口水",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change liquid level/shape (if modeled)"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a liquid, fluid, or pourable substance"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "heart",
+      "chinese_name": "心形",
+      "editability_score": 2,
+      "edit_examples": [
+        "change overall shape roundness",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pad",
+      "chinese_name": "垫子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change thickness/shape",
+        "change color/material"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Musical Instruments": [
+    {
+      "object": "drumstick",
+      "chinese_name": "鼓槌",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tip shape",
+        "alter grip texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "musical instrument",
+      "chinese_name": "乐器",
+      "editability_score": 2,
+      "edit_examples": [
+        "generic shape variation",
+        "color change"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pipe",
+      "chinese_name": "管子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change bowl shape",
+        "alter stem/mouthpiece length"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "triangle (musical instrument)",
+      "chinese_name": "三角铁",
+      "editability_score": 2,
+      "edit_examples": [
+        "change size/thickness",
+        "modify hanger/cord attachment"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "vuvuzela",
+      "chinese_name": "呜呜祖拉",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change bell/flare shape",
+        "Alter mouthpiece size/color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Office & Stationery": [
+    {
+      "object": "adhesive tape",
+      "chinese_name": "粘胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change width/length",
+        "Change core diameter or color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a thin 2D sheet material",
+        "Amorphous when not on a roll/dispensed"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "australian 50-cent coin",
+      "chinese_name": "澳大利亚50分硬币",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change obverse/reverse engraving",
+        "Alter edge thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "autobiography",
+      "chinese_name": "自传",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change cover graphic",
+        "Change spine text"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "birthday card",
+      "chinese_name": "生日卡",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change cover artwork/text",
+        "Add envelope or ribbon"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "bookmark",
+      "chinese_name": "书签",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape (corner clip/ribbon)",
+        "Change print/design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "brochure",
+      "chinese_name": "宣传册",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change fold type (bi/tri-fold)",
+        "Change cover graphic"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "business card",
+      "chinese_name": "名片",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change print/design",
+        "Round or notch corners"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is entirely a flat 2D sheet with no substantial 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "card",
+      "chinese_name": "卡片",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change print/design",
+        "Add embossing or cutout"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "coin",
+      "chinese_name": "硬币",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change diameter/thickness",
+        "Change relief/engraving"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is very thin and largely 2D coin-like disc"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "coloring material",
+      "chinese_name": "上色材料",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change packaging style",
+        "Change stick size/shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "credit card",
+      "chinese_name": "信用卡",
+      "editability_score": 3,
+      "edit_examples": [
+        "Change card color/design",
+        "Modify embossed numbers/chip placement",
+        "Add/remove contactless logo or hologram"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "crystal ball paperweight",
+      "chinese_name": "水晶球镇纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change base material",
+        "Engrave logo on base"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Mostly transparent/translucent object"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "cube paperweight",
+      "chinese_name": "方块镇纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change material/finish",
+        "Engrave a face with text"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "dollar",
+      "chinese_name": "美元",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change print design",
+        "Change wear/crease state"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is a flat 2D sheet (paper currency)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "dollar bill",
+      "chinese_name": "美元纸币",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change print design",
+        "Alter color tint"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "egg paperweight",
+      "chinese_name": "蛋形镇纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change material/finish",
+        "Engrave pattern on surface"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "envelope",
+      "chinese_name": "信封",
+      "editability_score": 3,
+      "edit_examples": [
+        "Change flap style (V/peel-and-seal)",
+        "Add window",
+        "Change size/color and closure detail"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a thin flat paper sheet with minimal 3D volume"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "eraser",
+      "chinese_name": "橡皮",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape (rectangular/cap/novelty)",
+        "Change sleeve/wrap color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "flyer",
+      "chinese_name": "传单",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change print design",
+        "Adjust paper color/finish"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "identity card",
+      "chinese_name": "身份证",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change print/design",
+        "Add a lanyard hole"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is a flat 2D card with minimal thickness"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "magnet",
+      "chinese_name": "磁铁",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape (bar/disc/novelty)",
+        "Change surface print/texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "map",
+      "chinese_name": "地图",
+      "editability_score": 2,
+      "edit_examples": [
+        "Folded vs rolled",
+        "Change print/design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Object is a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "marble paperweight",
+      "chinese_name": "大理石镇纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape finish (polished/faceted)",
+        "Engrave pattern or inset emblem"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "medical tape",
+      "chinese_name": "医用胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change width/porosity",
+        "Change core color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a thin 2D sheet material"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "money",
+      "chinese_name": "钱",
+      "editability_score": 1,
+      "edit_examples": [
+        "change print design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely flat 2D sheet (paper bills/notes); coins are too small individually and lack sub-parts"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "newspaper",
+      "chinese_name": "报纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "change number of folded sections",
+        "change front-page graphic"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "primarily a flat 2D sheet stack with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "notepad",
+      "chinese_name": "记事本",
+      "editability_score": 3,
+      "edit_examples": [
+        "change backing board",
+        "add top binding strip",
+        "add tear-off adhesive"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "mostly flat 2D sheet stack with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "packing tape",
+      "chinese_name": "打包胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change width/thickness",
+        "Change core size or color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a thin 2D sheet material",
+        "Often transparent/translucent over most of its surface"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pamphlet",
+      "chinese_name": "小册子",
+      "editability_score": 1,
+      "edit_examples": [
+        "Change print design",
+        "Change fold style"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Mostly a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "paper towel",
+      "chinese_name": "纸巾",
+      "editability_score": 2,
+      "edit_examples": [
+        "change emboss pattern",
+        "change roll length/diameter"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a thin sheet material (roll of 2D sheets)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "paperweight",
+      "chinese_name": "镇纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "change overall shape",
+        "change material/texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "parchment",
+      "chinese_name": "羊皮纸",
+      "editability_score": 1,
+      "edit_examples": [
+        "change sheet size/edge tattering"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "penny (coin)",
+      "chinese_name": "便士",
+      "editability_score": 1,
+      "edit_examples": [
+        "change relief design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small, thin coin with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "phone card",
+      "chinese_name": "电话卡",
+      "editability_score": 2,
+      "edit_examples": [
+        "change printed design",
+        "add/remove chip or mag stripe"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pin (fastener)",
+      "chinese_name": "别针",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change head shape/color",
+        "Change length/thickness of shaft"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "playing card",
+      "chinese_name": "扑克牌",
+      "editability_score": 2,
+      "edit_examples": [
+        "change face design",
+        "round/straight corner shape"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "postcard",
+      "chinese_name": "明信片",
+      "editability_score": 1,
+      "edit_examples": [
+        "change printed image"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "poster",
+      "chinese_name": "海报",
+      "editability_score": 1,
+      "edit_examples": [
+        "change printed graphic"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "receipt",
+      "chinese_name": "收据",
+      "editability_score": 1,
+      "edit_examples": [
+        "change printed text"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "rectangular paperweight",
+      "chinese_name": "长方形镇纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "change material/finish",
+        "engrave or add inset emblem"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "ribbon bookmark",
+      "chinese_name": "丝带书签",
+      "editability_score": 2,
+      "edit_examples": [
+        "change ribbon color/pattern",
+        "add/remove metal charm end"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "rubber band",
+      "chinese_name": "橡皮筋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change thickness/diameter",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small/simple loop with minimal structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "scotch tape",
+      "chinese_name": "透明胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change width/length",
+        "Change core size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a thin 2D sheet material",
+        "Mostly transparent/translucent"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "square paperweight",
+      "chinese_name": "方形镇纸",
+      "editability_score": 2,
+      "edit_examples": [
+        "change material/finish",
+        "engrave or add inset emblem"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sticker",
+      "chinese_name": "贴纸",
+      "editability_score": 1,
+      "edit_examples": [
+        "change printed design"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tape (sticky cloth or paper)",
+      "chinese_name": "胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change roll width/diameter",
+        "change texture/material"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "essentially a thin 2D strip/roll; minimal 3D structure as standalone"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tape roll",
+      "chinese_name": "胶带卷",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change width/diameter",
+        "Change core color/size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a thin 2D sheet material wound into a roll",
+        "Often transparent/translucent for many tape types"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "thumbtack",
+      "chinese_name": "图钉",
+      "editability_score": 2,
+      "edit_examples": [
+        "change head shape/color",
+        "change pin length"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model with multiple editable parts"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "washi tape",
+      "chinese_name": "和纸胶带",
+      "editability_score": 3,
+      "edit_examples": [
+        "Change printed pattern/color",
+        "Change roll width/diameter",
+        "Add metallic foil accents"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a thin 2D sheet material wound into a roll"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "world map",
+      "chinese_name": "世界地图",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change frame style (if framed)",
+        "Change poster size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    }
+  ],
+  "Outdoor, Urban & Structures": [
+    {
+      "object": "banner",
+      "chinese_name": "横幅",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change printed design/text",
+        "Add grommets or pole pockets"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "doormat",
+      "chinese_name": "门垫",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change pattern/text",
+        "Alter border thickness or add beveled edge"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "lightning rod",
+      "chinese_name": "避雷针",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change finial tip shape (spike/ball)",
+        "Modify base bracket or insulators"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "manhole",
+      "chinese_name": "窨井",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change cover pattern/texture",
+        "Modify frame/rim height or add bolts"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "milestone",
+      "chinese_name": "里程碑",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change shape/profile",
+        "Modify engraving/text or base"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mound (baseball)",
+      "chinese_name": "投手丘",
+      "editability_score": 2,
+      "edit_examples": [
+        "Adjust slope/shape",
+        "Edit rubber plate size/position"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "netting",
+      "chinese_name": "网布",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change mesh size/pattern",
+        "Change material color/thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pole",
+      "chinese_name": "杆",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change base/cap",
+        "Adjust height/diameter or add brackets"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "road map",
+      "chinese_name": "道路地图",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change printed design",
+        "Fold/unfold state or add cover"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tarp",
+      "chinese_name": "防水布",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change color/material",
+        "Add/remove grommets/eyelets"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a flat 2D sheet with no inherent structure (unless draped over something)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "tarpaulin",
+      "chinese_name": "篷布",
+      "editability_score": 2,
+      "edit_examples": [
+        "Change color/material",
+        "Add/remove grommets/eyelets"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "Entirely a flat 2D sheet with no inherent structure (unless draped over something)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    }
+  ],
+  "Sports, Hobbies & Recreation": [
+    {
+      "object": "ball",
+      "chinese_name": "球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "add/remove logo or pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "balloon",
+      "chinese_name": "气球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "alter shape (round/heart)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "barbell tube",
+      "chinese_name": "杠铃杆套管",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tube length",
+        "recolor the tube"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "base (baseball)",
+      "chinese_name": "垒包",
+      "editability_score": 2,
+      "edit_examples": [
+        "change top texture",
+        "recolor base border"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "beachball",
+      "chinese_name": "沙滩球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change panel colors",
+        "add or remove printed logo/graphic"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "beanbag",
+      "chinese_name": "豆袋",
+      "editability_score": 2,
+      "edit_examples": [
+        "change outer fabric color/texture",
+        "add/remove handle or seams"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "billiard ball",
+      "chinese_name": "台球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change number/stripe/solid design",
+        "alter surface color/finish"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "block toy",
+      "chinese_name": "积木",
+      "editability_score": 2,
+      "edit_examples": [
+        "change block color",
+        "add printed pattern or bevel edges"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "bouncy ball",
+      "chinese_name": "弹力球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change surface pattern/colors",
+        "add small nubs or glow stripes"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "checkerboard",
+      "chinese_name": "跳棋棋盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "change board pattern/colors",
+        "add borders or storage drawer"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "chessboard",
+      "chinese_name": "棋盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "alter square colors/material",
+        "add border/feet or storage box"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cleat (for securing rope)",
+      "chinese_name": "缆绳系固栓",
+      "editability_score": 2,
+      "edit_examples": [
+        "change horn length/shape",
+        "alter base plate holes or add caps"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "cricket ball",
+      "chinese_name": "板球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change seam color",
+        "change surface color/texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crossbar",
+      "chinese_name": "横梁",
+      "editability_score": 1,
+      "edit_examples": [
+        "change bar length"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "diving board",
+      "chinese_name": "跳板",
+      "editability_score": 2,
+      "edit_examples": [
+        "change board length/thickness",
+        "alter support/base height"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "dog bone toy",
+      "chinese_name": "狗骨头玩具",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "add surface texture or nubs"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "eight ball",
+      "chinese_name": "8号球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change number decal",
+        "alter gloss/finish color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "eight-ball",
+      "chinese_name": "8号球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change number decal",
+        "alter gloss/finish color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "exercise ball",
+      "chinese_name": "健身球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "add surface ridges or logo"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "football",
+      "chinese_name": "足球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/logo",
+        "add/remove laces detail"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "football (American)",
+      "chinese_name": "橄榄球",
+      "editability_score": 2,
+      "edit_examples": [
+        "recolor panels",
+        "modify laces or seam pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "frisbee",
+      "chinese_name": "飞盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "change rim profile",
+        "recolor/add logo graphic"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "gameboard",
+      "chinese_name": "游戏棋盘",
+      "editability_score": 2,
+      "edit_examples": [
+        "change printed pattern",
+        "add/remove folding seam"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "golf ball",
+      "chinese_name": "高尔夫球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/logo",
+        "alter dimple pattern density"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "golf ball toy",
+      "chinese_name": "高尔夫球玩具",
+      "editability_score": 2,
+      "edit_examples": [
+        "recolor surface",
+        "change dimple pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hockey stick toy",
+      "chinese_name": "冰球杆玩具",
+      "editability_score": 2,
+      "edit_examples": [
+        "change blade curve/shape",
+        "recolor grip or shaft wrap"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "inflatable ball",
+      "chinese_name": "充气球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change panel colors/pattern",
+        "add or move valve cap"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "kettlebell",
+      "chinese_name": "壶铃",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle shape/grip texture",
+        "change body color or add logo"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "kickball",
+      "chinese_name": "踢球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change surface texture/panel pattern",
+        "change color or add logo/graphics"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "mat (gym equipment)",
+      "chinese_name": "体操垫",
+      "editability_score": 2,
+      "edit_examples": [
+        "change thickness/edge binding",
+        "change surface color/texture or add logo"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "The object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "medicine ball",
+      "chinese_name": "药球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change panel stitching pattern",
+        "change color or add weight markings"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "paper doll",
+      "chinese_name": "纸偶",
+      "editability_score": 2,
+      "edit_examples": [
+        "change clothing color",
+        "add hat accessory"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely or mostly a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "pickleball",
+      "chinese_name": "匹克球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hole pattern count",
+        "change ball color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "ping-pong ball",
+      "chinese_name": "乒乓球",
+      "editability_score": 1,
+      "edit_examples": [
+        "change color",
+        "add logo decal"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "poker chip",
+      "chinese_name": "扑克筹码",
+      "editability_score": 2,
+      "edit_examples": [
+        "change inlay design",
+        "alter edge spot pattern/colors"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "pompom ball",
+      "chinese_name": "毛球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change yarn/strand length",
+        "change color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "shadow puppet",
+      "chinese_name": "皮影",
+      "editability_score": 2,
+      "edit_examples": [
+        "change silhouette shape",
+        "add or remove control rods"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with no 3D structure"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "softball",
+      "chinese_name": "垒球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change seam color",
+        "modify surface texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sparkler (fireworks)",
+      "chinese_name": "手持烟花",
+      "editability_score": 2,
+      "edit_examples": [
+        "change handle length",
+        "alter spark effect length"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "amorphous/shapeless with no defined form (spark effect)"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "stress ball",
+      "chinese_name": "解压球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change surface color",
+        "add a printed logo"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "tennis ball",
+      "chinese_name": "网球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "alter seam pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "toy",
+      "chinese_name": "玩具",
+      "editability_score": 1,
+      "edit_examples": [
+        "too generic to define edits"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [
+        "category too generic; lacks defined structure for edits"
+      ],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "toy ball",
+      "chinese_name": "玩具球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color/pattern",
+        "alter panel seams (soccer/volleyball style)"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "toy block",
+      "chinese_name": "积木块",
+      "editability_score": 2,
+      "edit_examples": [
+        "change color",
+        "modify stud count/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "toy rattle",
+      "chinese_name": "摇铃玩具",
+      "editability_score": 2,
+      "edit_examples": [
+        "recolor handle",
+        "change rattle head shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "volleyball",
+      "chinese_name": "排球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change panel colors",
+        "resize logo"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "water polo ball",
+      "chinese_name": "水球",
+      "editability_score": 2,
+      "edit_examples": [
+        "change panel color pattern",
+        "add/remove logo text"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "wayang kulit puppet",
+      "chinese_name": "皮影偶",
+      "editability_score": 3,
+      "edit_examples": [
+        "change silhouette cutout pattern",
+        "recolor painted areas",
+        "add/remove control rod ornaments"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "object is primarily a flat 2D sheet with minimal 3D structure"
+      ],
+      "removal_reasons": [
+        "3d_unfriendly"
+      ]
+    }
+  ],
+  "Tools, Construction & Garden": [
+    {
+      "object": "ceiling hook",
+      "chinese_name": "天花板挂钩",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hook curvature/size",
+        "alter mounting screw/plate style"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "crowbar",
+      "chinese_name": "撬棍",
+      "editability_score": 2,
+      "edit_examples": [
+        "change tip shape (gooseneck/flat)",
+        "add rubber grip or texture"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "duct tape",
+      "chinese_name": "管道胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change roll size/width",
+        "change color/pattern"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "earplug",
+      "chinese_name": "耳塞",
+      "editability_score": 2,
+      "edit_examples": [
+        "change shape (foam cone/flanged)",
+        "change color or add cord"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "electrical tape",
+      "chinese_name": "电工胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change roll width/diameter",
+        "alter color"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "entirely a flat 2D sheet with no 3D structure when unrolled"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "fishing hook",
+      "chinese_name": "鱼钩",
+      "editability_score": 2,
+      "edit_examples": [
+        "change barb size/shape",
+        "modify shank length/eye type"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hexagonal wrench",
+      "chinese_name": "内六角扳手",
+      "editability_score": 2,
+      "edit_examples": [
+        "change size",
+        "add ball-end tip"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "hook",
+      "chinese_name": "钩子",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hook curvature/size",
+        "add mounting plate or screw base"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "masking tape",
+      "chinese_name": "美纹纸胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change roll width/diameter",
+        "alter color of tape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "measuring stick",
+      "chinese_name": "量尺",
+      "editability_score": 2,
+      "edit_examples": [
+        "change length/markings",
+        "add end cap or clip"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "needle",
+      "chinese_name": "针",
+      "editability_score": 2,
+      "edit_examples": [
+        "change eye shape/size",
+        "change length/thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "painter's tape",
+      "chinese_name": "美纹纸胶带",
+      "editability_score": 2,
+      "edit_examples": [
+        "change roll width",
+        "alter tape color/label core"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "sewing needle",
+      "chinese_name": "缝衣针",
+      "editability_score": 2,
+      "edit_examples": [
+        "change length/thickness",
+        "alter eye shape/size"
+      ],
+      "has_3d_unfriendly_attrs": true,
+      "unfriendly_reasons": [
+        "too small to be a standalone 3D model"
+      ],
+      "removal_reasons": [
+        "too_simple",
+        "3d_unfriendly"
+      ]
+    },
+    {
+      "object": "syringe needle",
+      "chinese_name": "注射针",
+      "editability_score": 2,
+      "edit_examples": [
+        "change needle length/gauge",
+        "modify hub color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ],
+  "Vehicles": [
+    {
+      "object": "brake light",
+      "chinese_name": "刹车灯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change lens shape",
+        "recolor housing"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "canoe",
+      "chinese_name": "独木舟",
+      "editability_score": 2,
+      "edit_examples": [
+        "change hull color",
+        "add/remove seats/thwarts"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "license plate",
+      "chinese_name": "车牌",
+      "editability_score": 2,
+      "edit_examples": [
+        "change text/numbering",
+        "modify frame/border"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "motorcycle blinker",
+      "chinese_name": "摩托车转向灯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change lens color/shape",
+        "modify mounting bracket"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "oar",
+      "chinese_name": "桨",
+      "editability_score": 2,
+      "edit_examples": [
+        "change blade shape",
+        "change handle grip color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "raft",
+      "chinese_name": "木筏",
+      "editability_score": 2,
+      "edit_examples": [
+        "add oar mounts or rope ties",
+        "change number of air chambers or logs"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "taillight",
+      "chinese_name": "尾灯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change lens shape",
+        "change lens color"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "turn signal",
+      "chinese_name": "转向灯",
+      "editability_score": 2,
+      "edit_examples": [
+        "change lens color",
+        "alter housing shape"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    },
+    {
+      "object": "wagon wheel",
+      "chinese_name": "货车轮",
+      "editability_score": 2,
+      "edit_examples": [
+        "change number of spokes",
+        "alter hub or rim thickness"
+      ],
+      "has_3d_unfriendly_attrs": false,
+      "unfriendly_reasons": [],
+      "removal_reasons": [
+        "too_simple"
+      ]
+    }
+  ]
+}

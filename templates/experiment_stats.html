@@ -1,0 +1,898 @@
+{% extends "base.html" %}
+
+{% block title %}Experiment Stats{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Experiment Stats</h1>
+    <p class="page-desc">Use provider-level summary for macro comparison, or switch to YAML results to inspect the concrete runs, objects, and edits behind those stats.</p>
+</div>
+
+<div class="stats-layout">
+    <div class="card">
+        <div class="card-header">Filters</div>
+        <div class="card-body">
+            <div class="form-group">
+                <label for="viewMode">View Mode</label>
+                <select id="viewMode" class="form-select">
+                    <option value="provider">Provider Summary</option>
+                    <option value="yaml">YAML Results</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sourceProvider">Source Provider</label>
+                <select id="sourceProvider" class="form-select"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="targetProvider">Target Provider</label>
+                <select id="targetProvider" class="form-select"></select>
+            </div>
+
+            <div id="yamlFilters" style="display: none;">
+                <div class="form-group">
+                    <label for="yamlSelect">YAML File</label>
+                    <select id="yamlSelect" class="form-select"></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="experimentSelect">Experiment Run</label>
+                    <select id="experimentSelect" class="form-select"></select>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="loadCurrentView()">Load</button>
+            <p class="section-hint" id="pairHint" style="margin-top: 12px;"></p>
+        </div>
+    </div>
+
+    <div class="stack">
+        <div id="providerPanel" class="stack">
+            <div class="card">
+                <div class="card-header">Category Summary</div>
+                <div class="card-body">
+                    <div id="providerMeta" class="section-hint" style="margin-bottom: 12px;">Select a provider pair to load statistics.</div>
+                    <div class="table-wrap">
+                        <table class="table category-summary-table" id="providerStatsTable" data-category-table="provider">
+                            <thead>
+                                <tr>
+                                    <th data-sort-key="category"><button type="button" class="sort-button">Category</button></th>
+                                    <th data-sort-key="sample_count"><button type="button" class="sort-button">Samples</button></th>
+                                    <th data-sort-key="edit_attempts_total"><button type="button" class="sort-button">Edit Attempts</button></th>
+                                    <th data-sort-key="stage1_failed_rate"><button type="button" class="sort-button">Stage1 Fail Rate</button></th>
+                                    <th data-sort-key="stage2_entered_rate"><button type="button" class="sort-button">Stage2 Entered Rate</button></th>
+                                    <th data-sort-key="stage2_lpips_mean"><button type="button" class="sort-button">LPIPS Mean</button></th>
+                                    <th data-sort-key="stage2_lpips_std"><button type="button" class="sort-button">LPIPS Std</button></th>
+                                    <th>Objects</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8">No data loaded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="yamlPanel" class="stack" style="display: none;">
+            <div class="card">
+                <div class="card-header">YAML Overview</div>
+                <div class="card-body">
+                    <div id="yamlOverviewMeta" class="section-hint">Select a provider pair and YAML file to inspect the corresponding recorded experiments.</div>
+                    <div id="yamlOverviewGrid" class="kv-grid" style="display: none;"></div>
+
+                    <div id="planCategoriesBlock" style="display: none; margin-top: 16px;">
+                        <div class="subsection-title">Planned Categories</div>
+                        <div class="table-wrap">
+                            <table class="table" id="planCategoriesTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Category</th>
+                                        <th>Random</th>
+                                        <th>Object Count</th>
+                                        <th>Objects</th>
+                                        <th>Instruction Counts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6">No YAML selected.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <details id="rawYamlBlock" style="display: none; margin-top: 16px;">
+                        <summary>Show Raw YAML</summary>
+                        <pre id="rawYamlContent" class="raw-block"></pre>
+                    </details>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Experiment Runs</div>
+                <div class="card-body">
+                    <div id="yamlRunsMeta" class="section-hint" style="margin-bottom: 12px;">No YAML summary loaded.</div>
+                    <div class="table-wrap">
+                        <table class="table" id="yamlRunsTable">
+                            <thead>
+                                <tr>
+                                    <th>Experiment ID</th>
+                                    <th>Started</th>
+                                    <th>Finished</th>
+                                    <th>Objects</th>
+                                    <th>Edit Attempts</th>
+                                    <th>Stage1 Failed</th>
+                                    <th>Stage2 Passed</th>
+                                    <th>LPIPS Mean</th>
+                                    <th>Manifest</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="9">No YAML selected.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Category Summary</div>
+                <div class="card-body">
+                    <div id="yamlCategoryMeta" class="section-hint" style="margin-bottom: 12px;">No YAML details loaded.</div>
+                    <div class="table-wrap">
+                        <table class="table category-summary-table" id="yamlCategoryTable" data-category-table="yaml">
+                            <thead>
+                                <tr>
+                                    <th data-sort-key="category"><button type="button" class="sort-button">Category</button></th>
+                                    <th data-sort-key="sample_count"><button type="button" class="sort-button">Samples</button></th>
+                                    <th data-sort-key="edit_attempts_total"><button type="button" class="sort-button">Edit Attempts</button></th>
+                                    <th data-sort-key="stage1_failed_rate"><button type="button" class="sort-button">Stage1 Fail Rate</button></th>
+                                    <th data-sort-key="stage2_entered_rate"><button type="button" class="sort-button">Stage2 Entered Rate</button></th>
+                                    <th data-sort-key="stage2_lpips_mean"><button type="button" class="sort-button">LPIPS Mean</button></th>
+                                    <th data-sort-key="stage2_lpips_std"><button type="button" class="sort-button">LPIPS Std</button></th>
+                                    <th>Objects</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8">No YAML details loaded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Stage Timing Summary</div>
+                <div class="card-body">
+                    <div id="yamlTimingMeta" class="section-hint" style="margin-bottom: 12px;">No YAML details loaded.</div>
+                    <div class="table-wrap">
+                        <table class="table" id="yamlTimingTable">
+                            <thead>
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Scope</th>
+                                    <th>Basis</th>
+                                    <th>Count</th>
+                                    <th>Total Seconds</th>
+                                    <th>Mean Seconds</th>
+                                    <th>P90 Seconds</th>
+                                    <th>Failed</th>
+                                    <th>Skipped</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="9">No YAML details loaded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Object Summary</div>
+                <div class="card-body">
+                    <div id="yamlObjectMeta" class="section-hint" style="margin-bottom: 12px;">No YAML details loaded.</div>
+                    <div class="table-wrap">
+                        <table class="table" id="yamlObjectTable">
+                            <thead>
+                                <tr>
+                                    <th>Experiment ID</th>
+                                    <th>Category</th>
+                                    <th>Object</th>
+                                    <th>Prompt ID</th>
+                                    <th>Image ID</th>
+                                    <th>Source Model ID</th>
+                                    <th>Edit Attempts</th>
+                                    <th>Stage1 Failed</th>
+                                    <th>Stage2 Entered</th>
+                                    <th>Stage2 Passed</th>
+                                    <th>LPIPS Mean</th>
+                                    <th>LPIPS Std</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="12">No YAML details loaded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Edit Records</div>
+                <div class="card-body">
+                    <div id="yamlEditMeta" class="section-hint" style="margin-bottom: 12px;">No YAML details loaded.</div>
+                    <div class="table-wrap">
+                        <table class="table" id="yamlEditTable">
+                            <thead>
+                                <tr>
+                                    <th>Experiment ID</th>
+                                    <th>Category</th>
+                                    <th>Object</th>
+                                    <th>Type</th>
+                                    <th>#</th>
+                                    <th>Instruction</th>
+                                    <th>Edit ID</th>
+                                    <th>Target Model ID</th>
+                                    <th>Stage1</th>
+                                    <th>Stage2</th>
+                                    <th>Stage2 Config</th>
+                                    <th>LPIPS</th>
+                                    <th>Final Status</th>
+                                    <th>Exclusion Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="14">No YAML details loaded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stats-layout { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: 24px; align-items: start; }
+    .stats-layout > * { min-width: 0; }
+    .stack { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; color: #495057; margin-bottom: 6px; }
+    .form-select { width: 100%; padding: 8px 12px; font-size: 14px; border: 1px solid #ced4da; border-radius: 6px; background: #fff; }
+    .form-select:focus { outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1); }
+    .section-hint { font-size: 13px; color: #6c757d; }
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; }
+    .kv-grid { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 12px 16px; }
+    .kv-item { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px 12px; }
+    .kv-label { font-size: 12px; color: #6c757d; margin-bottom: 4px; }
+    .kv-value { font-size: 14px; color: #212529; word-break: break-word; }
+    .subsection-title { font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; }
+    .raw-block { margin-top: 10px; padding: 12px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: #eef2ff; color: #3b5bdb; white-space: nowrap; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    .sort-button { display: inline-flex; align-items: center; gap: 6px; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; font-weight: inherit; cursor: pointer; }
+    .sort-button::after { content: attr(data-sort-indicator); color: #0d6efd; font-size: 11px; line-height: 1; min-width: 10px; }
+    .sort-button[data-sort-indicator=""]::after { content: ""; min-width: 0; }
+    .category-summary-table th[data-sort-key] { white-space: nowrap; }
+    @media (max-width: 1280px) {
+        .stats-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+        .kv-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let providerPairs = [];
+    const categoryTableState = {
+        provider: {
+            rows: [],
+            sortKey: 'sample_count',
+            sortDir: 'desc',
+        },
+        yaml: {
+            rows: [],
+            sortKey: 'sample_count',
+            sortDir: 'desc',
+        },
+    };
+    const CATEGORY_SORT_NUMERIC_KEYS = new Set([
+        'sample_count',
+        'edit_attempts_total',
+        'stage1_failed_rate',
+        'stage2_entered_rate',
+        'stage2_lpips_mean',
+        'stage2_lpips_std',
+    ]);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        bindEventHandlers();
+        initializeCategoryTableSorting();
+        await initializeFilters();
+    });
+
+    function bindEventHandlers() {
+        document.getElementById('viewMode').addEventListener('change', async () => {
+            applyViewMode();
+            await loadCurrentView();
+        });
+        document.getElementById('sourceProvider').addEventListener('change', async () => {
+            updatePairHint();
+            await loadCurrentView();
+        });
+        document.getElementById('targetProvider').addEventListener('change', async () => {
+            updatePairHint();
+            await loadCurrentView();
+        });
+        document.getElementById('yamlSelect').addEventListener('change', async () => {
+            await loadYamlSummaryAndDetails();
+        });
+        document.getElementById('experimentSelect').addEventListener('change', async () => {
+            await loadYamlDetails();
+        });
+    }
+
+    async function initializeFilters() {
+        try {
+            const result = await fetchJson('/api/experiment-stats/options');
+            providerPairs = result.provider_pairs || [];
+
+            const sourceSelect = document.getElementById('sourceProvider');
+            const targetSelect = document.getElementById('targetProvider');
+            sourceSelect.innerHTML = '';
+            targetSelect.innerHTML = '';
+
+            (result.providers || []).forEach((provider) => {
+                sourceSelect.add(new Option(provider, provider));
+                targetSelect.add(new Option(provider, provider));
+            });
+
+            if (providerPairs.length > 0) {
+                sourceSelect.value = providerPairs[0].source_provider;
+                targetSelect.value = providerPairs[0].target_provider;
+            }
+
+            applyViewMode();
+            updatePairHint();
+            await loadCurrentView();
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    function getViewMode() {
+        return document.getElementById('viewMode').value;
+    }
+
+    function getSelectedProviders() {
+        return {
+            source: document.getElementById('sourceProvider').value,
+            target: document.getElementById('targetProvider').value,
+        };
+    }
+
+    function applyViewMode() {
+        const isYamlMode = getViewMode() === 'yaml';
+        document.getElementById('yamlFilters').style.display = isYamlMode ? 'block' : 'none';
+        document.getElementById('providerPanel').style.display = isYamlMode ? 'none' : 'flex';
+        document.getElementById('yamlPanel').style.display = isYamlMode ? 'flex' : 'none';
+    }
+
+    function updatePairHint() {
+        const { source, target } = getSelectedProviders();
+        const matched = providerPairs.find((pair) => pair.source_provider === source && pair.target_provider === target);
+        document.getElementById('pairHint').textContent = matched
+            ? `Found recorded experiments for ${matched.label}.`
+            : 'No recorded experiment manifests found for this provider pair yet.';
+    }
+
+    async function loadCurrentView() {
+        if (getViewMode() === 'yaml') {
+            await loadYamlOptions();
+            return;
+        }
+        await loadProviderSummary();
+    }
+
+    async function loadProviderSummary() {
+        try {
+            const { source, target } = getSelectedProviders();
+            const result = await fetchJson(`/api/experiment-stats/category-summary?source_provider=${encodeURIComponent(source)}&target_provider=${encodeURIComponent(target)}`);
+            renderCategoryTable('provider', result.category_stats || [], 'No matching stats found.');
+            const partialCount = (result.partial_experiments || []).length;
+            document.getElementById('providerMeta').textContent =
+                `Matched experiments: ${(result.matched_experiments || []).length}. Showing aggregated category stats for ${result.source_provider} -> ${result.target_provider}.${partialCount ? ` Includes ${partialCount} interrupted runs recovered from partial records.` : ''}`;
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    async function loadYamlOptions() {
+        try {
+            const { source, target } = getSelectedProviders();
+            const result = await fetchJson(`/api/experiment-stats/yaml-options?source_provider=${encodeURIComponent(source)}&target_provider=${encodeURIComponent(target)}`);
+            const yamlSelect = document.getElementById('yamlSelect');
+            yamlSelect.innerHTML = '';
+
+            (result.yaml_files || []).forEach((item) => {
+                const label = `${item.yaml_name} (${item.run_count} runs)`;
+                yamlSelect.add(new Option(label, item.plan_path));
+            });
+
+            if (!result.yaml_files || result.yaml_files.length === 0) {
+                clearYamlView(`No YAML runs recorded for ${source} -> ${target}.`);
+                return;
+            }
+
+            await loadYamlSummaryAndDetails();
+        } catch (error) {
+            clearYamlView(error.message);
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    async function loadYamlSummaryAndDetails() {
+        const yamlSelect = document.getElementById('yamlSelect');
+        const planPath = yamlSelect.value;
+        if (!planPath) {
+            clearYamlView('No YAML selected.');
+            return;
+        }
+
+        try {
+            const result = await fetchJson(`/api/experiment-stats/yaml-summary?plan_path=${encodeURIComponent(planPath)}`);
+            renderYamlOverview(result.yaml_summary);
+            renderYamlRuns(result.experiments || []);
+            populateExperimentSelect(result.experiments || []);
+            await loadYamlDetails();
+        } catch (error) {
+            clearYamlView(error.message);
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    function populateExperimentSelect(experiments) {
+        const experimentSelect = document.getElementById('experimentSelect');
+        const currentValue = experimentSelect.value;
+        experimentSelect.innerHTML = '';
+        experimentSelect.add(new Option('All runs under this YAML', ''));
+        experiments.forEach((experiment) => {
+            experimentSelect.add(new Option(experiment.experiment_id, experiment.experiment_id));
+        });
+        if (experiments.some((item) => item.experiment_id === currentValue)) {
+            experimentSelect.value = currentValue;
+        }
+    }
+
+    async function loadYamlDetails() {
+        const planPath = document.getElementById('yamlSelect').value;
+        if (!planPath) {
+            clearYamlDetailTables('No YAML selected.');
+            return;
+        }
+
+        try {
+            const experimentId = document.getElementById('experimentSelect').value;
+            const params = new URLSearchParams({ plan_path: planPath });
+            if (experimentId) {
+                params.set('experiment_id', experimentId);
+            }
+            const result = await fetchJson(`/api/experiment-stats/yaml-details?${params.toString()}`);
+            renderCategoryTable('yaml', result.category_stats || [], 'No category stats found for this YAML selection.');
+            renderTimingTable(result.stage_timing_summary || []);
+            renderObjectTable(result.object_stats || []);
+            renderEditTable(result.edit_records || []);
+
+            const scopeLabel = result.selected_experiment_id
+                ? `Showing details for experiment ${result.selected_experiment_id}.`
+                : `Showing aggregated details across ${(result.matched_experiments || []).length} runs under this YAML.`;
+            const partialCount = (result.partial_experiments || []).length;
+            const partialSuffix = partialCount ? ` Includes ${partialCount} interrupted runs recovered from partial records.` : '';
+            document.getElementById('yamlCategoryMeta').textContent = `${scopeLabel}${partialSuffix}`;
+            document.getElementById('yamlTimingMeta').textContent = `${scopeLabel} Stage timing rows: ${(result.stage_timing_summary || []).length}.${partialSuffix}`;
+            document.getElementById('yamlObjectMeta').textContent = `${scopeLabel} Objects: ${(result.object_stats || []).length}.${partialSuffix}`;
+            document.getElementById('yamlEditMeta').textContent = `${scopeLabel} Edit records: ${(result.edit_records || []).length}.${partialSuffix}`;
+        } catch (error) {
+            clearYamlDetailTables(error.message);
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    function renderYamlOverview(summary) {
+        const meta = document.getElementById('yamlOverviewMeta');
+        const grid = document.getElementById('yamlOverviewGrid');
+        const rawBlock = document.getElementById('rawYamlBlock');
+        const rawContent = document.getElementById('rawYamlContent');
+        const planCategoriesBlock = document.getElementById('planCategoriesBlock');
+        const overviewRows = [
+            ['YAML File', summary.yaml_name],
+            ['Plan Name', summary.plan_name],
+            ['Plan Path', summary.plan_path],
+            ['Source Provider', summary.source_provider],
+            ['Target Provider', summary.target_provider],
+            ['Edit Mode', summary.edit_mode],
+            ['Category Count', summary.category_count],
+            ['Experiment Runs', summary.experiment_run_count],
+            ['Latest Run Time', summary.latest_run_time || ''],
+            ['Plan File Exists', summary.plan_file_exists ? 'yes' : 'no'],
+        ];
+
+        grid.innerHTML = overviewRows.map(([label, value]) => `
+            <div class="kv-item">
+                <div class="kv-label">${escapeHtml(label)}</div>
+                <div class="kv-value ${label.includes('Path') ? 'mono' : ''}">${escapeHtml(String(value ?? ''))}</div>
+            </div>
+        `).join('');
+
+        meta.textContent = summary.plan_file_exists
+            ? 'Structured summary for the selected YAML. Raw YAML is available below.'
+            : 'Structured summary for the selected YAML. The original YAML file is missing, but experiment records are still available.';
+        grid.style.display = 'grid';
+
+        const planTbody = document.querySelector('#planCategoriesTable tbody');
+        const categories = summary.plan_categories || [];
+        if (categories.length === 0) {
+            planTbody.innerHTML = '<tr><td colspan="6">No category definitions found in this YAML.</td></tr>';
+        } else {
+            planTbody.innerHTML = categories.map((item) => `
+                <tr>
+                    <td>${item.index ?? ''}</td>
+                    <td>${escapeHtml(item.category_name || 'random')}</td>
+                    <td>${escapeHtml(formatRandomMode(item.random))}</td>
+                    <td>${item.object_count ?? ''}</td>
+                    <td>${escapeHtml((item.objects || []).join(', '))}</td>
+                    <td>${escapeHtml(formatInstructionPlan(item.instruction_plan))}</td>
+                </tr>
+            `).join('');
+        }
+        planCategoriesBlock.style.display = 'block';
+
+        if (summary.raw_yaml) {
+            rawContent.textContent = summary.raw_yaml;
+            rawBlock.style.display = 'block';
+        } else {
+            rawContent.textContent = '';
+            rawBlock.style.display = 'none';
+        }
+    }
+
+    function renderYamlRuns(experiments) {
+        const tbody = document.querySelector('#yamlRunsTable tbody');
+        if (!experiments.length) {
+            tbody.innerHTML = '<tr><td colspan="9">No experiment runs recorded for this YAML.</td></tr>';
+            document.getElementById('yamlRunsMeta').textContent = 'No experiment runs recorded for this YAML.';
+            return;
+        }
+
+        tbody.innerHTML = experiments.map((row) => `
+            <tr>
+                <td class="mono">${escapeHtml(row.experiment_id || '')}</td>
+                <td>${escapeHtml(formatDateTime(row.started_at))}</td>
+                <td>${escapeHtml(formatDateTime(row.finished_at))}</td>
+                <td>${row.object_count ?? ''}</td>
+                <td>${row.edit_attempts_total ?? ''}</td>
+                <td>${row.stage1_failed_count ?? ''}</td>
+                <td>${row.stage2_passed_count ?? ''}</td>
+                <td>${formatNumber(row.stage2_lpips_mean)}</td>
+                <td class="mono">${escapeHtml(row.manifest_path || '')}</td>
+            </tr>
+        `).join('');
+        document.getElementById('yamlRunsMeta').textContent = `Recorded runs under this YAML: ${experiments.length}.`;
+    }
+
+    function initializeCategoryTableSorting() {
+        document.querySelectorAll('.category-summary-table th[data-sort-key]').forEach((th) => {
+            const button = th.querySelector('.sort-button');
+            if (!button) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                const table = th.closest('.category-summary-table');
+                const tableKey = table?.dataset.categoryTable;
+                const sortKey = th.dataset.sortKey;
+                if (!tableKey || !sortKey || !categoryTableState[tableKey]) {
+                    return;
+                }
+                const state = categoryTableState[tableKey];
+                if (state.sortKey === sortKey) {
+                    state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.sortKey = sortKey;
+                    state.sortDir = CATEGORY_SORT_NUMERIC_KEYS.has(sortKey) ? 'desc' : 'asc';
+                }
+                renderCategoryTable(tableKey, state.rows, tableKey === 'provider' ? 'No matching stats found.' : 'No category stats found for this YAML selection.');
+            });
+        });
+        updateCategorySortHeaders('provider');
+        updateCategorySortHeaders('yaml');
+    }
+
+    function updateCategorySortHeaders(tableKey) {
+        const state = categoryTableState[tableKey];
+        const table = document.querySelector(`.category-summary-table[data-category-table="${tableKey}"]`);
+        if (!table) {
+            return;
+        }
+        table.querySelectorAll('th[data-sort-key]').forEach((th) => {
+            const button = th.querySelector('.sort-button');
+            if (!button) {
+                return;
+            }
+            const isActive = th.dataset.sortKey === state.sortKey;
+            button.dataset.sortIndicator = isActive ? (state.sortDir === 'asc' ? '^' : 'v') : '';
+            button.title = isActive
+                ? `Sorted ${state.sortDir === 'asc' ? 'ascending' : 'descending'}. Click to toggle.`
+                : 'Click to sort.';
+            th.setAttribute('aria-sort', isActive ? (state.sortDir === 'asc' ? 'ascending' : 'descending') : 'none');
+        });
+    }
+
+    function renderTimingTable(rows) {
+        const tbody = document.querySelector('#yamlTimingTable tbody');
+        if (!rows.length) {
+            tbody.innerHTML = '<tr><td colspan="9">No timing summary found for this YAML selection.</td></tr>';
+            return;
+        }
+
+        const sortedRows = [...rows].sort((left, right) => {
+            const leftScope = String(left.scope || '');
+            const rightScope = String(right.scope || '');
+            if (leftScope !== rightScope) {
+                return leftScope.localeCompare(rightScope);
+            }
+            const leftStage = String(left.stage_name || '');
+            const rightStage = String(right.stage_name || '');
+            if (leftStage !== rightStage) {
+                return leftStage.localeCompare(rightStage);
+            }
+            return String(left.aggregation_basis || '').localeCompare(String(right.aggregation_basis || ''));
+        });
+
+        tbody.innerHTML = sortedRows.map((row) => `
+            <tr>
+                <td>${escapeHtml(row.stage_name || '')}</td>
+                <td>${escapeHtml(row.scope || '')}</td>
+                <td>${escapeHtml(row.aggregation_basis || '')}</td>
+                <td>${row.sample_count ?? ''}</td>
+                <td>${formatNumber(row.total_seconds)}</td>
+                <td>${formatNumber(row.mean_seconds)}</td>
+                <td>${formatNumber(row.p90_seconds)}</td>
+                <td>${row.failed_count ?? ''}</td>
+                <td>${row.skipped_count ?? ''}</td>
+            </tr>
+        `).join('');
+    }
+
+    function compareCategoryNames(left, right) {
+        return String(left?.category || '').localeCompare(String(right?.category || ''), undefined, {
+            sensitivity: 'base',
+            numeric: true,
+        });
+    }
+
+    function getSortedCategoryRows(tableKey, rows) {
+        const state = categoryTableState[tableKey];
+        const direction = state.sortDir === 'asc' ? 1 : -1;
+        const sortKey = state.sortKey;
+
+        return [...rows].sort((left, right) => {
+            const leftValue = left?.[sortKey];
+            const rightValue = right?.[sortKey];
+
+            if (CATEGORY_SORT_NUMERIC_KEYS.has(sortKey)) {
+                const leftMissing = leftValue === null || leftValue === undefined;
+                const rightMissing = rightValue === null || rightValue === undefined;
+                if (leftMissing && rightMissing) {
+                    return compareCategoryNames(left, right);
+                }
+                if (leftMissing) {
+                    return 1;
+                }
+                if (rightMissing) {
+                    return -1;
+                }
+                if (leftValue !== rightValue) {
+                    return (leftValue - rightValue) * direction;
+                }
+                return compareCategoryNames(left, right);
+            }
+
+            const stringCompare = String(leftValue || '').localeCompare(String(rightValue || ''), undefined, {
+                sensitivity: 'base',
+                numeric: true,
+            });
+            if (stringCompare !== 0) {
+                return stringCompare * direction;
+            }
+            return compareCategoryNames(left, right);
+        });
+    }
+
+    function renderCategoryTable(tableKey, rows, emptyText) {
+        const tableId = tableKey === 'provider' ? 'providerStatsTable' : 'yamlCategoryTable';
+        const tbody = document.querySelector(`#${tableId} tbody`);
+        categoryTableState[tableKey].rows = Array.isArray(rows) ? rows : [];
+        updateCategorySortHeaders(tableKey);
+        if (!categoryTableState[tableKey].rows.length) {
+            tbody.innerHTML = `<tr><td colspan="8">${escapeHtml(emptyText)}</td></tr>`;
+            return;
+        }
+        const sortedRows = getSortedCategoryRows(tableKey, categoryTableState[tableKey].rows);
+        tbody.innerHTML = sortedRows.map((row) => `
+            <tr>
+                <td>${escapeHtml(row.category)}</td>
+                <td>${row.sample_count ?? ''}</td>
+                <td>${row.edit_attempts_total ?? ''}</td>
+                <td>${formatRate(row.stage1_failed_rate)}</td>
+                <td>${formatRate(row.stage2_entered_rate)}</td>
+                <td>${formatNumber(row.stage2_lpips_mean)}</td>
+                <td>${formatNumber(row.stage2_lpips_std)}</td>
+                <td>${escapeHtml((row.distinct_objects || []).join(', '))}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderObjectTable(rows) {
+        const tbody = document.querySelector('#yamlObjectTable tbody');
+        if (!rows.length) {
+            tbody.innerHTML = '<tr><td colspan="12">No object-level records found for this YAML selection.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map((row) => `
+            <tr>
+                <td class="mono">${escapeHtml(row.experiment_id || '')}</td>
+                <td>${escapeHtml(row.category || '')}</td>
+                <td>${escapeHtml(row.object_name || '')}</td>
+                <td class="mono">${escapeHtml(row.prompt_id || '')}</td>
+                <td class="mono">${escapeHtml(row.image_id || '')}</td>
+                <td class="mono">${escapeHtml(row.source_model_id || '')}</td>
+                <td>${row.edit_attempts_total ?? ''}</td>
+                <td>${row.stage1_failed_count ?? ''}</td>
+                <td>${row.stage2_entered_count ?? ''}</td>
+                <td>${row.stage2_passed_count ?? ''}</td>
+                <td>${formatNumber(row.stage2_lpips_mean)}</td>
+                <td>${formatNumber(row.stage2_lpips_std)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderEditTable(rows) {
+        const tbody = document.querySelector('#yamlEditTable tbody');
+        if (!rows.length) {
+            tbody.innerHTML = '<tr><td colspan="14">No edit-level records found for this YAML selection.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map((row) => `
+            <tr>
+                <td class="mono">${escapeHtml(row.experiment_id || '')}</td>
+                <td>${escapeHtml(row.category || '')}</td>
+                <td>${escapeHtml(row.object_name || '')}</td>
+                <td>${escapeHtml(row.instruction_type || '')}</td>
+                <td>${row.instruction_index ?? ''}</td>
+                <td>${escapeHtml(row.instruction_text || '')}</td>
+                <td class="mono">${escapeHtml(row.edit_id || '')}</td>
+                <td class="mono">${escapeHtml(row.target_model_id || '')}</td>
+                <td><span class="status-chip">${escapeHtml(row.stage1_status || '')}</span></td>
+                <td><span class="status-chip">${escapeHtml(row.stage2_status || '')}</span></td>
+                <td>${formatStage2Config(row)}</td>
+                <td>${formatNumber(row.stage2_score)}</td>
+                <td><span class="status-chip">${escapeHtml(row.final_status || '')}</span></td>
+                <td>${escapeHtml(row.exclusion_reason || '')}</td>
+            </tr>
+        `).join('');
+    }
+
+    function clearYamlView(message) {
+        document.getElementById('yamlOverviewMeta').textContent = message;
+        document.getElementById('yamlOverviewGrid').style.display = 'none';
+        document.getElementById('planCategoriesBlock').style.display = 'none';
+        document.getElementById('rawYamlBlock').style.display = 'none';
+        document.querySelector('#yamlRunsTable tbody').innerHTML = '<tr><td colspan="9">No YAML selected.</td></tr>';
+        document.getElementById('yamlRunsMeta').textContent = message;
+        clearYamlDetailTables(message);
+        const experimentSelect = document.getElementById('experimentSelect');
+        experimentSelect.innerHTML = '<option value="">All runs under this YAML</option>';
+    }
+
+    function clearYamlDetailTables(message) {
+        document.querySelector('#yamlCategoryTable tbody').innerHTML = `<tr><td colspan="8">${escapeHtml(message)}</td></tr>`;
+        document.querySelector('#yamlTimingTable tbody').innerHTML = `<tr><td colspan="9">${escapeHtml(message)}</td></tr>`;
+        document.querySelector('#yamlObjectTable tbody').innerHTML = `<tr><td colspan="12">${escapeHtml(message)}</td></tr>`;
+        document.querySelector('#yamlEditTable tbody').innerHTML = `<tr><td colspan="14">${escapeHtml(message)}</td></tr>`;
+        document.getElementById('yamlCategoryMeta').textContent = message;
+        document.getElementById('yamlTimingMeta').textContent = message;
+        document.getElementById('yamlObjectMeta').textContent = message;
+        document.getElementById('yamlEditMeta').textContent = message;
+    }
+
+    async function fetchJson(url) {
+        const response = await fetch(url);
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+        return result;
+    }
+
+    function formatInstructionPlan(value) {
+        if (!value) {
+            return '';
+        }
+        const allowedTypes = Array.isArray(value.allowed_types) ? value.allowed_types.join(', ') : '';
+        return `mode=${value.mode || ''}, count=${value.count ?? ''}, allowed_types=[${allowedTypes}]`;
+    }
+
+    function formatStage2Config(row) {
+        const inputMode = escapeHtml(row.stage2_input_mode || '');
+        const views = Array.isArray(row.stage2_views) ? row.stage2_views.join(', ') : '';
+        if (!inputMode && !views) {
+            return '';
+        }
+        if (inputMode && views) {
+            return `${inputMode} | ${escapeHtml(views)}`;
+        }
+        return inputMode || escapeHtml(views);
+    }
+
+    function formatRandomMode(value) {
+        if (!value) {
+            return '';
+        }
+        const parts = [];
+        if (value.category) {
+            parts.push('category');
+        }
+        if (value.object) {
+            parts.push('object');
+        }
+        return parts.length ? parts.join(' + ') : 'fixed';
+    }
+
+    function formatDateTime(value) {
+        if (!value) {
+            return '';
+        }
+        return value.replace('T', ' ').replace(/\.\d+$/, '');
+    }
+
+    function formatRate(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        return `${(value * 100).toFixed(2)}%`;
+    }
+
+    function formatNumber(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        return Number(value).toFixed(6);
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+</script>
+{% endblock %}

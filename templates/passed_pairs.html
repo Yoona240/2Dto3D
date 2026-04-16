@@ -1,0 +1,1190 @@
+{% extends "base.html" %}
+{% set page = "passed_pairs" %}
+
+{% block title %}Passed Pairs{% endblock %}
+
+{% block content %}
+<style>
+    /* Pair Item */
+    .pair-item {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+
+    .pair-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .pair-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pair-id {
+        font-weight: 600;
+        font-size: 14px;
+        color: #212529;
+        font-family: monospace;
+    }
+
+    .pair-badges {
+        display: flex;
+        gap: 6px;
+    }
+
+    .pair-content {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0;
+    }
+
+    /* Models Column (source + target 3D stacked) */
+    .models-column {
+        padding: 16px;
+        border-right: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .model-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Source Column - kept for backward compat */
+    .source-column {
+        padding: 16px;
+        border-right: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .source-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .source-3d-container {
+        width: 260px;
+        height: 260px;
+        background: #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .source-3d-container model-viewer {
+        width: 100%;
+        height: 100%;
+    }
+
+    .source-3d-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .source-3d-placeholder:hover {
+        background: #dee2e6;
+    }
+
+    /* Info Column (right side: instruction, grids, mask) */
+    .target-column {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .target-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .target-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .target-nav-btn {
+        width: 28px;
+        height: 28px;
+        border: 1px solid #ced4da;
+        background: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .target-nav-btn:hover:not(:disabled) {
+        background: #e9ecef;
+    }
+
+    .target-nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .target-counter {
+        font-size: 13px;
+        color: #6c757d;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .target-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+    }
+
+    .target-3d-container {
+        width: 260px;
+        height: 260px;
+        background: #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .target-3d-container model-viewer {
+        width: 100%;
+        height: 100%;
+    }
+
+    .target-3d-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 13px;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .target-info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .instruction-box {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 12px;
+    }
+
+    .instruction-label {
+        font-size: 11px;
+        color: #6c757d;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+    }
+
+    .instruction-text {
+        font-size: 13px;
+        color: #212529;
+        line-height: 1.4;
+        max-height: 80px;
+        overflow-y: auto;
+    }
+
+    .edited-preview {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+    }
+
+    .evidence-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .evidence-item {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 6px;
+    }
+
+    .evidence-label {
+        font-size: 11px;
+        color: #6c757d;
+        margin-bottom: 4px;
+    }
+
+    .evidence-img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        cursor: pointer;
+    }
+
+    /* Loading State */
+    .loading-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px;
+        color: #6c757d;
+    }
+
+    .loading-spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid #e9ecef;
+        border-top-color: #0d6efd;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 12px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Stats bar */
+    .stats-bar {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 20px;
+        padding: 12px 16px;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+
+    .stats-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .stats-value {
+        font-weight: 600;
+        font-size: 18px;
+        color: #212529;
+    }
+
+    .stats-label {
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    /* Provider Tabs */
+    .provider-tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+
+    .provider-tab-btn {
+        font-size: 12px;
+        padding: 3px 10px;
+        text-transform: capitalize;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        color: #495057;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .provider-tab-btn.active {
+        background: #0d6efd;
+        color: #fff;
+        border-color: #0d6efd;
+    }
+
+    .provider-tab-btn:hover:not(.active) {
+        background: #e9ecef;
+    }
+
+    /* YAML Filter Panel */
+    .yaml-filter-panel {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+    .yaml-filter-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        cursor: pointer;
+        user-select: none;
+        font-weight: 500;
+        font-size: 14px;
+        color: #495057;
+        background: #f8f9fa;
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+    .yaml-filter-toggle:hover { background: #e9ecef; }
+    .yaml-filter-toggle .arrow { transition: transform 0.2s; font-size: 10px; }
+    .yaml-filter-toggle .arrow.open { transform: rotate(90deg); }
+    .yaml-filter-body { padding: 16px; display: none; border-top: 1px solid #dee2e6; }
+    .yaml-filter-body.show { display: block; }
+    .yaml-list {
+        max-height: 240px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 8px;
+        margin-bottom: 12px;
+    }
+    .yaml-list label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        font-family: monospace;
+    }
+    .yaml-list label:hover { background: #f0f0f0; }
+    .yaml-list .run-count { color: #6c757d; font-size: 11px; font-family: sans-serif; }
+    .yaml-filter-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .yaml-filter-actions label { font-size: 13px; color: #495057; font-weight: 500; }
+    .yaml-filter-actions input[type="number"] {
+        width: 80px;
+        padding: 4px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    .yaml-filter-stats {
+        margin-top: 12px;
+        padding: 8px 12px;
+        background: #f0f7ff;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #0d6efd;
+        display: none;
+    }
+    .yaml-filter-stats.show { display: block; }
+    .export-section {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #dee2e6;
+    }
+    .export-section .form-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+    .export-section .form-row label { min-width: 80px; color: #495057; font-weight: 500; }
+    .export-section input[type="text"], .export-section select {
+        padding: 4px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    .export-section input[type="text"] { flex: 1; max-width: 260px; }
+    .cmd-output {
+        margin-top: 8px;
+        padding: 10px 12px;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        position: relative;
+        display: none;
+    }
+    .cmd-output.show { display: block; }
+    .cmd-copy-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: #3c3c3c;
+        color: #d4d4d4;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-size: 11px;
+        cursor: pointer;
+    }
+    .cmd-copy-btn:hover { background: #505050; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .pair-content {
+            grid-template-columns: 1fr;
+        }
+
+        .source-column {
+            border-right: none;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .target-content {
+            align-items: stretch;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">Passed Pairs</h1>
+    <p class="page-desc">Stage2 VLM passed editing pairs — select YAML experiment and/or category to browse</p>
+</div>
+
+<div class="stats-bar" id="statsBar">
+    <div class="stats-item">
+        <span class="stats-value" id="statModels">-</span>
+        <span class="stats-label">Source models</span>
+    </div>
+    <div class="stats-item">
+        <span class="stats-value" id="statEdits">-</span>
+        <span class="stats-label">Passed pairs</span>
+    </div>
+    <div class="stats-item">
+        <span class="stats-value" id="statCategories">-</span>
+        <span class="stats-label">Categories</span>
+    </div>
+</div>
+
+<!-- Category Filter -->
+<div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; padding:8px 14px; background:#f0f4ff; border-radius:8px; border:1px solid #c7d5f5;">
+    <label for="categoryFilterSelect" style="font-size:12px; font-weight:500; color:#495057; white-space:nowrap;">Category:</label>
+    <select id="categoryFilterSelect" class="form-select" style="max-width:300px; font-size:13px;" onchange="applyCategoryFilter(this.value)">
+        <option value="all">All Categories</option>
+    </select>
+    <span id="categoryFilterCount" style="font-size:11px; color:#6c757d;"></span>
+</div>
+
+<div class="yaml-filter-panel" id="yamlFilterPanel">
+    <button class="yaml-filter-toggle" onclick="toggleYamlFilter()">
+        <span class="arrow" id="yamlFilterArrow">&#9654;</span>
+        YAML Experiment Filter
+        <span id="yamlFilterBadge" style="font-size:11px; color:#6c757d; font-weight:normal;"></span>
+    </button>
+    <div class="yaml-filter-body" id="yamlFilterBody">
+        <div class="yaml-list" id="yamlList">
+            <span style="color:#6c757d; font-size:13px;">Loading...</span>
+        </div>
+        <div class="yaml-filter-actions">
+            <label>LPIPS &le; <input type="number" id="lpipsMaxInput" step="0.01" min="0" max="1" placeholder="no limit"></label>
+            <button class="btn btn-sm btn-primary" onclick="applyYamlFilter()">Apply Filter</button>
+            <button class="btn btn-sm btn-secondary" onclick="clearYamlFilter()">Clear</button>
+        </div>
+        <div class="yaml-filter-stats" id="yamlFilterStats"></div>
+
+        <div class="export-section" id="exportSection" style="display:none;">
+            <div class="form-row">
+                <label>Dataset:</label>
+                <input type="text" id="exportDatasetName" value="export" placeholder="dataset name">
+            </div>
+            <div class="form-row">
+                <label>Path Prefix:</label>
+                <select id="exportPathPrefix"></select>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="generateExportCmd()">Generate Export Command</button>
+            <div class="cmd-output" id="cmdOutput">
+                <button class="cmd-copy-btn" onclick="copyCmd()">Copy</button>
+                <code id="cmdText"></code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pairsContainer">
+    <div id="passedPairsPlaceholder" style="text-align:center; padding:48px; color:#6c757d;">
+        Select a YAML experiment above to load Stage2 passed pairs
+    </div>
+</div>
+<div id="pairsLoadingIndicator" class="loading-container" style="display:none; padding:24px;">
+    <div class="loading-spinner"></div>
+    <span>Loading passed pairs...</span>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Store pairs data (all loaded from YAML filter, no pagination)
+    let pairsData = [];
+    let allPassedPairs = []; // unfiltered by category
+    let currentCategoryFilter = 'all';
+    let isLoading = false;
+    // Track current edit index for each model
+    const currentEditIndex = {};
+    // Track loaded 3D viewers to enable lazy loading
+    const loadedViewers = new Set();
+    const PAIRS_PAGE_STATE_KEY = 'passed-pairs-page-state:v1';
+    const PAIRS_PAGE_STATE_TTL_MS = 15 * 60 * 1000;
+    let pairsStateSaveTimer = null;
+
+    function loadPairsPageState() {
+        try {
+            const raw = sessionStorage.getItem(PAIRS_PAGE_STATE_KEY);
+            if (!raw) return null;
+            const state = JSON.parse(raw);
+            if (!state || typeof state !== 'object') return null;
+            if (Date.now() - (state.saved_at || 0) > PAIRS_PAGE_STATE_TTL_MS) return null;
+            return state;
+        } catch (err) {
+            console.warn('Failed to load pairs page state:', err);
+            return null;
+        }
+    }
+
+    function persistPairsPageState() {
+        try {
+            const state = {
+                saved_at: Date.now(),
+                pairsData,
+                pairsSummary,
+                currentPage,
+                hasMore,
+                currentEditIndex,
+                currentSourceProvider,
+                currentTargetProvider,
+                scrollY: window.scrollY || 0,
+            };
+            sessionStorage.setItem(PAIRS_PAGE_STATE_KEY, JSON.stringify(state));
+        } catch (err) {
+            console.warn('Failed to persist pairs page state:', err);
+        }
+    }
+
+    function schedulePersistPairsPageState() {
+        if (pairsStateSaveTimer) {
+            clearTimeout(pairsStateSaveTimer);
+        }
+        pairsStateSaveTimer = setTimeout(() => {
+            pairsStateSaveTimer = null;
+            persistPairsPageState();
+        }, 120);
+    }
+
+    function updatePassedStats() {
+        const totalPairs = pairsData.reduce((sum, p) => sum + p.edit_batches.length, 0);
+        const categories = new Set(pairsData.flatMap(p => p.edit_batches.map(b => b.category || 'Unknown')));
+        document.getElementById('statModels').textContent = pairsData.length;
+        document.getElementById('statEdits').textContent = totalPairs;
+        document.getElementById('statCategories').textContent = categories.size;
+    }
+
+    function populateCategoryOptions() {
+        const categories = new Set();
+        allPassedPairs.forEach(pair => {
+            pair.edit_batches.forEach(batch => {
+                categories.add(batch.category || 'Unknown');
+            });
+        });
+        const select = document.getElementById('categoryFilterSelect');
+        select.innerHTML = '<option value="all">All Categories</option>';
+        Array.from(categories).sort().forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            select.appendChild(opt);
+        });
+    }
+
+    function applyCategoryFilter(category) {
+        currentCategoryFilter = category || 'all';
+        renderFilteredPairs();
+    }
+
+    function renderFilteredPairs() {
+        // Deep-filter: only keep batches matching category
+        if (currentCategoryFilter === 'all') {
+            pairsData = allPassedPairs.map(p => ({...p, edit_batches: [...p.edit_batches], edit_count: p.edit_batches.length}));
+        } else {
+            pairsData = [];
+            allPassedPairs.forEach(p => {
+                const filtered = p.edit_batches.filter(b => (b.category || 'Unknown') === currentCategoryFilter);
+                if (filtered.length > 0) {
+                    pairsData.push({...p, edit_batches: filtered, edit_count: filtered.length});
+                }
+            });
+        }
+        const container = document.getElementById('pairsContainer');
+        if (pairsData.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:48px; color:#6c757d;">No passed pairs match the current filters</div>';
+        } else {
+            container.innerHTML = pairsData.map(renderPair).join('');
+        }
+        updatePassedStats();
+        const countEl = document.getElementById('categoryFilterCount');
+        if (currentCategoryFilter !== 'all') {
+            const total = pairsData.reduce((s, p) => s + p.edit_batches.length, 0);
+            countEl.textContent = `(${total} pairs)`;
+        } else {
+            countEl.textContent = '';
+        }
+    }
+
+    function renderPair(pair) {
+        currentEditIndex[pair.id] = 0;
+        const editBatch = pair.edit_batches[0];
+        const hasMultiple = pair.edit_batches.length > 1;
+
+        return `
+            <div class="pair-item" id="pair-${pair.id}" data-pair-id="${pair.id}">
+                <div class="pair-header">
+                    <div class="pair-header-left">
+                        <span class="pair-id">${pair.id}</span>
+                        <div class="pair-badges">
+                            <span class="badge" style="background:#e9ecef; color:#495057;">${pair.provider || 'unknown'}</span>
+                            <span class="badge" style="background:#0d6efd; color:#fff;">${pair.edit_batches.length} edit${pair.edit_batches.length > 1 ? 's' : ''}</span>
+                            ${pair.edit_batches[0].category ? `<span class="badge" style="background:#6f42c1; color:#fff;">${escapeHtml(pair.edit_batches[0].category)}</span>` : ''}
+                            ${pair.edit_batches[0].object_name ? `<span class="badge" style="background:#20c997; color:#fff;">${escapeHtml(pair.edit_batches[0].object_name)}</span>` : ''}
+                            ${pair.edit_batches[0].stage2_score != null ? `<span class="badge" style="background:#28a745; color:#fff;">Score ${pair.edit_batches[0].stage2_score}</span>` : ''}
+                        </div>
+                    </div>
+                    <a href="/model/${pair.id}" class="btn btn-sm btn-secondary">View Details</a>
+                </div>
+                <div class="pair-content">
+                    <div class="models-column">
+                        <div class="model-block">
+                            <div class="source-label">Source 3D</div>
+                            ${renderSourceProviderTabs(pair)}
+                            <div class="source-3d-container" id="source-container-${pair.id}">
+                                <div class="source-3d-placeholder" onclick="loadSource3D('${pair.id}', 0)">
+                                    Click to load 3D model
+                                </div>
+                            </div>
+                        </div>
+                        <div class="model-block" id="target-model-block-${pair.id}">
+                            <div class="source-label">Target 3D</div>
+                            <div class="target-3d-container" id="target-container-${pair.id}">
+                                ${(editBatch.target_3d_models || []).length > 0 ? `
+                                    <div class="source-3d-placeholder" onclick="loadTarget3D('${pair.id}', 0)">
+                                        Click to load Target 3D
+                                    </div>
+                                ` : `
+                                    <div class="target-3d-placeholder">No Target 3D yet</div>
+                                `}
+                            </div>
+                            ${renderTargetProviderTabs(pair.id, editBatch)}
+                        </div>
+                    </div>
+
+                    <div class="target-column">
+                        <div class="target-header">
+                            <div class="source-label">Edit Details</div>
+                            ${hasMultiple ? `
+                            <div class="target-nav">
+                                <button class="target-nav-btn" onclick="navigateEdit('${pair.id}', -1)" ${currentEditIndex[pair.id] === 0 ? 'disabled' : ''}>
+                                    &lt;
+                                </button>
+                                <span class="target-counter" id="counter-${pair.id}">1 / ${pair.edit_batches.length}</span>
+                                <button class="target-nav-btn" onclick="navigateEdit('${pair.id}', 1)" ${currentEditIndex[pair.id] >= pair.edit_batches.length - 1 ? 'disabled' : ''}>
+                                    &gt;
+                                </button>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div class="target-content" id="target-content-${pair.id}">
+                            ${renderTargetInfo(pair.id, editBatch)}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function restorePairsPageState(state) {
+        if (!state) return false;
+
+        pairsData = Array.isArray(state.pairsData) ? state.pairsData : [];
+        pairsSummary = state.pairsSummary || {};
+        currentPage = Number.isInteger(state.currentPage) ? state.currentPage : 0;
+        hasMore = Boolean(state.hasMore);
+
+        Object.keys(currentEditIndex).forEach(key => delete currentEditIndex[key]);
+        Object.assign(currentEditIndex, state.currentEditIndex || {});
+        Object.keys(currentSourceProvider).forEach(key => delete currentSourceProvider[key]);
+        Object.assign(currentSourceProvider, state.currentSourceProvider || {});
+        Object.keys(currentTargetProvider).forEach(key => delete currentTargetProvider[key]);
+        Object.assign(currentTargetProvider, state.currentTargetProvider || {});
+
+        const container = document.getElementById('pairsContainer');
+        if (!container) return false;
+
+        if (pairsData.length === 0) {
+            updateStats(pairsSummary);
+            return false;
+        }
+
+        container.innerHTML = pairsData.map(pair => renderPair(pair)).join('');
+        updateStats(pairsSummary);
+
+        pairsData.forEach(pair => {
+            const desiredIndex = Math.max(0, Math.min(
+                Number(currentEditIndex[pair.id] || 0),
+                pair.edit_batches.length - 1
+            ));
+            currentEditIndex[pair.id] = desiredIndex;
+
+            if (desiredIndex > 0) {
+                const counter = document.getElementById(`counter-${pair.id}`);
+                if (counter) {
+                    counter.textContent = `${desiredIndex + 1} / ${pair.edit_batches.length}`;
+                }
+                const targetContent = document.getElementById(`target-content-${pair.id}`);
+                if (targetContent) {
+                    targetContent.innerHTML = renderTargetContent(pair.id, pair.edit_batches[desiredIndex]);
+                }
+                const pairEl = document.getElementById(`pair-${pair.id}`);
+                if (pairEl) {
+                    const prevBtn = pairEl.querySelector('.target-nav-btn:first-child');
+                    const nextBtn = pairEl.querySelector('.target-nav-btn:last-child');
+                    if (prevBtn) prevBtn.disabled = desiredIndex === 0;
+                    if (nextBtn) nextBtn.disabled = desiredIndex >= pair.edit_batches.length - 1;
+                }
+            }
+
+            const sourceTabContainer = document.getElementById(`source-tabs-${pair.id}`);
+            if (sourceTabContainer) {
+                sourceTabContainer.querySelectorAll('.provider-tab-btn').forEach((btn, index) => {
+                    btn.classList.toggle('active', index === (currentSourceProvider[pair.id] || 0));
+                });
+            }
+
+            const targetTabContainer = document.getElementById(`target-tabs-${pair.id}`);
+            if (targetTabContainer) {
+                targetTabContainer.querySelectorAll('.provider-tab-btn').forEach((btn, index) => {
+                    btn.classList.toggle('active', index === (currentTargetProvider[pair.id] || 0));
+                });
+            }
+        });
+
+        const savedScrollY = Number(state.scrollY || 0);
+        requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, behavior: 'auto' }));
+        return true;
+    }
+
+    // No infinite scroll — all data loaded via YAML filter
+    async function loadMorePairs() {}
+    function setupInfiniteScroll() {}
+
+    function renderSourceProviderTabs(pair) {
+        const models = pair.source_3d_models || [pair.source_3d];
+        if (models.length <= 1) return '';
+        return `
+            <div class="provider-tabs" id="source-tabs-${pair.id}">
+                ${models.map((m, i) => `
+                    <button class="provider-tab-btn${i === 0 ? ' active' : ''}"
+                            onclick="switchSourceProvider('${pair.id}', ${i}, this)">
+                        ${m.provider || 'unknown'}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderTargetProviderTabs(pairId, editBatch) {
+        const models = editBatch.target_3d_models || [];
+        if (models.length <= 1) return '';
+        return `
+            <div class="provider-tabs" id="target-tabs-${pairId}">
+                ${models.map((m, i) => `
+                    <button class="provider-tab-btn${i === 0 ? ' active' : ''}"
+                            onclick="switchTargetProvider('${pairId}', ${i}, this)">
+                        ${m.provider || 'unknown'}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderEvidenceImage(label, path) {
+        if (!path) {
+            return `
+                <div class="evidence-item">
+                    <div class="evidence-label">${label}</div>
+                    <div style="min-height:72px; border:1px dashed #dee2e6; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:11px;">Missing</div>
+                </div>
+            `;
+        }
+        return `
+            <div class="evidence-item">
+                <div class="evidence-label">${label}</div>
+                <img src="/${path}" class="evidence-img" alt="${label}" loading="lazy" onclick="window.open('/${path}', '_blank')">
+            </div>
+        `;
+    }
+
+    function renderTargetInfo(pairId, editBatch) {
+        const beforeGrid = editBatch.before_image_grid || '';
+        const targetGrid = editBatch.target_image_grid || editBatch.front_view || '';
+        const editMask = editBatch.edit_mask || '';
+
+        return `
+            <div class="target-info">
+                <div class="instruction-box">
+                    <div class="instruction-label">Instruction</div>
+                    <div class="instruction-text">${escapeHtml(editBatch.instruction_display_text || editBatch.instruction || 'No instruction')}</div>
+                </div>
+                <div class="evidence-grid">
+                    ${renderEvidenceImage('Before Grid', beforeGrid)}
+                    ${renderEvidenceImage('After Grid', targetGrid)}
+                </div>
+                <div style="margin-top:8px;">
+                    ${renderEvidenceImage('Mask', editMask)}
+                </div>
+            </div>
+        `;
+    }
+
+    // Track current provider index for source and target per pair
+    const currentSourceProvider = {};
+    const currentTargetProvider = {};
+
+    function switchSourceProvider(pairId, index, btn) {
+        currentSourceProvider[pairId] = index;
+        // Update tab button styles
+        const tabs = btn.parentElement.querySelectorAll('.provider-tab-btn');
+        tabs.forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        // Reload if already loaded
+        if (loadedViewers.has(`source-${pairId}`)) {
+            loadSource3D(pairId, index);
+        }
+        schedulePersistPairsPageState();
+    }
+
+    function switchTargetProvider(pairId, index, btn) {
+        currentTargetProvider[pairId] = index;
+        // Update tab button styles
+        const tabs = btn.parentElement.querySelectorAll('.provider-tab-btn');
+        tabs.forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        // Reload if already loaded
+        if (loadedViewers.has(`target-${pairId}`)) {
+            loadTarget3D(pairId, index);
+        }
+        schedulePersistPairsPageState();
+    }
+
+    function loadSource3D(pairId, providerIndex) {
+        const pair = pairsData.find(p => p.id === pairId);
+        if (!pair) return;
+        const models = pair.source_3d_models || [pair.source_3d];
+        const idx = providerIndex != null ? providerIndex : (currentSourceProvider[pairId] || 0);
+        const model = models[idx] || models[0];
+        const container = document.getElementById(`source-container-${pairId}`);
+        container.innerHTML = `
+            <model-viewer
+                src="/${model.path}"
+                alt="Source 3D"
+                auto-rotate
+                camera-controls
+                shadow-intensity="1"
+                style="background: #e9ecef;">
+            </model-viewer>
+        `;
+        loadedViewers.add(`source-${pairId}`);
+        schedulePersistPairsPageState();
+    }
+
+    function loadTarget3D(pairId, providerIndex) {
+        const pair = pairsData.find(p => p.id === pairId);
+        if (!pair) return;
+        const editIdx = currentEditIndex[pairId] || 0;
+        const editBatch = pair.edit_batches[editIdx];
+        if (!editBatch) return;
+        const models = editBatch.target_3d_models || [];
+        const idx = providerIndex != null ? providerIndex : (currentTargetProvider[pairId] || 0);
+        const model = models[idx] || models[0];
+        if (!model) return;
+        const container = document.getElementById(`target-container-${pairId}`);
+        container.innerHTML = `
+            <model-viewer
+                src="/${model.path}"
+                alt="Target 3D"
+                auto-rotate
+                camera-controls
+                shadow-intensity="1"
+                style="background: #e9ecef;">
+            </model-viewer>
+        `;
+        loadedViewers.add(`target-${pairId}`);
+        schedulePersistPairsPageState();
+    }
+
+    function navigateEdit(pairId, direction) {
+        const pair = pairsData.find(p => p.id === pairId);
+        if (!pair) return;
+
+        let newIndex = currentEditIndex[pairId] + direction;
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= pair.edit_batches.length) newIndex = pair.edit_batches.length - 1;
+
+        if (newIndex === currentEditIndex[pairId]) return;
+
+        currentEditIndex[pairId] = newIndex;
+        currentTargetProvider[pairId] = 0;  // Reset target provider on edit switch
+        const editBatch = pair.edit_batches[newIndex];
+
+        // Update counter
+        const counter = document.getElementById(`counter-${pairId}`);
+        if (counter) {
+            counter.textContent = `${newIndex + 1} / ${pair.edit_batches.length}`;
+        }
+
+        // Update navigation buttons
+        const pairEl = document.getElementById(`pair-${pairId}`);
+        const prevBtn = pairEl.querySelector('.target-nav-btn:first-child');
+        const nextBtn = pairEl.querySelector('.target-nav-btn:last-child');
+        if (prevBtn) prevBtn.disabled = newIndex === 0;
+        if (nextBtn) nextBtn.disabled = newIndex >= pair.edit_batches.length - 1;
+
+        // Update info content (right column)
+        const targetContent = document.getElementById(`target-content-${pairId}`);
+        targetContent.innerHTML = renderTargetInfo(pairId, editBatch);
+
+        // Update target 3D block (left column)
+        const targetModelBlock = document.getElementById(`target-model-block-${pairId}`);
+        if (targetModelBlock) {
+            const models = editBatch.target_3d_models || [];
+            targetModelBlock.innerHTML = `
+                <div class="source-label">Target 3D</div>
+                <div class="target-3d-container" id="target-container-${pairId}">
+                    ${models.length > 0 ? `
+                        <div class="source-3d-placeholder" onclick="loadTarget3D('${pairId}', 0)">
+                            Click to load Target 3D
+                        </div>
+                    ` : `
+                        <div class="target-3d-placeholder">No Target 3D yet</div>
+                    `}
+                </div>
+                ${renderTargetProviderTabs(pairId, editBatch)}
+            `;
+        }
+
+        // Clear loaded state for target viewer
+        loadedViewers.delete(`target-${pairId}`);
+        schedulePersistPairsPageState();
+    }
+
+    // Lazy loading disabled - models only load on click
+    // setupLazyLoading() removed
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ==================== YAML Filter ====================
+    let yamlFilterActive = false;
+    let yamlOptions = [];
+
+    function toggleYamlFilter() {
+        const body = document.getElementById('yamlFilterBody');
+        const arrow = document.getElementById('yamlFilterArrow');
+        body.classList.toggle('show');
+        arrow.classList.toggle('open');
+    }
+
+    async function loadYamlOptions() {
+        try {
+            const res = await fetch('/api/pairs/yaml-options');
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed');
+            yamlOptions = data.yaml_files || [];
+            const container = document.getElementById('yamlList');
+            if (yamlOptions.length === 0) {
+                container.innerHTML = '<span style="color:#6c757d; font-size:13px;">No YAML experiments available</span>';
+                return;
+            }
+            container.innerHTML = yamlOptions.map(y => `
+                <label>
+                    <input type="checkbox" value="${escapeHtml(y.plan_path)}" class="yaml-checkbox">
+                    ${escapeHtml(y.yaml_name)}
+                    <span class="run-count">(${y.run_count} run${y.run_count > 1 ? 's' : ''})</span>
+                </label>
+            `).join('');
+        } catch (err) {
+            document.getElementById('yamlList').innerHTML =
+                `<span style="color:#dc3545; font-size:13px;">Failed to load: ${err.message}</span>`;
+        }
+    }
+
+    async function loadExportPathPrefixes() {
+        try {
+            const res = await fetch('/api/pairs/export-config');
+            const data = await res.json();
+            if (!res.ok) return;
+            const select = document.getElementById('exportPathPrefix');
+            select.innerHTML = '';
+            (data.path_prefixes || []).forEach((p, i) => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                if (i === 0) opt.selected = true;
+                select.appendChild(opt);
+            });
+        } catch (_) {}
+    }
+
+    function getSelectedYamlPaths() {
+        return Array.from(document.querySelectorAll('.yaml-checkbox:checked')).map(cb => cb.value);
+    }
+
+    async function applyYamlFilter() {
+        const paths = getSelectedYamlPaths();
+        if (paths.length === 0) {
+            alert('Please select at least one YAML');
+            return;
+        }
+
+        const lpipsVal = document.getElementById('lpipsMaxInput').value.trim();
+        let url = `/api/pairs/filter-by-yaml?plan_paths=${encodeURIComponent(paths.join(','))}`;
+        if (lpipsVal) url += `&lpips_max=${lpipsVal}`;
+
+        const container = document.getElementById('pairsContainer');
+        container.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><span>Loading passed pairs...</span></div>';
+        document.getElementById('passedPairsPlaceholder')?.remove();
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed');
+
+            yamlFilterActive = true;
+
+            // Filter only Stage2 VLM passed batches
+            const items = (data.items || []).map(pair => {
+                const passedBatches = pair.edit_batches.filter(b => b.stage2_status === 'passed');
+                return {...pair, edit_batches: passedBatches, edit_count: passedBatches.length};
+            }).filter(pair => pair.edit_batches.length > 0);
+
+            allPassedPairs = items;
+            currentCategoryFilter = 'all';
+            document.getElementById('categoryFilterSelect').value = 'all';
+            populateCategoryOptions();
+            renderFilteredPairs();
+
+            // Show filter stats
+            const totalPassed = allPassedPairs.reduce((s, p) => s + p.edit_batches.length, 0);
+            const stats = data.stats || {};
+            const statsEl = document.getElementById('yamlFilterStats');
+            statsEl.innerHTML = `Total records: ${stats.total_records || 0} | Stage2 passed: ${totalPassed} | Models: ${allPassedPairs.length}`;
+            statsEl.classList.add('show');
+
+            // Show export section
+            document.getElementById('exportSection').style.display = 'block';
+
+            // Update badge
+            document.getElementById('yamlFilterBadge').textContent = `(${paths.length} YAML selected, ${totalPassed} passed pairs)`;
+
+        } catch (err) {
+            container.innerHTML = `<div class="loading-container" style="color:#dc3545;">Filter failed: ${err.message}</div>`;
+        }
+    }
+
+    function clearYamlFilter() {
+        yamlFilterActive = false;
+        allPassedPairs = [];
+        pairsData = [];
+        currentCategoryFilter = 'all';
+        document.querySelectorAll('.yaml-checkbox').forEach(cb => cb.checked = false);
+        document.getElementById('lpipsMaxInput').value = '';
+        document.getElementById('yamlFilterStats').classList.remove('show');
+        document.getElementById('exportSection').style.display = 'none';
+        document.getElementById('cmdOutput').classList.remove('show');
+        document.getElementById('yamlFilterBadge').textContent = '';
+        document.getElementById('categoryFilterSelect').value = 'all';
+        document.getElementById('categoryFilterSelect').innerHTML = '<option value="all">All Categories</option>';
+        document.getElementById('categoryFilterCount').textContent = '';
+        document.getElementById('pairsContainer').innerHTML = '<div id="passedPairsPlaceholder" style="text-align:center; padding:48px; color:#6c757d;">Select a YAML experiment above to load Stage2 passed pairs</div>';
+        updatePassedStats();
+    }
+
+    async function generateExportCmd() {
+        const paths = getSelectedYamlPaths();
+        if (paths.length === 0) { alert('Please select YAML first'); return; }
+
+        const lpipsVal = document.getElementById('lpipsMaxInput').value.trim();
+        const datasetName = document.getElementById('exportDatasetName').value.trim() || 'export';
+        const pathPrefix = document.getElementById('exportPathPrefix').value;
+
+        try {
+            const res = await fetch('/api/pairs/generate-export-cmd', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    plan_paths: paths,
+                    lpips_max: lpipsVal ? parseFloat(lpipsVal) : null,
+                    dataset_name: datasetName,
+                    path_prefix: pathPrefix,
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed');
+
+            document.getElementById('cmdText').textContent = data.command;
+            document.getElementById('cmdOutput').classList.add('show');
+        } catch (err) {
+            alert('Failed to generate command: ' + err.message);
+        }
+    }
+
+    function copyCmd() {
+        const text = document.getElementById('cmdText').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.cmd-copy-btn');
+            btn.textContent = 'Copied';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+    }
+
+    // Load on page load — don't auto-load pairs, wait for YAML selection
+    document.addEventListener('DOMContentLoaded', () => {
+        loadYamlOptions();
+        loadExportPathPrefixes();
+        updatePassedStats();
+    });
+</script>
+{% endblock %}

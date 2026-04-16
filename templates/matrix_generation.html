@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Matrix Generation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Matrix Generation</h1>
+    <p class="page-desc">Deterministic object+style pair coverage. Sequentially generate source models from a pre-ordered pair list — each object gets its highest-priority style first.</p>
+</div>
+
+<div class="matrix-container">
+
+    <!-- Section 1: Pairs file info -->
+    <div class="card">
+        <div class="card-header"><span>1. Pair List Status</span></div>
+        <div class="card-body">
+            <div class="config-info" id="pairsInfo">
+                <div class="config-row">
+                    <span class="config-label">Pairs file:</span>
+                    <code class="config-value" id="pairsFilePath">Loading...</code>
+                </div>
+                <div class="config-row">
+                    <span class="config-label">Total pairs:</span>
+                    <span class="config-value" id="totalPairs">—</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-label">Total rounds:</span>
+                    <span class="config-value" id="totalRounds">—</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-label">Objects:</span>
+                    <span class="config-value" id="totalObjects">—</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-label">Categories:</span>
+                    <span class="config-value" id="totalCategories">—</span>
+                </div>
+            </div>
+            <div id="roundSummary" class="round-summary" style="display:none"></div>
+            <p class="section-hint">If no pairs file exists, generate it first with the CLI below, then refresh.</p>
+            <div class="btn-row">
+                <button type="button" class="btn btn-secondary btn-sm" id="refreshStatusBtn">Refresh</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="showGenPairsCliBtn">Generate Pairs CLI</button>
+            </div>
+            <div id="genPairsCliSection" style="display:none; margin-top:12px">
+                <div class="cli-preview" id="genPairsCliPreview"></div>
+                <div class="cli-actions">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="copyText(document.getElementById('genPairsCliPreview').textContent)">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Run Matrix Batch -->
+    <div class="card">
+        <div class="card-header"><span>2. Run Matrix Batch</span></div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startIndex">Start Index *</label>
+                    <input type="number" id="startIndex" class="form-input" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="pairCount">Count *</label>
+                    <input type="number" id="pairCount" class="form-input" value="100" min="1">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editsPerObject">Edits per Object *</label>
+                    <input type="number" id="editsPerObject" class="form-input" value="4" min="1" max="20">
+                </div>
+                <div class="form-group">
+                    <label for="gpuId">GPU ID</label>
+                    <input type="number" id="gpuId" class="form-input" value="0" min="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sourceProvider">Source Provider *</label>
+                    <select id="sourceProvider" class="form-select">
+                        <option value="hunyuan" selected>hunyuan</option>
+                        <option value="tripo">tripo</option>
+                        <option value="rodin">rodin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="targetProvider">Target Provider *</label>
+                    <select id="targetProvider" class="form-select">
+                        <option value="hunyuan" selected>hunyuan</option>
+                        <option value="tripo">tripo</option>
+                        <option value="rodin">rodin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editMode">Edit Mode *</label>
+                    <select id="editMode" class="form-select">
+                        <option value="multiview" selected>multiview</option>
+                        <option value="single">single</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="batchName">Batch Name</label>
+                    <input type="text" id="batchName" class="form-input" placeholder="(auto-generated)">
+                </div>
+            </div>
+
+            <div class="btn-row" style="margin-top:12px">
+                <button type="button" class="btn btn-primary" id="generateCliBtn">Generate Plan & CLI</button>
+            </div>
+
+            <div id="cliOutputSection" style="display:none; margin-top:12px">
+                <div id="planSummary" class="batch-preview"></div>
+                <label style="font-size:13px; font-weight:500; margin-top:12px; display:block; color:#495057;">Execute Command (copy & run on server):</label>
+                <div class="cli-preview" id="cliPreview"></div>
+                <div class="cli-actions">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="copyText(document.getElementById('cliPreview').textContent)">Copy CLI</button>
+                </div>
+                <div style="margin-top:8px">
+                    <span style="font-size:12px; color:#6c757d;">YAML: <code id="planPathDisplay"></code></span><br>
+                    <span style="font-size:12px; color:#6c757d;">Log: <code id="logPathDisplay"></code></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Resume Interrupted Experiment -->
+    <div class="card">
+        <div class="card-header"><span>3. Resume Interrupted Experiment</span></div>
+        <div class="card-body">
+            <p class="section-hint" style="margin-top:0">
+                If a matrix batch was interrupted, use the experiment ID to resume. Already-completed source models and edits will be skipped automatically.
+            </p>
+            <div class="form-row">
+                <div class="form-group" style="flex:3">
+                    <label for="resumeExperimentSelect">Experiment *</label>
+                    <select id="resumeExperimentSelect" class="form-select">
+                        <option value="">-- Loading experiments... --</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1">
+                    <label for="resumeGpuId">GPU ID</label>
+                    <input type="number" id="resumeGpuId" class="form-input" value="0" min="0">
+                </div>
+            </div>
+            <div id="resumeRunInfo" style="display:none; font-size:12px; color:#6c757d; margin-bottom:8px;"></div>
+            <div class="btn-row">
+                <button type="button" class="btn btn-secondary btn-sm" id="refreshRunsBtn">Refresh</button>
+                <button type="button" class="btn btn-primary" id="generateResumeCliBtn">Generate Resume CLI</button>
+            </div>
+            <div id="resumeCliSection" style="display:none; margin-top:12px">
+                <div class="cli-preview" id="resumeCliPreview"></div>
+                <div class="cli-actions">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="copyText(document.getElementById('resumeCliPreview').textContent)">Copy CLI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .matrix-container { max-width: 900px; }
+    .config-info { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; }
+    .config-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .config-row:last-child { margin-bottom: 0; }
+    .config-label { font-size: 13px; font-weight: 500; color: #495057; min-width: 110px; }
+    .config-value { font-size: 13px; color: #212529; word-break: break-all; }
+    .form-row { display: flex; gap: 16px; margin-bottom: 12px; }
+    .form-row .form-group { flex: 1; }
+    .form-group { margin-bottom: 0; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: #495057; }
+    .form-input, .form-select { width: 100%; padding: 6px 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 13px; }
+    .cli-preview { background: #212529; color: #e8e8e8; padding: 12px 16px; border-radius: 6px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; white-space: pre-wrap; word-wrap: break-word; }
+    .cli-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .btn-row { display: flex; gap: 8px; }
+    .batch-preview { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 12px 16px; margin-top: 12px; font-size: 13px; }
+    .batch-preview .bp-title { font-weight: 600; margin-bottom: 6px; }
+    .batch-preview table { width: 100%; font-size: 12px; border-collapse: collapse; }
+    .batch-preview th, .batch-preview td { text-align: left; padding: 3px 8px; border-bottom: 1px solid #e9ecef; }
+    .batch-preview th { color: #6c757d; }
+    .round-summary { background: #f0f4f8; border: 1px solid #d0d7de; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; font-size: 12px; }
+    .round-summary table { width: 100%; border-collapse: collapse; }
+    .round-summary th, .round-summary td { padding: 2px 8px; text-align: left; }
+    .round-summary th { color: #6c757d; }
+    .section-hint { font-size: 12px; color: #6c757d; margin-bottom: 8px; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let pairsData = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadPairsStatus();
+    document.getElementById('refreshStatusBtn').addEventListener('click', loadPairsStatus);
+    document.getElementById('showGenPairsCliBtn').addEventListener('click', showGenPairsCli);
+    document.getElementById('generateCliBtn').addEventListener('click', generatePlan);
+    document.getElementById('generateResumeCliBtn').addEventListener('click', generateResumeCli);
+    document.getElementById('refreshRunsBtn').addEventListener('click', loadExperimentRuns);
+    document.getElementById('resumeExperimentSelect').addEventListener('change', showResumeRunInfo);
+    loadExperimentRuns();
+});
+
+async function loadPairsStatus() {
+    try {
+        const res = await fetch('/api/matrix/pairs-status');
+        const data = await res.json();
+        if (data.error) {
+            document.getElementById('pairsFilePath').textContent = data.pairs_file || '(not configured)';
+            document.getElementById('totalPairs').textContent = 'File not found';
+            document.getElementById('totalRounds').textContent = '—';
+            document.getElementById('totalObjects').textContent = '—';
+            document.getElementById('totalCategories').textContent = '—';
+            document.getElementById('roundSummary').style.display = 'none';
+            pairsData = null;
+            return;
+        }
+        pairsData = data;
+        document.getElementById('pairsFilePath').textContent = data.pairs_file;
+        document.getElementById('totalPairs').textContent = data.total_pairs.toLocaleString();
+        document.getElementById('totalRounds').textContent = data.total_rounds;
+        document.getElementById('totalObjects').textContent = data.total_objects.toLocaleString();
+        document.getElementById('totalCategories').textContent = data.total_categories;
+
+        if (data.round_summary && data.round_summary.length) {
+            let html = '<table><tr><th>Round</th><th>Objects</th><th>Categories</th><th>Cumulative</th></tr>';
+            let cum = 0;
+            for (const r of data.round_summary) {
+                cum += r.objects;
+                html += `<tr><td>${r.round}</td><td>${r.objects}</td><td>${r.categories}/20</td><td>${cum.toLocaleString()}</td></tr>`;
+            }
+            html += '</table>';
+            document.getElementById('roundSummary').innerHTML = html;
+            document.getElementById('roundSummary').style.display = 'block';
+        }
+    } catch (err) {
+        showToast('Failed to load pairs status: ' + err.message);
+    }
+}
+
+async function showGenPairsCli() {
+    const section = document.getElementById('genPairsCliSection');
+    if (section.style.display !== 'none') {
+        section.style.display = 'none';
+        return;
+    }
+    try {
+        const res = await fetch('/api/matrix/gen-pairs-cli');
+        const data = await res.json();
+        document.getElementById('genPairsCliPreview').textContent = data.cli_command || 'Error generating CLI';
+        section.style.display = 'block';
+    } catch (err) {
+        showToast('Error: ' + err.message);
+    }
+}
+
+async function generatePlan() {
+    if (!pairsData || !pairsData.total_pairs) {
+        showToast('No pairs file loaded. Generate pairs first.');
+        return;
+    }
+
+    const start = parseInt(document.getElementById('startIndex').value) || 0;
+    const count = parseInt(document.getElementById('pairCount').value) || 100;
+    const edits = parseInt(document.getElementById('editsPerObject').value) || 4;
+    const gpu = parseInt(document.getElementById('gpuId').value) || 0;
+    const srcProvider = document.getElementById('sourceProvider').value;
+    const tgtProvider = document.getElementById('targetProvider').value;
+    const editMode = document.getElementById('editMode').value;
+    const name = document.getElementById('batchName').value.trim();
+
+    const btn = document.getElementById('generateCliBtn');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    try {
+        const res = await fetch('/api/matrix/generate-plan', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                start, count, edits_per_object: edits, gpu_id: gpu,
+                source_provider: srcProvider, target_provider: tgtProvider,
+                edit_mode: editMode, name: name || undefined,
+            }),
+        });
+        const data = await res.json();
+        if (data.error) {
+            showToast('Error: ' + data.error);
+            return;
+        }
+
+        // Show summary
+        let html = '<div class="bp-title">Generated Plan</div><table>';
+        html += `<tr><th>Index range</th><td>[${data.start}, ${data.end}) — ${data.actual_count} pairs</td></tr>`;
+        html += `<tr><th>Rounds</th><td>${data.rounds}</td></tr>`;
+        html += `<tr><th>Categories</th><td>${data.categories}</td></tr>`;
+        html += `<tr><th>Total edit pipelines</th><td>${data.total_edits}</td></tr>`;
+        html += '</table>';
+        if (data.category_summary) {
+            html += '<table style="margin-top:8px"><tr><th>Category</th><th>Objects</th><th>Styles</th></tr>';
+            for (const c of data.category_summary) {
+                html += `<tr><td>${c.category}</td><td>${c.objects}</td><td>${c.styles.join(', ')}</td></tr>`;
+            }
+            html += '</table>';
+        }
+        document.getElementById('planSummary').innerHTML = html;
+
+        // Show CLI
+        document.getElementById('cliPreview').textContent = data.cli_command;
+        document.getElementById('planPathDisplay').textContent = data.plan_path;
+        document.getElementById('logPathDisplay').textContent = data.log_path;
+        document.getElementById('cliOutputSection').style.display = 'block';
+    } catch (err) {
+        showToast('Failed: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Generate Plan & CLI';
+    }
+}
+
+let experimentRuns = [];
+
+async function loadExperimentRuns() {
+    const select = document.getElementById('resumeExperimentSelect');
+    try {
+        const res = await fetch('/api/experiment-plan/runs');
+        const data = await res.json();
+        experimentRuns = (data.runs || []).sort((a, b) => (b.experiment_id || '').localeCompare(a.experiment_id || ''));
+        select.innerHTML = '<option value="">-- Select experiment --</option>';
+        for (const run of experimentRuns) {
+            const id = run.experiment_id || '';
+            const status = run.status || '?';
+            const label = `${id} [${status}]`;
+            select.innerHTML += `<option value="${id}">${label}</option>`;
+        }
+    } catch (err) {
+        select.innerHTML = '<option value="">Failed to load</option>';
+    }
+}
+
+function showResumeRunInfo() {
+    const id = document.getElementById('resumeExperimentSelect').value;
+    const infoEl = document.getElementById('resumeRunInfo');
+    if (!id) { infoEl.style.display = 'none'; return; }
+    const run = experimentRuns.find(r => r.experiment_id === id);
+    if (!run) { infoEl.style.display = 'none'; return; }
+    const parts = [];
+    if (run.plan_name) parts.push(`Plan: ${run.plan_name}`);
+    if (run.total_objects != null) parts.push(`Objects: ${run.total_objects}`);
+    if (run.status) parts.push(`Status: ${run.status}`);
+    if (run.started_at) parts.push(`Started: ${run.started_at}`);
+    infoEl.textContent = parts.join(' | ');
+    infoEl.style.display = 'block';
+}
+
+async function generateResumeCli() {
+    const experimentId = document.getElementById('resumeExperimentSelect').value;
+    if (!experimentId) {
+        showToast('Please select an experiment');
+        return;
+    }
+    const gpuId = parseInt(document.getElementById('resumeGpuId').value) || 0;
+
+    try {
+        const res = await fetch('/api/experiment-plan/resume-cli-command', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ experiment_id: experimentId, gpu_id: gpuId }),
+        });
+        const data = await res.json();
+        if (data.error) {
+            showToast('Error: ' + data.error);
+            return;
+        }
+        document.getElementById('resumeCliPreview').textContent = data.cli_command;
+        document.getElementById('resumeCliSection').style.display = 'block';
+    } catch (err) {
+        showToast('Failed: ' + err.message);
+    }
+}
+
+function copyText(text) {
+    if (!text) { showToast('Nothing to copy'); return; }
+    copyTextToClipboard(text).then(() => showToast('Copied to clipboard'));
+}
+</script>
+{% endblock %}

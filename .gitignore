@@ -1,0 +1,44 @@
+# Python cache files
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+.playwright-browsers/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+# IDE
+.vscode/
+.idea/
+.cursor/
+.kiro/
+.claude/
+*.swp
+*.swo
+
+# Data folders
+/data/pipeline/
+/workspace/
+/test_output/
+tests/
+
+# Logs
+/logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+env/
+.env
+data/pipeline/
+
+# Plan
+plans/
+exports/
+
+# Model
+models/

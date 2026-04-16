@@ -1,0 +1,1670 @@
+{% extends "base.html" %}
+
+{% block title %}Batch Generation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Batch Generation</h1>
+    <p class="page-desc">Configure and generate experiment plans for the adaptive-k run_full_experiment pipeline.</p>
+</div>
+
+<div class="batch-gen-container">
+    <div class="config-panel card">
+        <div class="card-header">
+            <span>Experiment Configuration</span>
+        </div>
+        <div class="card-body">
+            <div class="form-section">
+                <h3 class="section-title">Quick Tools</h3>
+                <div class="quick-tabs">
+                    <button type="button" class="quick-tab-btn active" data-panel="quickPanelA">Balanced Generate</button>
+                    <button type="button" class="quick-tab-btn" data-panel="quickPanelB">Get Plan CLI</button>
+                    <button type="button" class="quick-tab-btn" data-panel="quickPanelC">Get Resume CLI</button>
+                </div>
+
+                <!-- Panel A: Balanced Generation -->
+                <div class="quick-panel active" id="quickPanelA">
+                    <div class="form-group">
+                        <label for="balancedPlanName">Plan Name *</label>
+                        <input type="text" id="balancedPlanName" class="form-input" placeholder="e.g., balanced-100">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="balancedTotalObjects">Total Objects *</label>
+                            <input type="number" id="balancedTotalObjects" class="form-input" value="100" min="1" max="1051">
+                        </div>
+                        <div class="form-group">
+                            <label for="balancedEditsPerObject">Edits per Object *</label>
+                            <input type="number" id="balancedEditsPerObject" class="form-input" value="3" min="1" max="20">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="balancedSourceProvider">Source Provider *</label>
+                            <select id="balancedSourceProvider" class="form-select"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="balancedTargetProvider">Target Provider *</label>
+                            <select id="balancedTargetProvider" class="form-select"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="balancedEditMode">Edit Mode *</label>
+                            <select id="balancedEditMode" class="form-select"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="balancedGpuId">GPU ID</label>
+                            <input type="number" id="balancedGpuId" class="form-input" value="0" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Allowed Types *</label>
+                        <div class="checkbox-column">
+                            <label class="checkbox-label"><input type="checkbox" id="balancedAllowRemove" checked> remove</label>
+                            <label class="checkbox-label"><input type="checkbox" id="balancedAllowReplace" checked> replace</label>
+                        </div>
+                    </div>
+                    <div id="balancedDistributionPreview" class="distribution-preview" style="display:none"></div>
+                    <button type="button" class="btn btn-primary" id="generateBalancedBtn">Generate Balanced Plan</button>
+                </div>
+
+                <!-- Panel B: Get Execute CLI for existing plan -->
+                <div class="quick-panel" id="quickPanelB">
+                    <div class="form-group">
+                        <label for="quickPlanSelect">Select YAML Plan</label>
+                        <select id="quickPlanSelect" class="form-select">
+                            <option value="">-- Select a plan --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickPlanGpuId">GPU ID</label>
+                        <input type="number" id="quickPlanGpuId" class="form-input" value="0" min="0">
+                    </div>
+                    <div id="quickPlanInfo" class="existing-plan-info" style="display:none"></div>
+                    <button type="button" class="btn btn-primary" id="getExecuteCliBtn">Get Execute CLI</button>
+                </div>
+
+                <!-- Panel C: Get Resume CLI for existing run -->
+                <div class="quick-panel" id="quickPanelC">
+                    <div class="form-group">
+                        <label for="quickRunSelect">Select Run to Resume</label>
+                        <select id="quickRunSelect" class="form-select">
+                            <option value="">-- Select a run --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickResumeGpuId">GPU ID (override)</label>
+                        <input type="number" id="quickResumeGpuId" class="form-input" value="0" min="0">
+                    </div>
+                    <div id="quickRunInfo" class="existing-plan-info" style="display:none"></div>
+                    <button type="button" class="btn btn-primary" id="getResumeCliBtn">Get Resume CLI</button>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Existing YAML Plans</h3>
+                <div class="form-group">
+                    <label for="existingPlanSelect">Generated YAML Files</label>
+                    <select id="existingPlanSelect" class="form-select">
+                        <option value="">-- Select an existing YAML --</option>
+                    </select>
+                    <p class="section-hint">Start here if you want to reuse an old plan as a template. The list is sorted by YAML generation time in descending order.</p>
+                </div>
+                <div class="history-actions">
+                    <button type="button" class="btn btn-secondary" id="refreshPlanHistoryBtn">Refresh List</button>
+                    <button type="button" class="btn btn-primary" id="executeSelectedPlanBtn">Execute Selected YAML</button>
+                </div>
+                <div id="existingPlanInfo" class="existing-plan-info">No existing YAML selected.</div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Experiment Runs</h3>
+                <div class="form-group">
+                    <label for="existingRunSelect">Experiment Run Instances</label>
+                    <select id="existingRunSelect" class="form-select">
+                        <option value="">-- Select an experiment run --</option>
+                    </select>
+                    <p class="section-hint">运行实例和 YAML 模板是两类对象。`Resume` 是继续未完成实例，`Repair` 是从已有产物重建记录。</p>
+                </div>
+                <div class="history-actions">
+                    <button type="button" class="btn btn-secondary" id="refreshRunHistoryBtn">Refresh Runs</button>
+                    <button type="button" class="btn btn-secondary" id="loadRunDetailBtn">Load Run Detail</button>
+                    <button type="button" class="btn btn-primary" id="resumeSelectedRunBtn">Resume Selected Run</button>
+                    <button type="button" class="btn btn-secondary" id="repairSelectedRunBtn">Repair Selected Run</button>
+                </div>
+                <div id="existingRunInfo" class="existing-plan-info">No experiment run selected.</div>
+                <div id="existingRunDetail" class="existing-plan-info">Run detail will appear here after selection.</div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Basic Settings</h3>
+
+                <div class="form-group">
+                    <label for="planName">Plan Name *</label>
+                    <input type="text" id="planName" class="form-input" placeholder="e.g., hunyuan_furniture_eval" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sourceProvider">Source Provider *</label>
+                        <select id="sourceProvider" class="form-select" required>
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetProvider">Target Provider *</label>
+                        <select id="targetProvider" class="form-select" required>
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editMode">Edit Mode *</label>
+                        <select id="editMode" class="form-select" required>
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryWorkersDerived">Category Workers (Derived)</label>
+                        <input type="number" id="categoryWorkersDerived" class="form-input" readonly>
+                        <p class="section-hint" id="categoryWorkersHint">Derived from API and render concurrency limits for the selected provider pair.</p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categoryCount">Category Count *</label>
+                        <input type="number" id="categoryCount" class="form-input" min="1" value="1">
+                        <p class="section-hint" id="categoryCountHint">When random categories are off, this creates the exact number of category templates you must finish before YAML generation.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Category Selection Mode</label>
+                        <label class="checkbox-label standalone-checkbox">
+                            <input type="checkbox" id="globalRandomCategories">
+                            Randomly choose N distinct categories
+                        </label>
+                        <p class="section-hint" id="randomCategoriesHint">When enabled, one shared template will be replicated N times, and run_full_experiment will sample N distinct categories at runtime.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Categories</h3>
+                <p class="section-hint" id="categoriesSectionHint">Configure one template per category. All templates must be complete before YAML generation.</p>
+                <div id="categoriesContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-panel">
+        <div class="actions-bar card">
+            <div class="card-body actions-row">
+                <button type="button" class="btn btn-secondary" onclick="validateForm()">Validate</button>
+                <button type="button" class="btn btn-primary" onclick="generateYAML()">Generate YAML</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>YAML Preview</span>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="copyYAML()" id="copyYAMLBtn" disabled>Copy YAML</button>
+            </div>
+            <div class="card-body">
+                <pre id="yamlPreview" class="yaml-preview">Configure the form and click "Generate YAML" to preview.</pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>CLI Command</span>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="copyCLI()" id="copyCLIBtn" disabled>Copy CLI</button>
+            </div>
+            <div class="card-body">
+                <div id="cliPreview" class="cli-preview">
+                    <code>CLI command will appear here after generation.</code>
+                </div>
+                <p class="section-hint">Generated commands pre-create the log file and use <code>tail --retry -f</code>, so delayed log visibility on <code>/seaweedfs</code> will not break log following.</p>
+                <p class="section-hint">Generated commands now default to <code>--gpu-id 0</code>. Please check the target machine with <code>nvidia-smi</code> first, and manually change that value if this run should use another GPU.</p>
+            </div>
+        </div>
+
+        <div class="card" id="resultCard" style="display: none;">
+            <div class="card-header">Generation Result</div>
+            <div class="card-body">
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="categoryTemplate">
+    <div class="category-card">
+        <div class="category-header">
+            <span class="category-title">Category #1</span>
+        </div>
+        <div class="category-body">
+            <div class="checkbox-row">
+                <label class="checkbox-label">
+                    <input type="checkbox" class="random-object-checkbox" onchange="updateCategoryCard(this.closest('.category-card'))">
+                    Random Object
+                </label>
+            </div>
+
+            <div class="form-group category-select-group">
+                <label>Category Name *</label>
+                <select class="form-select category-name" onchange="updateCategoryCard(this.closest('.category-card'))">
+                    <option value="">-- Select Category --</option>
+                </select>
+            </div>
+
+            <div class="form-group objects-group">
+                <label>Objects *</label>
+                <div class="object-picker">
+                    <div class="object-picker-panel">
+                        <div class="object-picker-title">Available Objects</div>
+                        <select class="form-select category-objects" size="8"></select>
+                        <p class="section-hint">Double-click an object to add it.</p>
+                    </div>
+                    <div class="object-picker-panel">
+                        <div class="object-picker-title">Selected Objects</div>
+                        <div class="selected-objects"></div>
+                        <p class="section-hint">Click the x on a selected object to remove it.</p>
+                    </div>
+                </div>
+                <p class="section-hint">Used only when random object is off. <code>object_count</code> will follow the selected objects.</p>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Object Count *</label>
+                    <input type="number" class="form-input object-count" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Mode Summary</label>
+                    <div class="mode-summary">Fixed category + fixed objects</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Edit Count *</label>
+                    <input type="number" class="form-input edit-count" value="2" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Allowed Types *</label>
+                    <div class="checkbox-column instruction-types-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="allowed-type-remove" checked>
+                            remove
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="allowed-type-replace" checked>
+                            replace
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+    .batch-gen-container { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr); gap: 24px; align-items: start; }
+    .batch-gen-container > * { min-width: 0; }
+    @media (max-width: 1280px) { .batch-gen-container { grid-template-columns: 1fr; } }
+    .config-panel { max-height: calc(100vh - 150px); overflow-y: auto; min-width: 0; }
+    .preview-panel { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .actions-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .history-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .form-section { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #e9ecef; }
+    .form-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .section-title { font-size: 16px; font-weight: 600; color: #212529; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    .section-hint { font-size: 13px; color: #6c757d; margin-top: 8px; margin-bottom: 0; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; color: #495057; margin-bottom: 6px; }
+    .form-input, .form-select { width: 100%; padding: 8px 12px; font-size: 14px; border: 1px solid #ced4da; border-radius: 6px; background: #fff; }
+    .form-input:focus, .form-select:focus { outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1); }
+    .form-select.select-expanded { position: relative; z-index: 20; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .category-card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 16px; }
+    .category-header { padding: 12px 16px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 8px 8px 0 0; }
+    .category-title { font-weight: 500; font-size: 14px; }
+    .category-body { padding: 16px; }
+    .checkbox-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
+    .checkbox-column { min-height: 38px; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 8px 12px; background: #fff; border: 1px solid #ced4da; border-radius: 6px; }
+    .checkbox-label { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #495057; cursor: pointer; }
+    .standalone-checkbox { min-height: 38px; padding: 8px 12px; background: #fff; border: 1px solid #ced4da; border-radius: 6px; }
+    .mode-summary { min-height: 38px; display: flex; align-items: center; padding: 8px 12px; background: #fff; border: 1px solid #ced4da; border-radius: 6px; color: #495057; font-size: 13px; }
+    .object-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .object-picker-panel { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .object-picker-title { font-size: 12px; font-weight: 600; color: #495057; text-transform: uppercase; letter-spacing: 0.04em; }
+    .selected-objects { min-height: 180px; padding: 10px; background: #fff; border: 1px solid #ced4da; border-radius: 6px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; }
+    .selected-objects.empty::before { content: "No objects selected"; color: #9aa1a9; font-size: 13px; }
+    .selected-object-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; background: #e9ecef; border-radius: 999px; font-size: 13px; color: #212529; max-width: 100%; }
+    .selected-object-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .remove-object-btn { border: none; background: transparent; color: #dc3545; font-size: 14px; line-height: 1; cursor: pointer; padding: 0; }
+    .remove-object-btn:hover { color: #b42318; }
+    .yaml-preview { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; line-height: 1.6; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; }
+    .cli-preview { background: #212529; color: #fff; padding: 12px 16px; border-radius: 6px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; }
+    .result-success { color: #155724; }
+    .result-error { color: #721c24; }
+    .result-path { background: #e9ecef; padding: 8px 12px; border-radius: 4px; font-family: monospace; font-size: 12px; margin-top: 8px; word-break: break-all; }
+    .existing-plan-info { margin-top: 12px; padding: 12px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; font-size: 13px; color: #495057; line-height: 1.6; }
+    .run-status-pill { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #e9ecef; color: #343a40; }
+    .run-cli-block { margin-top: 10px; padding: 10px; background: #212529; color: #f8f9fa; border-radius: 6px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+    .run-detail-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    @media (max-width: 900px) { .object-picker, .form-row { grid-template-columns: 1fr; } }
+    /* Quick Tools tabs */
+    .quick-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid #e9ecef; padding-bottom: 0; }
+    .quick-tab-btn { padding: 7px 14px; font-size: 13px; font-weight: 500; border: none; background: none; color: #6c757d; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; border-radius: 4px 4px 0 0; transition: color 0.15s; }
+    .quick-tab-btn:hover { color: #343a40; background: #f8f9fa; }
+    .quick-tab-btn.active { color: #0d6efd; border-bottom-color: #0d6efd; background: none; }
+    .quick-panel { display: none; }
+    .quick-panel.active { display: block; }
+    .distribution-preview { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.7; max-height: 200px; overflow-y: auto; }
+    .dist-bar { display: inline-block; background: #0d6efd; height: 8px; border-radius: 2px; vertical-align: middle; margin: 0 6px; opacity: 0.6; }
+    .dist-row { display: flex; align-items: center; gap: 4px; }
+    .dist-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #343a40; }
+    .dist-count { font-weight: 600; color: #0d6efd; min-width: 24px; text-align: right; }
+    .dist-pool { color: #adb5bd; min-width: 60px; }
+    .dist-summary { margin-top: 8px; padding-top: 6px; border-top: 1px solid #dee2e6; font-weight: 500; color: #343a40; }
+    .quick-cli-output { background: #212529; color: #fff; padding: 12px 16px; border-radius: 6px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; white-space: pre-wrap; word-wrap: break-word; margin-top: 12px; }
+    .quick-output-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let options = {
+        providers: [],
+        edit_modes: [],
+        categories: [],
+        objects_by_category: {}
+    };
+    let existingPlanEntries = [];
+    let existingRunEntries = [];
+    let selectedRunDetail = null;
+    let generatedYAML = '';
+    let generatedCLI = '';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            await loadOptions();
+            await loadPlanHistory();
+            await loadRunHistory();
+            populateQuickToolsSelects();
+            bindBatchGenerationEvents();
+            bindQuickToolsEvents();
+            updateBalancedPreview();
+            bindScrollableSelects();
+            syncCategoryTemplates();
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        }
+    });
+
+    // -------------------------------------------------------------------------
+    // Quick Tools: tab switching
+    // -------------------------------------------------------------------------
+    function bindQuickToolsEvents() {
+        document.querySelectorAll('.quick-tab-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.quick-tab-btn').forEach((b) => b.classList.remove('active'));
+                document.querySelectorAll('.quick-panel').forEach((p) => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.panel).classList.add('active');
+            });
+        });
+
+        // Panel A: live distribution preview
+        ['input', 'change'].forEach((ev) => {
+            document.getElementById('balancedTotalObjects').addEventListener(ev, updateBalancedPreview);
+        });
+        document.getElementById('generateBalancedBtn').addEventListener('click', generateBalancedPlan);
+
+        // Panel B
+        document.getElementById('quickPlanSelect').addEventListener('change', onQuickPlanSelect);
+        document.getElementById('getExecuteCliBtn').addEventListener('click', getExecuteCli);
+
+        // Panel C
+        document.getElementById('quickRunSelect').addEventListener('change', onQuickRunSelect);
+        document.getElementById('getResumeCliBtn').addEventListener('click', getResumeCli);
+    }
+
+    function populateQuickToolsSelects() {
+        // Providers & edit mode for Panel A (mirrors main form options)
+        const panels = [
+            { src: 'balancedSourceProvider', tgt: 'balancedTargetProvider', mode: 'balancedEditMode' },
+        ];
+        panels.forEach(({ src, tgt, mode }) => {
+            const srcEl = document.getElementById(src);
+            const tgtEl = document.getElementById(tgt);
+            const modeEl = document.getElementById(mode);
+            srcEl.innerHTML = '';
+            tgtEl.innerHTML = '';
+            modeEl.innerHTML = '';
+            options.providers.forEach((p) => {
+                srcEl.add(new Option(p, p));
+                tgtEl.add(new Option(p, p));
+            });
+            options.edit_modes.forEach((m) => modeEl.add(new Option(m, m)));
+            if (options.providers.includes('hunyuan')) {
+                srcEl.value = 'hunyuan';
+                tgtEl.value = 'hunyuan';
+            }
+            if (options.edit_modes.includes('single')) {
+                modeEl.value = 'single';
+            }
+        });
+
+        // Panel B: plan select (mirrors plan history)
+        const quickPlanSel = document.getElementById('quickPlanSelect');
+        quickPlanSel.innerHTML = '<option value="">-- Select a plan --</option>';
+        existingPlanEntries.forEach((entry) => {
+            const ts = formatTimestampForDisplay(entry.generated_at);
+            quickPlanSel.add(new Option(`${entry.yaml_name} · ${ts}`, entry.plan_path));
+        });
+
+        // Panel C: run select (only resumable runs)
+        const quickRunSel = document.getElementById('quickRunSelect');
+        quickRunSel.innerHTML = '<option value="">-- Select a run --</option>';
+        existingRunEntries
+            .filter((e) => e.resumable)
+            .forEach((entry) => {
+                const ts = formatTimestampForDisplay(entry.started_at);
+                const label = `${entry.experiment_id} · ${entry.status} · ${ts}`;
+                quickRunSel.add(new Option(label, entry.experiment_id));
+            });
+    }
+
+    // -------------------------------------------------------------------------
+    // Panel A: Balanced generation
+    // -------------------------------------------------------------------------
+    function distributeBalancedJS(totalObjects) {
+        const sortedCats = Object.entries(options.objects_by_category)
+            .map(([name, objs]) => ({ name, poolSize: objs.length }))
+            .sort((a, b) => b.poolSize - a.poolSize);
+        const n = sortedCats.length;
+        if (n === 0 || totalObjects <= 0) return [];
+        const base = Math.floor(totalObjects / n);
+        const remainder = totalObjects % n;
+        const result = [];
+        let assignedTotal = 0;
+        for (let i = 0; i < n; i++) {
+            const { name, poolSize } = sortedCats[i];
+            let count = base + (i < remainder ? 1 : 0);
+            count = Math.min(count, poolSize);
+            if (count > 0) {
+                result.push({ category_name: name, object_count: count, pool_size: poolSize });
+                assignedTotal += count;
+            }
+        }
+        // Redistribute leftover from capped categories
+        let leftover = totalObjects - assignedTotal;
+        for (const item of result) {
+            if (leftover <= 0) break;
+            const spare = item.pool_size - item.object_count;
+            const add = Math.min(spare, leftover);
+            item.object_count += add;
+            leftover -= add;
+        }
+        return result.filter((item) => item.object_count > 0);
+    }
+
+    function updateBalancedPreview() {
+        const total = parseInt(document.getElementById('balancedTotalObjects').value, 10);
+        const preview = document.getElementById('balancedDistributionPreview');
+        if (!total || total <= 0 || !options.objects_by_category) {
+            preview.style.display = 'none';
+            return;
+        }
+        const dist = distributeBalancedJS(total);
+        if (dist.length === 0) {
+            preview.style.display = 'none';
+            return;
+        }
+        const actualTotal = dist.reduce((s, d) => s + d.object_count, 0);
+        const maxCount = Math.max(...dist.map((d) => d.object_count));
+        const rows = dist.map((item) => {
+            const barWidth = Math.round((item.object_count / maxCount) * 80);
+            return `<div class="dist-row">
+                <span class="dist-name">${escapeHtml(item.category_name)}</span>
+                <span class="dist-bar" style="width:${barWidth}px"></span>
+                <span class="dist-count">${item.object_count}</span>
+                <span class="dist-pool">(pool: ${item.pool_size})</span>
+            </div>`;
+        }).join('');
+        const edits = parseInt(document.getElementById('balancedEditsPerObject').value, 10) || 0;
+        preview.style.display = 'block';
+        preview.innerHTML = rows + `<div class="dist-summary">Total: ${actualTotal} objects, ${actualTotal * edits} edits</div>`;
+    }
+
+    async function generateBalancedPlan() {
+        const name = document.getElementById('balancedPlanName').value.trim();
+        const totalObjects = parseInt(document.getElementById('balancedTotalObjects').value, 10);
+        const editsPerObject = parseInt(document.getElementById('balancedEditsPerObject').value, 10);
+        const sourceProvider = document.getElementById('balancedSourceProvider').value;
+        const targetProvider = document.getElementById('balancedTargetProvider').value;
+        const editMode = document.getElementById('balancedEditMode').value;
+        const gpuId = parseInt(document.getElementById('balancedGpuId').value, 10) || 0;
+        const allowedTypes = [];
+        if (document.getElementById('balancedAllowRemove').checked) allowedTypes.push('remove');
+        if (document.getElementById('balancedAllowReplace').checked) allowedTypes.push('replace');
+
+        if (!name) { showToast('Plan name is required'); return; }
+        if (!totalObjects || totalObjects < 1) { showToast('Total objects must be a positive integer'); return; }
+        if (!editsPerObject || editsPerObject < 1) { showToast('Edits per object must be a positive integer'); return; }
+        if (!sourceProvider) { showToast('Source provider is required'); return; }
+        if (!editMode) { showToast('Edit mode is required'); return; }
+        if (allowedTypes.length === 0) { showToast('Select at least one allowed type'); return; }
+
+        const btn = document.getElementById('generateBalancedBtn');
+        btn.disabled = true;
+        btn.textContent = 'Generating…';
+        try {
+            const response = await fetch('/api/experiment-plan/generate-balanced', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    total_objects: totalObjects,
+                    edits_per_object: editsPerObject,
+                    source_provider: sourceProvider,
+                    target_provider: targetProvider,
+                    edit_mode: editMode,
+                    allowed_types: allowedTypes,
+                    gpu_id: gpuId,
+                }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+
+            generatedYAML = result.yaml_content || '';
+            generatedCLI = result.cli_command || '';
+            document.getElementById('yamlPreview').textContent = generatedYAML;
+            document.getElementById('cliPreview').innerHTML = `<code>${escapeHtml(generatedCLI)}</code>`;
+            document.getElementById('copyYAMLBtn').disabled = !generatedYAML;
+            document.getElementById('copyCLIBtn').disabled = !generatedCLI;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Balanced plan generated.</strong></p>
+                <p>Total objects: <strong>${escapeHtml(String(result.total_objects))}</strong>,
+                   Total edits: <strong>${escapeHtml(String(result.total_edits))}</strong>,
+                   Categories: <strong>${escapeHtml(String(result.distribution.length))}</strong></p>
+                <p>Saved to:</p>
+                <div class="result-path">${escapeHtml(result.plan_path)}</div>
+                <p>Log path:</p>
+                <div class="result-path">${escapeHtml(result.log_path)}</div>
+            `;
+            showToast('Balanced plan generated');
+            await loadPlanHistory(result.plan_path);
+            populateQuickToolsSelects();
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Generate Balanced Plan';
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Panel B: Get execute CLI for existing YAML
+    // -------------------------------------------------------------------------
+    function onQuickPlanSelect() {
+        const planPath = document.getElementById('quickPlanSelect').value;
+        const infoEl = document.getElementById('quickPlanInfo');
+        if (!planPath) { infoEl.style.display = 'none'; return; }
+        const entry = existingPlanEntries.find((e) => e.plan_path === planPath);
+        if (!entry) { infoEl.style.display = 'none'; return; }
+        infoEl.style.display = 'block';
+        infoEl.innerHTML = `
+            <strong>${escapeHtml(entry.yaml_name)}</strong><br>
+            Generated: ${escapeHtml(formatTimestampForDisplay(entry.generated_at))}<br>
+            Provider: ${escapeHtml(`${entry.source_provider || '-'} → ${entry.target_provider || '-'}`)}<br>
+            Categories: ${escapeHtml(String(entry.category_count ?? '-'))}
+        `;
+    }
+
+    async function getExecuteCli() {
+        const planPath = document.getElementById('quickPlanSelect').value;
+        if (!planPath) { showToast('Select a plan first'); return; }
+        const gpuId = parseInt(document.getElementById('quickPlanGpuId').value, 10) || 0;
+
+        const btn = document.getElementById('getExecuteCliBtn');
+        btn.disabled = true;
+        btn.textContent = 'Loading…';
+        try {
+            const response = await fetch('/api/experiment-plan/cli-command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plan_path: planPath, gpu_id: gpuId }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+
+            generatedCLI = result.cli_command || '';
+            document.getElementById('cliPreview').innerHTML = `<code>${escapeHtml(generatedCLI)}</code>`;
+            document.getElementById('copyCLIBtn').disabled = !generatedCLI;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Execute CLI ready — copy and run on server.</strong></p>
+                <p>Plan: <code>${escapeHtml(result.plan_path)}</code></p>
+                <p>Log path:</p>
+                <div class="result-path">${escapeHtml(result.log_path)}</div>
+            `;
+            showToast('Execute CLI generated');
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Get Execute CLI';
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Panel C: Get resume CLI for an interrupted run
+    // -------------------------------------------------------------------------
+    function onQuickRunSelect() {
+        const experimentId = document.getElementById('quickRunSelect').value;
+        const infoEl = document.getElementById('quickRunInfo');
+        if (!experimentId) { infoEl.style.display = 'none'; return; }
+        const entry = existingRunEntries.find((e) => e.experiment_id === experimentId);
+        if (!entry) { infoEl.style.display = 'none'; return; }
+        infoEl.style.display = 'block';
+        infoEl.innerHTML = `
+            <strong>${escapeHtml(entry.experiment_id)}</strong><br>
+            Status: <span class="run-status-pill">${escapeHtml(entry.status)}</span><br>
+            Plan: ${escapeHtml(entry.yaml_name || '-')}<br>
+            Progress: ${escapeHtml(`${entry.object_record_count ?? 0}/${entry.planned_object_count ?? '-'} objects, ${entry.edit_record_count ?? 0}/${entry.planned_edit_count ?? '-'} edits`)}
+        `;
+    }
+
+    async function getResumeCli() {
+        const experimentId = document.getElementById('quickRunSelect').value;
+        if (!experimentId) { showToast('Select a run first'); return; }
+        const gpuId = parseInt(document.getElementById('quickResumeGpuId').value, 10) || 0;
+
+        const btn = document.getElementById('getResumeCliBtn');
+        btn.disabled = true;
+        btn.textContent = 'Loading…';
+        try {
+            const response = await fetch('/api/experiment-plan/resume-cli-command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ experiment_id: experimentId, gpu_id: gpuId }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+
+            generatedCLI = result.cli_command || '';
+            document.getElementById('cliPreview').innerHTML = `<code>${escapeHtml(generatedCLI)}</code>`;
+            document.getElementById('copyCLIBtn').disabled = !generatedCLI;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Resume CLI ready — copy and run on server.</strong></p>
+                <p>Experiment: <code>${escapeHtml(result.experiment_id)}</code></p>
+                <p>Status: <span class="run-status-pill">${escapeHtml(result.status)}</span></p>
+                <p>Log path:</p>
+                <div class="result-path">${escapeHtml(result.log_path)}</div>
+            `;
+            showToast('Resume CLI generated');
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Get Resume CLI';
+        }
+    }
+
+
+    function bindBatchGenerationEvents() {
+        document.getElementById('sourceProvider').addEventListener('change', async () => {
+            resetGeneratedOutputs();
+            await updateDerivedCategoryWorkers();
+        });
+        document.getElementById('targetProvider').addEventListener('change', async () => {
+            resetGeneratedOutputs();
+            await updateDerivedCategoryWorkers();
+        });
+        ['input', 'change'].forEach((eventName) => {
+            document.getElementById('categoryCount').addEventListener(eventName, () => {
+                syncCategoryTemplates();
+                resetGeneratedOutputs();
+            });
+        });
+        document.getElementById('globalRandomCategories').addEventListener('change', () => {
+            syncCategoryTemplates();
+            resetGeneratedOutputs();
+        });
+        document.getElementById('planName').addEventListener('input', resetGeneratedOutputs);
+        document.getElementById('editMode').addEventListener('change', resetGeneratedOutputs);
+        document.getElementById('existingPlanSelect').addEventListener('change', async (event) => {
+            const planPath = event.target.value;
+            updateExistingPlanInfo(planPath);
+            if (!planPath) {
+                return;
+            }
+            await loadSelectedPlan(planPath);
+        });
+        document.getElementById('refreshPlanHistoryBtn').addEventListener('click', async () => {
+            await loadPlanHistory(document.getElementById('existingPlanSelect').value);
+            showToast('YAML list refreshed');
+        });
+        document.getElementById('executeSelectedPlanBtn').addEventListener('click', executeSelectedPlan);
+        document.getElementById('existingRunSelect').addEventListener('change', async (event) => {
+            const experimentId = event.target.value;
+            updateExistingRunInfo(experimentId);
+            if (!experimentId) {
+                clearRunDetail();
+                return;
+            }
+            await loadRunDetail(experimentId);
+        });
+        document.getElementById('refreshRunHistoryBtn').addEventListener('click', async () => {
+            await loadRunHistory(document.getElementById('existingRunSelect').value);
+            showToast('Run list refreshed');
+        });
+        document.getElementById('loadRunDetailBtn').addEventListener('click', async () => {
+            const experimentId = document.getElementById('existingRunSelect').value;
+            if (!experimentId) {
+                showToast('Select an experiment run first');
+                return;
+            }
+            await loadRunDetail(experimentId);
+        });
+        document.getElementById('resumeSelectedRunBtn').addEventListener('click', resumeSelectedRun);
+        document.getElementById('repairSelectedRunBtn').addEventListener('click', repairSelectedRun);
+    }
+
+    async function loadOptions() {
+        const response = await fetch('/api/experiment-plan/options');
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+        options = result;
+
+        const sourceSelect = document.getElementById('sourceProvider');
+        const targetSelect = document.getElementById('targetProvider');
+        options.providers.forEach((provider) => {
+            sourceSelect.add(new Option(provider, provider));
+            targetSelect.add(new Option(provider, provider));
+        });
+
+        const editModeSelect = document.getElementById('editMode');
+        options.edit_modes.forEach((mode) => {
+            editModeSelect.add(new Option(mode, mode));
+        });
+
+        if (options.providers.includes('hunyuan')) {
+            sourceSelect.value = 'hunyuan';
+            targetSelect.value = 'hunyuan';
+        }
+        if (options.edit_modes.includes('multiview')) {
+            editModeSelect.value = 'multiview';
+        }
+
+        const categoryCountInput = document.getElementById('categoryCount');
+        categoryCountInput.max = String(options.categories.length);
+
+        await updateDerivedCategoryWorkers();
+    }
+
+    async function loadPlanHistory(preferredPlanPath = '') {
+        const response = await fetch('/api/experiment-plan/history');
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+
+        existingPlanEntries = result.yaml_files || [];
+        const select = document.getElementById('existingPlanSelect');
+        const previousValue = preferredPlanPath || select.value;
+        select.innerHTML = '<option value="">-- Select an existing YAML --</option>';
+
+        existingPlanEntries.forEach((entry) => {
+            const timestamp = formatTimestampForDisplay(entry.generated_at);
+            const label = `${entry.yaml_name} · ${timestamp}`;
+            select.add(new Option(label, entry.plan_path));
+        });
+
+        if (previousValue && existingPlanEntries.some((entry) => entry.plan_path === previousValue)) {
+            select.value = previousValue;
+        }
+        updateExistingPlanInfo(select.value);
+    }
+
+    function updateExistingPlanInfo(planPath) {
+        const info = document.getElementById('existingPlanInfo');
+        if (!planPath) {
+            info.textContent = 'No existing YAML selected.';
+            return;
+        }
+        const entry = existingPlanEntries.find((item) => item.plan_path === planPath);
+        if (!entry) {
+            info.textContent = planPath;
+            return;
+        }
+        const generatedAt = formatTimestampForDisplay(entry.generated_at);
+        info.innerHTML = `
+            <strong>${escapeHtml(entry.yaml_name)}</strong><br>
+            Generated: ${escapeHtml(generatedAt)}<br>
+            Plan Name: ${escapeHtml(entry.plan_name || '-')}<br>
+            Provider Pair: ${escapeHtml(`${entry.source_provider || '-'} -> ${entry.target_provider || '-'}`)}<br>
+            Categories: ${escapeHtml(String(entry.category_count ?? '-'))}
+        `;
+    }
+
+    async function loadRunHistory(preferredExperimentId = '') {
+        const response = await fetch('/api/experiment-plan/runs');
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+
+        existingRunEntries = result.runs || [];
+        const select = document.getElementById('existingRunSelect');
+        const previousValue = preferredExperimentId || select.value;
+        select.innerHTML = '<option value="">-- Select an experiment run --</option>';
+
+        existingRunEntries.forEach((entry) => {
+            const startedAt = formatTimestampForDisplay(entry.started_at);
+            const label = `${entry.experiment_id} · ${entry.status} · ${startedAt}`;
+            select.add(new Option(label, entry.experiment_id));
+        });
+
+        if (previousValue && existingRunEntries.some((entry) => entry.experiment_id === previousValue)) {
+            select.value = previousValue;
+            updateExistingRunInfo(previousValue);
+        } else {
+            updateExistingRunInfo('');
+            clearRunDetail();
+        }
+    }
+
+    function updateExistingRunInfo(experimentId) {
+        const info = document.getElementById('existingRunInfo');
+        const resumeBtn = document.getElementById('resumeSelectedRunBtn');
+        const repairBtn = document.getElementById('repairSelectedRunBtn');
+        if (!experimentId) {
+            info.textContent = 'No experiment run selected.';
+            resumeBtn.disabled = true;
+            repairBtn.disabled = true;
+            return;
+        }
+
+        const entry = existingRunEntries.find((item) => item.experiment_id === experimentId);
+        if (!entry) {
+            info.textContent = experimentId;
+            resumeBtn.disabled = true;
+            repairBtn.disabled = true;
+            return;
+        }
+
+        resumeBtn.disabled = !entry.resumable;
+        repairBtn.disabled = false;
+        info.innerHTML = `
+            <strong>${escapeHtml(entry.experiment_id)}</strong><br>
+            Status: <span class="run-status-pill">${escapeHtml(entry.status)}</span><br>
+            YAML: ${escapeHtml(entry.yaml_name || '-')}<br>
+            Provider Pair: ${escapeHtml(`${entry.source_provider || '-'} -> ${entry.target_provider || '-'}`)}<br>
+            Progress: ${escapeHtml(`${entry.object_record_count ?? 0}/${entry.planned_object_count ?? '-'} objects, ${entry.edit_record_count ?? 0}/${entry.planned_edit_count ?? '-'} edits`)}<br>
+            Resume Allowed: ${entry.resumable ? 'Yes' : 'No'}<br>
+            Repair Recommended: ${entry.repair_recommended ? 'Yes' : 'No'}
+        `;
+    }
+
+    function clearRunDetail() {
+        selectedRunDetail = null;
+        document.getElementById('existingRunDetail').textContent = 'Run detail will appear here after selection.';
+    }
+
+    async function loadRunDetail(experimentId) {
+        const response = await fetch(`/api/experiment-plan/run-detail?experiment_id=${encodeURIComponent(experimentId)}`);
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+        selectedRunDetail = result;
+        renderRunDetail(result);
+    }
+
+    function renderRunDetail(detail) {
+        const run = detail.run || {};
+        const progress = detail.progress || {};
+        const totals = detail.totals || {};
+        const detailEl = document.getElementById('existingRunDetail');
+        detailEl.innerHTML = `
+            <strong>Run Detail</strong><br>
+            Experiment ID: ${escapeHtml(run.experiment_id || '-')}<br>
+            Status: <span class="run-status-pill">${escapeHtml(run.status || '-')}</span><br>
+            GPU ID: ${escapeHtml(String(run.gpu_id ?? '-'))}<br>
+            Started: ${escapeHtml(formatTimestampForDisplay(run.started_at))}<br>
+            Finished: ${escapeHtml(formatTimestampForDisplay(run.finished_at))}<br>
+            Manifest: ${escapeHtml(run.manifest_path || '-')}<br>
+            Planned Objects: ${escapeHtml(String(progress.planned_object_count ?? '-'))}<br>
+            Planned Edits: ${escapeHtml(String(progress.planned_edit_count ?? '-'))}<br>
+            Object Records: ${escapeHtml(String(progress.object_record_count ?? '-'))}<br>
+            Edit Records: ${escapeHtml(String(progress.edit_record_count ?? '-'))}<br>
+            Source Pipeline Failed: ${escapeHtml(String(run.source_pipeline_failed_count ?? 0))}<br>
+            Stage1 Failed: ${escapeHtml(String(totals.stage1_failed_count ?? run.stage1_failed_count ?? 0))}<br>
+            Stage2 Failed: ${escapeHtml(String(totals.stage2_failed_count ?? run.stage2_failed_count ?? 0))}<br>
+            <div class="run-detail-actions">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copySelectedRunCLI('resume')">Copy Resume CLI</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copySelectedRunCLI('repair')">Copy Repair CLI</button>
+            </div>
+            <div class="run-cli-block">Resume CLI:\n${escapeHtml(run.resume_cli_command || '-')}</div>
+            <div class="run-cli-block">Repair CLI:\n${escapeHtml(run.repair_cli_command || '-')}</div>
+        `;
+    }
+
+    function copySelectedRunCLI(mode) {
+        if (!selectedRunDetail || !selectedRunDetail.run) {
+            showToast('Load a run detail first');
+            return;
+        }
+        const command = mode === 'repair'
+            ? selectedRunDetail.run.repair_cli_command
+            : selectedRunDetail.run.resume_cli_command;
+        if (!command) {
+            showToast(`No ${mode} CLI available`);
+            return;
+        }
+        copyTextToClipboard(command).then(() => showToast(`${mode} CLI copied to clipboard`));
+    }
+
+    async function resumeSelectedRun() {
+        const experimentId = document.getElementById('existingRunSelect').value;
+        if (!experimentId) {
+            showToast('Select an experiment run first');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/experiment-plan/resume', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ experiment_id: experimentId })
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || `HTTP ${response.status}`);
+            }
+
+            generatedCLI = result.cli_command || '';
+            document.getElementById('cliPreview').innerHTML = `<code>${escapeHtml(generatedCLI)}</code>`;
+            document.getElementById('copyCLIBtn').disabled = !generatedCLI;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Resume task started.</strong></p>
+                <p>Task ID: <code>${escapeHtml(result.task_id)}</code></p>
+                <p>Experiment ID: <code>${escapeHtml(result.experiment_id)}</code></p>
+                <p>Runtime log:</p>
+                <div class="result-path">${escapeHtml(result.log_path)}</div>
+            `;
+            showToast(`Resume task started: ${result.task_id}`);
+
+            pollTask(
+                result.task_id,
+                async () => {
+                    showToast('Resume completed');
+                    await loadRunHistory(experimentId);
+                    await loadRunDetail(experimentId);
+                },
+                (errorMessage) => {
+                    showToast(`Resume failed: ${errorMessage}`);
+                }
+            );
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    async function repairSelectedRun() {
+        const experimentId = document.getElementById('existingRunSelect').value;
+        if (!experimentId) {
+            showToast('Select an experiment run first');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/experiment-plan/repair', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ experiment_id: experimentId })
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || `HTTP ${response.status}`);
+            }
+
+            generatedCLI = result.cli_command || '';
+            document.getElementById('cliPreview').innerHTML = `<code>${escapeHtml(generatedCLI)}</code>`;
+            document.getElementById('copyCLIBtn').disabled = !generatedCLI;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Repair task started.</strong></p>
+                <p>Task ID: <code>${escapeHtml(result.task_id)}</code></p>
+                <p>Experiment ID: <code>${escapeHtml(result.experiment_id)}</code></p>
+                <p>Runtime log:</p>
+                <div class="result-path">${escapeHtml(result.log_path)}</div>
+            `;
+            showToast(`Repair task started: ${result.task_id}`);
+
+            pollTask(
+                result.task_id,
+                async () => {
+                    showToast('Repair completed');
+                    await loadRunHistory(experimentId);
+                    await loadRunDetail(experimentId);
+                },
+                (errorMessage) => {
+                    showToast(`Repair failed: ${errorMessage}`);
+                }
+            );
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    function isGlobalRandomCategoryEnabled() {
+        return document.getElementById('globalRandomCategories').checked;
+    }
+
+    function getDesiredCategoryCount() {
+        const value = parseInt(document.getElementById('categoryCount').value, 10);
+        const maxCount = options.categories.length;
+        if (!Number.isFinite(value) || value <= 0) {
+            return 0;
+        }
+        if (maxCount > 0) {
+            return Math.min(value, maxCount);
+        }
+        return value;
+    }
+
+    function createCategoryCard() {
+        const template = document.getElementById('categoryTemplate');
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = template.innerHTML;
+        const card = wrapper.firstElementChild;
+
+        const categorySelect = card.querySelector('.category-name');
+        options.categories.forEach((category) => {
+            categorySelect.add(new Option(category, category));
+        });
+
+        card.querySelector('.category-objects').addEventListener('dblclick', () => addSelectedObject(card));
+        card.querySelector('.random-object-checkbox').addEventListener('change', resetGeneratedOutputs);
+        card.querySelector('.category-name').addEventListener('change', resetGeneratedOutputs);
+        card.querySelector('.object-count').addEventListener('input', resetGeneratedOutputs);
+        card.querySelector('.edit-count').addEventListener('input', resetGeneratedOutputs);
+        card.querySelector('.allowed-type-remove').addEventListener('change', resetGeneratedOutputs);
+        card.querySelector('.allowed-type-replace').addEventListener('change', resetGeneratedOutputs);
+        bindScrollableSelects(card);
+        return card;
+    }
+
+    function bindScrollableSelects(root = document) {
+        const selects = Array.from(root.querySelectorAll('select.form-select:not(.category-objects)'));
+        selects.forEach((select) => {
+            if (select.dataset.scrollBound === 'true') {
+                return;
+            }
+
+            const openSelect = () => {
+                const visibleOptions = Math.min(select.options.length, 10);
+                if (visibleOptions <= 1) {
+                    return;
+                }
+                select.size = visibleOptions;
+                select.classList.add('select-expanded');
+            };
+
+            const closeSelect = () => {
+                select.size = 1;
+                select.classList.remove('select-expanded');
+            };
+
+            select.addEventListener('mousedown', (event) => {
+                if (select.disabled) {
+                    return;
+                }
+                if (select.size === 1) {
+                    event.preventDefault();
+                    openSelect();
+                    select.focus();
+                }
+            });
+
+            select.addEventListener('blur', closeSelect);
+            select.addEventListener('change', closeSelect);
+            select.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeSelect();
+                    return;
+                }
+                if (select.size === 1 && ['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
+                    event.preventDefault();
+                    openSelect();
+                }
+            });
+
+            select.dataset.scrollBound = 'true';
+        });
+    }
+
+    async function loadSelectedPlan(planPath) {
+        try {
+            const response = await fetch(`/api/experiment-plan/load?plan_path=${encodeURIComponent(planPath)}`);
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || `HTTP ${response.status}`);
+            }
+
+            applyLoadedPlanToForm(result.form_data);
+            await updateDerivedCategoryWorkers();
+            generatedYAML = result.yaml_content || '';
+            generatedCLI = '';
+            document.getElementById('yamlPreview').textContent = generatedYAML || 'No YAML content returned.';
+            document.getElementById('cliPreview').innerHTML = '<code>CLI command will appear here after generation.</code>';
+            document.getElementById('copyYAMLBtn').disabled = !generatedYAML;
+            document.getElementById('copyCLIBtn').disabled = true;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Existing YAML loaded into the form.</strong></p>
+                <p>You can now edit the inputs and click <strong>Generate YAML</strong> to create a new plan and CLI command.</p>
+                <p>Loaded from:</p>
+                <div class="result-path">${escapeHtml(result.plan_path)}</div>
+            `;
+            showToast('Existing YAML loaded into the form');
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    function applyLoadedPlanToForm(formData) {
+        document.getElementById('planName').value = formData.name || '';
+        document.getElementById('sourceProvider').value = formData.source_provider || '';
+        document.getElementById('targetProvider').value = formData.target_provider || '';
+        document.getElementById('editMode').value = formData.edit_mode || '';
+        document.getElementById('categoryCount').value = String(formData.category_count || 1);
+        document.getElementById('globalRandomCategories').checked = Boolean(formData.global_random_categories);
+
+        syncCategoryTemplates();
+
+        const cards = Array.from(document.querySelectorAll('.category-card'));
+        const categories = Array.isArray(formData.categories) ? formData.categories : [];
+        if (cards.length !== categories.length) {
+            throw new Error(`Loaded YAML expected ${categories.length} category templates, but the UI has ${cards.length}.`);
+        }
+
+        cards.forEach((card, index) => fillCategoryCardFromData(card, categories[index], Boolean(formData.global_random_categories)));
+    }
+
+    function fillCategoryCardFromData(card, categoryData, globalRandom) {
+        const categorySelect = card.querySelector('.category-name');
+        const randomObjectCheckbox = card.querySelector('.random-object-checkbox');
+        const objectCountInput = card.querySelector('.object-count');
+        const editCountInput = card.querySelector('.edit-count');
+        const allowedRemoveInput = card.querySelector('.allowed-type-remove');
+        const allowedReplaceInput = card.querySelector('.allowed-type-replace');
+        const allowedTypes = Array.isArray(categoryData?.instruction_plan?.allowed_types)
+            ? categoryData.instruction_plan.allowed_types
+            : [];
+
+        randomObjectCheckbox.checked = Boolean(categoryData?.random?.object);
+        categorySelect.value = categoryData?.category_name || '';
+
+        if (!globalRandom) {
+            populateObjects(card, categorySelect.value);
+            if (!randomObjectCheckbox.checked) {
+                renderSelectedObjects(card, Array.isArray(categoryData?.objects) ? categoryData.objects : []);
+            } else {
+                renderSelectedObjects(card, []);
+            }
+        } else {
+            renderSelectedObjects(card, []);
+        }
+
+        updateCategoryCard(card);
+
+        objectCountInput.value = String(categoryData?.object_count ?? 0);
+        editCountInput.value = String(categoryData?.instruction_plan?.count ?? 0);
+        allowedRemoveInput.checked = allowedTypes.includes('remove');
+        allowedReplaceInput.checked = allowedTypes.includes('replace');
+    }
+
+    function syncCategoryTemplates() {
+        const container = document.getElementById('categoriesContainer');
+        const desiredCount = getDesiredCategoryCount();
+        const maxCount = options.categories.length;
+        const globalRandom = isGlobalRandomCategoryEnabled();
+        const categoryCountInput = document.getElementById('categoryCount');
+
+        if (desiredCount > 0 && Number(categoryCountInput.value) !== desiredCount) {
+            categoryCountInput.value = String(desiredCount);
+        }
+
+        document.getElementById('categoriesSectionHint').textContent = globalRandom
+            ? 'Configure one shared random-category template. It will be replicated N times, and each replicated entry will sample a distinct category at runtime.'
+            : 'Configure one template per category. All templates must be complete before YAML generation.';
+        document.getElementById('categoryCountHint').textContent = globalRandom
+            ? `This is the number of distinct random categories that will be sampled at runtime. Max: ${maxCount}.`
+            : `This creates the exact number of category templates you must finish before YAML generation. Max: ${maxCount}.`;
+
+        const targetCards = globalRandom ? 1 : desiredCount;
+        const currentCards = Array.from(container.querySelectorAll('.category-card'));
+
+        if (desiredCount <= 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        if (currentCards.length < targetCards) {
+            for (let i = currentCards.length; i < targetCards; i += 1) {
+                container.appendChild(createCategoryCard());
+            }
+        } else if (currentCards.length > targetCards) {
+            currentCards.slice(targetCards).forEach((card) => card.remove());
+        }
+
+        renumberCategoryCards();
+        Array.from(container.querySelectorAll('.category-card')).forEach((card) => updateCategoryCard(card));
+    }
+
+    function renumberCategoryCards() {
+        const globalRandom = isGlobalRandomCategoryEnabled();
+        Array.from(document.querySelectorAll('.category-card')).forEach((card, index) => {
+            card.dataset.index = String(index + 1);
+            card.querySelector('.category-title').textContent = globalRandom
+                ? 'Random Category Template'
+                : `Category #${index + 1}`;
+        });
+    }
+
+    async function updateDerivedCategoryWorkers() {
+        const sourceProvider = document.getElementById('sourceProvider').value;
+        const targetProvider = document.getElementById('targetProvider').value;
+        if (!sourceProvider || !targetProvider) {
+            document.getElementById('categoryWorkersDerived').value = '';
+            document.getElementById('categoryWorkersHint').textContent = 'Select source and target providers to derive category workers.';
+            return;
+        }
+
+        const response = await fetch(`/api/experiment-plan/derived-category-workers?source_provider=${encodeURIComponent(sourceProvider)}&target_provider=${encodeURIComponent(targetProvider)}`);
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+
+        document.getElementById('categoryWorkersDerived').value = result.category_workers_derived;
+        document.getElementById('categoryWorkersHint').textContent =
+            `Derived as ${result.category_workers_formula}. Each resource pool is independently throttled by a semaphore.`;
+    }
+
+    function getSelectedObjects(card) {
+        return Array.from(card.querySelectorAll('.selected-object-tag')).map((tag) => tag.dataset.value);
+    }
+
+    function renderSelectedObjects(card, objects) {
+        const container = card.querySelector('.selected-objects');
+        container.innerHTML = '';
+
+        objects.forEach((objectName) => {
+            const tag = document.createElement('span');
+            tag.className = 'selected-object-tag';
+            tag.dataset.value = objectName;
+            tag.innerHTML = `
+                <span class="selected-object-text">${escapeHtml(objectName)}</span>
+                <button type="button" class="remove-object-btn" aria-label="Remove ${escapeHtml(objectName)}">x</button>
+            `;
+            tag.querySelector('.remove-object-btn').addEventListener('click', () => {
+                removeSelectedObject(card, objectName);
+            });
+            container.appendChild(tag);
+        });
+
+        container.classList.toggle('empty', objects.length === 0);
+        if (!isGlobalRandomCategoryEnabled() && !card.querySelector('.random-object-checkbox').checked) {
+            card.querySelector('.object-count').value = objects.length;
+        }
+    }
+
+    function populateObjects(card, categoryName) {
+        const objectsSelect = card.querySelector('.category-objects');
+        const currentSelections = getSelectedObjects(card);
+        objectsSelect.innerHTML = '';
+        const objects = options.objects_by_category[categoryName] || [];
+        objects.forEach((objectName) => {
+            const option = new Option(objectName, objectName);
+            objectsSelect.add(option);
+        });
+        const validSelections = currentSelections.filter((objectName) => objects.includes(objectName));
+        renderSelectedObjects(card, validSelections);
+    }
+
+    function addSelectedObject(card) {
+        const objectsSelect = card.querySelector('.category-objects');
+        const selectedValue = objectsSelect.value;
+        if (!selectedValue) {
+            return;
+        }
+        const selectedObjects = getSelectedObjects(card);
+        if (!selectedObjects.includes(selectedValue)) {
+            selectedObjects.push(selectedValue);
+            renderSelectedObjects(card, selectedObjects);
+            resetGeneratedOutputs();
+        }
+    }
+
+    function removeSelectedObject(card, objectName) {
+        const selectedObjects = getSelectedObjects(card).filter((value) => value !== objectName);
+        renderSelectedObjects(card, selectedObjects);
+        resetGeneratedOutputs();
+    }
+
+    function updateCategoryCard(card) {
+        const globalRandom = isGlobalRandomCategoryEnabled();
+        const randomObject = card.querySelector('.random-object-checkbox');
+        const categorySelectGroup = card.querySelector('.category-select-group');
+        const categorySelect = card.querySelector('.category-name');
+        const objectsGroup = card.querySelector('.objects-group');
+        const objectCount = card.querySelector('.object-count');
+        const modeSummary = card.querySelector('.mode-summary');
+
+        if (globalRandom) {
+            randomObject.checked = true;
+            randomObject.disabled = true;
+            categorySelectGroup.style.display = 'none';
+            categorySelect.value = '';
+            objectsGroup.style.display = 'none';
+            objectCount.readOnly = false;
+            modeSummary.textContent = 'Random category + random objects';
+            card.querySelector('.category-objects').innerHTML = '';
+            renderSelectedObjects(card, []);
+            return;
+        }
+
+        categorySelectGroup.style.display = 'block';
+        randomObject.disabled = false;
+        populateObjects(card, categorySelect.value);
+
+        if (randomObject.checked) {
+            objectsGroup.style.display = 'none';
+            objectCount.readOnly = false;
+            modeSummary.textContent = 'Fixed category + random objects';
+        } else {
+            objectsGroup.style.display = 'block';
+            objectCount.readOnly = true;
+            objectCount.value = getSelectedObjects(card).length || 0;
+            modeSummary.textContent = 'Fixed category + fixed objects';
+        }
+    }
+
+    function collectCategoryData(card) {
+        const globalRandom = isGlobalRandomCategoryEnabled();
+        const randomObject = card.querySelector('.random-object-checkbox').checked;
+        const objects = getSelectedObjects(card);
+        const allowedTypes = [];
+        if (card.querySelector('.allowed-type-remove').checked) {
+            allowedTypes.push('remove');
+        }
+        if (card.querySelector('.allowed-type-replace').checked) {
+            allowedTypes.push('replace');
+        }
+        const data = {
+            random: {
+                category: globalRandom,
+                object: globalRandom ? true : randomObject
+            },
+            object_count: parseInt(card.querySelector('.object-count').value, 10) || 0,
+            instruction_plan: {
+                mode: 'adaptive_k',
+                count: parseInt(card.querySelector('.edit-count').value, 10) || 0,
+                allowed_types: allowedTypes
+            }
+        };
+
+        if (!globalRandom) {
+            data.category_name = card.querySelector('.category-name').value;
+            if (!randomObject) {
+                data.objects = objects;
+                data.object_count = objects.length;
+            }
+        }
+        return data;
+    }
+
+    function collectFormData() {
+        const cards = Array.from(document.querySelectorAll('.category-card'));
+        const desiredCount = getDesiredCategoryCount();
+        let categories = cards.map(collectCategoryData);
+
+        if (isGlobalRandomCategoryEnabled()) {
+            const templateData = categories[0];
+            categories = templateData
+                ? Array.from({ length: desiredCount }, () => JSON.parse(JSON.stringify(templateData)))
+                : [];
+        }
+
+        return {
+            name: document.getElementById('planName').value.trim(),
+            source_provider: document.getElementById('sourceProvider').value,
+            target_provider: document.getElementById('targetProvider').value,
+            edit_mode: document.getElementById('editMode').value,
+            categories: categories
+        };
+    }
+
+    function validateForm() {
+        const data = collectFormData();
+        const errors = [];
+        const desiredCount = getDesiredCategoryCount();
+        const maxCount = options.categories.length;
+        const globalRandom = isGlobalRandomCategoryEnabled();
+        const visibleCards = Array.from(document.querySelectorAll('.category-card'));
+
+        if (!data.name) {
+            errors.push('Plan name is required');
+        } else if (/[\/\\]|(\.\.)/.test(data.name)) {
+            errors.push('Plan name contains invalid characters');
+        }
+        if (!data.source_provider) {
+            errors.push('Source provider is required');
+        }
+        if (!data.target_provider) {
+            errors.push('Target provider is required');
+        }
+        if (!data.edit_mode) {
+            errors.push('Edit mode is required');
+        }
+        if (!Number.isFinite(desiredCount) || desiredCount < 1) {
+            errors.push('Category count must be at least 1');
+        }
+        if (maxCount > 0 && desiredCount > maxCount) {
+            errors.push(`Category count cannot exceed available categories (${maxCount})`);
+        }
+
+        if (globalRandom) {
+            if (visibleCards.length !== 1) {
+                errors.push('Random category mode must have exactly one shared template card');
+            }
+        } else if (visibleCards.length !== desiredCount) {
+            errors.push(`Expected ${desiredCount} category templates, but found ${visibleCards.length}`);
+        }
+
+        const fixedCategoryNames = [];
+        data.categories.forEach((category, index) => {
+            const prefix = globalRandom ? 'Random category template' : `Category ${index + 1}`;
+
+            if (category.object_count < 1) {
+                errors.push(`${prefix}: object count must be at least 1`);
+            }
+            if (category.instruction_plan.count < 1) {
+                errors.push(`${prefix}: edit count must be at least 1`);
+            }
+            if (!Array.isArray(category.instruction_plan.allowed_types) || category.instruction_plan.allowed_types.length === 0) {
+                errors.push(`${prefix}: select at least one allowed type`);
+            }
+
+            if (category.random.category) {
+                return;
+            }
+
+            if (!category.category_name) {
+                errors.push(`${prefix}: category name is required`);
+                return;
+            }
+            fixedCategoryNames.push(category.category_name);
+
+            if (!category.random.object) {
+                if (!Array.isArray(category.objects) || category.objects.length === 0) {
+                    errors.push(`${prefix}: select at least one object`);
+                }
+            }
+        });
+
+        const duplicateFixedCategories = fixedCategoryNames.filter((name, index) => fixedCategoryNames.indexOf(name) !== index);
+        if (duplicateFixedCategories.length > 0) {
+            errors.push(`Duplicate fixed categories are not allowed: ${Array.from(new Set(duplicateFixedCategories)).join(', ')}`);
+        }
+
+        if (errors.length > 0) {
+            showToast(`Validation failed: ${errors[0]}`);
+            return false;
+        }
+        showToast('Validation passed');
+        return true;
+    }
+
+    async function generateYAML() {
+        if (!validateForm()) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/experiment-plan/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(collectFormData())
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                showToast(`Error: ${result.error || `HTTP ${response.status}`}`);
+                document.getElementById('resultCard').style.display = 'block';
+                document.getElementById('resultContent').innerHTML = `
+                    <p class="result-error"><strong>Generation failed</strong></p>
+                    <p>${escapeHtml(result.error || `HTTP ${response.status}`)}</p>
+                `;
+                return;
+            }
+
+            generatedYAML = result.yaml_content;
+            generatedCLI = result.cli_command;
+            document.getElementById('yamlPreview').textContent = generatedYAML;
+            document.getElementById('cliPreview').innerHTML = `<code>${escapeHtml(generatedCLI)}</code>`;
+            document.getElementById('copyYAMLBtn').disabled = false;
+            document.getElementById('copyCLIBtn').disabled = false;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Plan generated successfully.</strong></p>
+                <p>File saved to:</p>
+                <div class="result-path">${escapeHtml(result.plan_path)}</div>
+                <p style="margin-top: 12px;">Log will be written to:</p>
+                <div class="result-path">${escapeHtml(result.log_path)}</div>
+            `;
+            await loadPlanHistory(result.plan_path);
+            showToast('YAML generated successfully');
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        }
+    }
+
+    async function executeSelectedPlan() {
+        const planPath = document.getElementById('existingPlanSelect').value;
+        if (!planPath) {
+            showToast('Select an existing YAML first');
+            return;
+        }
+
+        const btn = document.getElementById('executeSelectedPlanBtn');
+        btn.disabled = true;
+        btn.textContent = 'Loading…';
+        try {
+            const response = await fetch('/api/experiment-plan/cli-command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plan_path: planPath }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+
+            generatedCLI = result.cli_command || '';
+            document.getElementById('cliPreview').innerHTML = `<code>${escapeHtml(generatedCLI)}</code>`;
+            document.getElementById('copyCLIBtn').disabled = !generatedCLI;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `
+                <p class="result-success"><strong>Execute CLI ready — copy and run on server.</strong></p>
+                <p>Plan: <code>${escapeHtml(result.plan_path)}</code></p>
+                <p>Log path:</p>
+                <div class="result-path">${escapeHtml(result.log_path)}</div>
+            `;
+            showToast('Execute CLI generated');
+        } catch (error) {
+            showToast(`Error: ${error.message}`);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Execute Selected YAML';
+        }
+    }
+
+    function resetGeneratedOutputs() {
+        generatedYAML = '';
+        generatedCLI = '';
+        document.getElementById('copyYAMLBtn').disabled = true;
+        document.getElementById('copyCLIBtn').disabled = true;
+        document.getElementById('yamlPreview').textContent = 'Configure the form and click "Generate YAML" to preview.';
+        document.getElementById('cliPreview').innerHTML = '<code>CLI command will appear here after generation.</code>';
+        document.getElementById('resultCard').style.display = 'none';
+        document.getElementById('resultContent').innerHTML = '';
+    }
+
+    function copyYAML() {
+        if (!generatedYAML) {
+            showToast('No YAML to copy');
+            return;
+        }
+        copyTextToClipboard(generatedYAML).then(() => showToast('YAML copied to clipboard'));
+    }
+
+    function copyCLI() {
+        if (!generatedCLI) {
+            showToast('No CLI command to copy');
+            return;
+        }
+        copyTextToClipboard(generatedCLI).then(() => showToast('CLI command copied to clipboard'));
+    }
+
+    function formatTimestampForDisplay(value) {
+        if (!value) {
+            return '-';
+        }
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+        return date.toLocaleString();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+</script>
+{% endblock %}

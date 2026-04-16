@@ -1,0 +1,86 @@
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-dialog {
+    background: var(--card-bg);
+    width: 600px;
+    max-width: 90%;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.modal-body .form-group {
+    margin-bottom: 20px;
+}
+
+/* Action Buttons */
+.action-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.2s;
+    margin-left: 5px;
+}
+
+.action-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.input-suffix-btn {
+    white-space: nowrap;
+    background: #2a2a4a;
+    border: 1px solid var(--border);
+    color: var(--text-color);
+    padding: 0 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.input-suffix-btn:hover {
+    background: var(--accent);
+}

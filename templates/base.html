@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pipeline{% endblock %} - 3D Editing Pipeline</title>
+    <script type="module" src="/static/js/model-viewer.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.5;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-brand {
+            font-weight: 600;
+            font-size: 18px;
+            color: #212529;
+            text-decoration: none;
+            margin-right: 40px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .nav-link {
+            padding: 8px 16px;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
+        
+        .nav-link:hover {
+            background: #e9ecef;
+        }
+        
+        .nav-link.active {
+            background: #e9ecef;
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .page-header {
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        /* Cards */
+        .card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 500;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        @media (max-width: 900px) {
+            .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 600px) {
+            .grid-4, .grid-3 { grid-template-columns: 1fr; }
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        
+        .btn-primary {
+            background: #0d6efd;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: #0b5ed7;
+        }
+        
+        .btn-secondary {
+            background: #fff;
+            color: #495057;
+            border-color: #ced4da;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table th {
+            font-weight: 500;
+            color: #495057;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Status badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+        
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-running {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        /* Image Preview */
+        .img-preview {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        
+        .img-thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #e9ecef;
+        }
+        
+        /* Model Viewer */
+        model-viewer {
+            width: 100%;
+            height: 300px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        
+        /* Item Card */
+        .item-card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .item-card-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: #e9ecef;
+        }
+        
+        .item-card-body {
+            padding: 12px;
+        }
+        
+        .item-card-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .item-card-meta {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .item-card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* Stats */
+        .stat-card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        
+        /* Utilities */
+        .text-muted {
+            color: #6c757d;
+        }
+        
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+        
+        .toast {
+            background: #212529;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">3D Pipeline</a>
+        <div class="nav-links">
+            <a href="/" class="nav-link {% if page == 'home' %}active{% endif %}">Overview</a>
+            <a href="/tasks" class="nav-link {% if page == 'tasks' %}active{% endif %}">Tasks</a>
+            <a href="/prompts" class="nav-link {% if page == 'prompts' %}active{% endif %}">Prompts</a>
+            <a href="/images" class="nav-link {% if page == 'images' %}active{% endif %}">Images</a>
+            <a href="/models" class="nav-link {% if page == 'models' %}active{% endif %}">Models</a>
+            <a href="/pairs" class="nav-link {% if page == 'pairs' %}active{% endif %}">Pairs</a>
+            <a href="/passed-pairs" class="nav-link {% if page == 'passed_pairs' %}active{% endif %}">Passed Pairs</a>
+            <a href="/batch-generation" class="nav-link {% if page == 'batch-generation' %}active{% endif %}">Batch Generation</a>
+            <a href="/matrix-generation" class="nav-link {% if page == 'matrix-generation' %}active{% endif %}">Matrix Generation</a>
+            <a href="/experiment-stats" class="nav-link {% if page == 'experiment-stats' %}active{% endif %}">Experiment Stats</a>
+        </div>
+    </nav>
+    
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Persistent Log Panel -->
+    <div id="logPanel" style="display:none; position:fixed; bottom:0; left:0; right:0; height:200px; background:#1e1e1e; border-top:2px solid #495057; z-index:999; font-family:monospace; font-size:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 12px; background:#343a40; color:#fff;">
+            <span>Logs <span id="logCount" style="color:#6c757d;">(0)</span></span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="clearLogs()" style="background:#6c757d; color:#fff; border:none; padding:2px 8px; border-radius:3px; cursor:pointer; font-size:11px;">Clear</button>
+                <button onclick="copyLogs()" style="background:#0d6efd; color:#fff; border:none; padding:2px 8px; border-radius:3px; cursor:pointer; font-size:11px;">Copy All</button>
+                <button onclick="toggleLogPanel()" style="background:#dc3545; color:#fff; border:none; padding:2px 8px; border-radius:3px; cursor:pointer; font-size:11px;">×</button>
+            </div>
+        </div>
+        <div id="logContent" style="height:calc(100% - 28px); overflow-y:auto; padding:8px 12px; color:#d4d4d4;"></div>
+    </div>
+    
+    <!-- Toggle Log Button -->
+    <button id="logToggle" onclick="toggleLogPanel()" style="position:fixed; bottom:12px; right:12px; background:#343a40; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:12px; z-index:998; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+        📋 Logs <span id="logBadge" style="display:none; background:#dc3545; color:#fff; padding:1px 6px; border-radius:10px; font-size:10px; margin-left:4px;">0</span>
+    </button>
+    
+    <script>
+        // Log system
+        const logs = [];
+        let logPanelVisible = false;
+        
+        function addLog(level, message, details = null) {
+            const time = new Date().toLocaleTimeString();
+            const entry = { time, level, message, details };
+            logs.push(entry);
+            
+            // Update log panel
+            const content = document.getElementById('logContent');
+            const colors = { info: '#58a6ff', warn: '#d29922', error: '#f85149', success: '#3fb950' };
+            const color = colors[level] || '#d4d4d4';
+            
+            const line = document.createElement('div');
+            line.style.cssText = `margin-bottom:4px; border-bottom:1px solid #333; padding-bottom:4px; user-select:text;`;
+            line.innerHTML = `<span style="color:#6c757d;">[${time}]</span> <span style="color:${color}; font-weight:bold;">[${level.toUpperCase()}]</span> <span style="color:#fff;">${escapeHtml(message)}</span>`;
+            
+            if (details) {
+                const detailText = typeof details === 'object' ? JSON.stringify(details, null, 2) : details;
+                line.innerHTML += `<pre style="margin:4px 0 0 20px; color:#adb5bd; white-space:pre-wrap; word-break:break-all;">${escapeHtml(detailText)}</pre>`;
+            }
+            
+            content.appendChild(line);
+            content.scrollTop = content.scrollHeight;
+            
+            // Update counts
+            document.getElementById('logCount').textContent = `(${logs.length})`;
+            const badge = document.getElementById('logBadge');
+            const errorCount = logs.filter(l => l.level === 'error').length;
+            if (errorCount > 0) {
+                badge.style.display = 'inline';
+                badge.textContent = errorCount;
+            }
+            
+            // Also show toast for errors
+            if (level === 'error') {
+                showToast('Error: ' + message, 10000);
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/"/g, '&quot;').replace(/`/g, '&#96;').replace(/\$/g, '&#36;');
+        }
+
+        function normalizeInstructionItem(instr) {
+            if (typeof instr === 'string') {
+                return { text: instr, instruction_display_text: instr, type: 'edit' };
+            }
+            return instr || {};
+        }
+
+        function getInstructionDisplayText(instr) {
+            const item = normalizeInstructionItem(instr);
+            return item.instruction_display_text || item.text || item.instruction || '';
+        }
+        
+        function toggleLogPanel() {
+            logPanelVisible = !logPanelVisible;
+            document.getElementById('logPanel').style.display = logPanelVisible ? 'block' : 'none';
+        }
+        
+        function clearLogs() {
+            logs.length = 0;
+            document.getElementById('logContent').innerHTML = '';
+            document.getElementById('logCount').textContent = '(0)';
+            document.getElementById('logBadge').style.display = 'none';
+        }
+        
+        function copyLogs() {
+            const text = logs.map(l => {
+                let line = `[${l.time}] [${l.level.toUpperCase()}] ${l.message}`;
+                if (l.details) {
+                    line += '\n  ' + (typeof l.details === 'object' ? JSON.stringify(l.details) : l.details);
+                }
+                return line;
+            }).join('\n');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Logs copied to clipboard');
+            });
+        }
+        
+        // Toast notification (also logs)
+        function showToast(message, duration = null) {
+            const isError = message.toLowerCase().startsWith('error');
+            const finalDuration = duration || (isError ? 10000 : 3000);
+            
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (isError) {
+                toast.style.background = '#dc3545';
+            }
+            toast.textContent = message;
+            
+            // Click to dismiss
+            toast.style.cursor = 'pointer';
+            toast.onclick = () => toast.remove();
+            
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentNode) toast.remove(); }, finalDuration);
+        }
+
+        function copyTextToClipboard(text) {
+            // Validate input
+            if (!text || typeof text !== 'string') {
+                addLog('error', 'Copy failed: No text provided');
+                return Promise.reject(new Error('No text to copy'));
+            }
+
+            addLog('info', `Attempting to copy ${text.length} characters`);
+
+            // Try modern Clipboard API first (requires HTTPS or localhost)
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                addLog('info', 'Using modern Clipboard API');
+                return navigator.clipboard.writeText(text)
+                    .then(() => {
+                        addLog('success', 'Text copied via Clipboard API');
+                    })
+                    .catch(err => {
+                        addLog('warn', 'Clipboard API failed, trying fallback', err.message);
+                        // Fall back to execCommand
+                        return copyViaExecCommand(text);
+                    });
+            }
+
+            // Fallback to execCommand for non-secure contexts or older browsers
+            addLog('info', 'Using execCommand fallback (deprecated)');
+            return copyViaExecCommand(text);
+        }
+
+        function copyViaExecCommand(text) {
+            return new Promise((resolve, reject) => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '0';
+                textarea.style.top = '0';
+                textarea.style.width = '1px';
+                textarea.style.height = '1px';
+                textarea.style.opacity = '0';
+                textarea.setAttribute('readonly', '');
+                document.body.appendChild(textarea);
+                
+                textarea.focus();
+                textarea.select();
+                
+                // For iOS compatibility
+                if (navigator.userAgent.match(/ipad|iphone/i)) {
+                    const range = document.createRange();
+                    range.selectNodeContents(textarea);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    textarea.setSelectionRange(0, 999999);
+                }
+
+                try {
+                    const success = document.execCommand('copy');
+                    if (success) {
+                        addLog('success', 'Text copied via execCommand');
+                        resolve();
+                    } else {
+                        addLog('error', 'execCommand returned false');
+                        document.body.removeChild(textarea);
+                        promptCopyFallback(text);
+                        resolve();
+                    }
+                } catch (err) {
+                    addLog('error', 'execCommand threw error', err.message);
+                    document.body.removeChild(textarea);
+                    promptCopyFallback(text);
+                    resolve();
+                }
+            });
+        }
+
+        function promptCopyFallback(text) {
+            addLog('info', 'Using prompt fallback for copy');
+            const result = prompt('Copy this text (Ctrl+C, then Enter):', text);
+            if (result !== null) {
+                showToast('Text ready to paste');
+            }
+        }
+
+        // Check clipboard support on page load
+        function checkClipboardSupport() {
+            const hasClipboard = !!(navigator.clipboard && navigator.clipboard.writeText);
+            const hasExecCommand = document.queryCommandSupported && document.queryCommandSupported('copy');
+            const isSecure = window.isSecureContext;
+            
+            addLog('info', 'Clipboard support check', {
+                modernAPI: hasClipboard,
+                execCommand: hasExecCommand,
+                isSecureContext: isSecure,
+                protocol: window.location.protocol
+            });
+            
+            if (!hasClipboard && !isSecure) {
+                addLog('warn', 'Running in non-secure context - Clipboard API unavailable. Using fallback method.');
+            }
+            
+            return hasClipboard || hasExecCommand;
+        }
+
+        // Run clipboard check on load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkClipboardSupport();
+        });
+        
+        // Poll task status with logging
+        function pollTask(taskId, onComplete, onError, interval = 2000) {
+            addLog('info', `Polling task: ${taskId}`);
+            
+            const poll = () => {
+                fetch(`/api/tasks/${taskId}`)
+                    .then(r => r.json())
+                    .then(task => {
+                        if (task.status === 'completed') {
+                            addLog('success', `Task completed: ${taskId}`, task.result);
+                            onComplete(task);
+                        } else if (task.status === 'failed') {
+                            addLog('error', `Task failed: ${taskId}`, task.error);
+                            onError(task.error || 'Task failed');
+                        } else {
+                            setTimeout(poll, interval);
+                        }
+                    })
+                    .catch(err => {
+                        addLog('error', `Poll error: ${err.message}`);
+                        onError(err.message);
+                    });
+            };
+            poll();
+        }
+        
+        // Generic action handler with logging
+        function triggerAction(endpoint, data = {}) {
+            addLog('info', `API call: ${endpoint}`, data);
+            
+            return fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => {
+                if (!r.ok) {
+                    return r.text().then(text => {
+                        addLog('error', `HTTP ${r.status}: ${endpoint}`, text);
+                        throw new Error(`HTTP ${r.status}: ${text.substring(0, 200)}`);
+                    });
+                }
+                return r.json();
+            })
+            .then(json => {
+                if (json.error) {
+                    addLog('error', `API error: ${json.error}`);
+                } else if (json.task_id) {
+                    addLog('info', `Task created: ${json.task_id}`);
+                }
+                return json;
+            })
+            .catch(err => {
+                addLog('error', `Request failed: ${err.message}`);
+                throw err;
+            });
+        }
+    </script>
+    
+    <!-- Common JS modules -->
+    <script src="/static/js/download.js"></script>
+    <script src="/static/js/common.js"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

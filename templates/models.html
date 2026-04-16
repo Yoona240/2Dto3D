@@ -1,0 +1,2313 @@
+{% extends 'base.html' %}
+{% set page = 'models' %}
+
+{% block title %}3D Models{% endblock %}
+
+{% block content %}
+<style>
+/* Sidebar TOC Styles */
+.page-with-sidebar { display: flex; gap: 16px; }
+.sidebar-toc {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+}
+.sidebar-toc h4 { margin: 0 0 8px 0; font-size: 14px; color: #495057; }
+.sidebar-toc .toc-controls { display: flex; gap: 4px; margin-bottom: 8px; }
+.sidebar-toc .toc-controls button { flex: 1; padding: 4px 8px; font-size: 11px; }
+.sidebar-toc .toc-controls button.active { background: #007bff; color: #fff; }
+.sidebar-toc input { width: 100%; padding: 6px; font-size: 12px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 8px; }
+.toc-list { list-style: none; padding: 0; margin: 0; max-height: 60vh; overflow-y: auto; }
+.toc-item { padding: 6px 8px; font-size: 12px; cursor: pointer; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toc-item:hover { background: #f0f0f0; }
+.toc-item.active { background: #e7f1ff; color: #0d6efd; }
+.main-content { flex: 1; min-width: 0; }
+@media (max-width: 900px) { .sidebar-toc { display: none; } .main-content { width: 100%; } }
+
+/* Models page card sizing */
+.models-page model-viewer {
+    height: 480px;
+}
+
+.models-page .img-thumb {
+    width: 128px;
+    height: 128px;
+}
+
+/* Filter button styles */
+.filter-btn {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    color: #495057;
+}
+.filter-btn:hover {
+    background: #e9ecef;
+}
+.filter-btn.active {
+    background: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+.filter-select {
+    min-width: 220px;
+    width: auto;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+.filter-section-hidden {
+    display: none !important;
+}
+.experiment-filter-details {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #dee2e6;
+}
+.item-card.filtered-out {
+    display: none !important;
+}
+</style>
+
+<div class="models-page">
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+    <div>
+        <h1 class="page-title">3D Models</h1>
+        <p class="page-desc">Generated 3D models from the pipeline</p>
+    </div>
+    <div class="batch-actions" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <div style="display:flex; gap:4px; align-items:center; margin-right:8px; padding-right:8px; border-right:1px solid #dee2e6;">
+            <span style="font-size:12px; color:#6c757d;">Sort:</span>
+            <button class="btn btn-secondary btn-sm" onclick="sortCards('id')" id="sortCardsById" style="font-size:11px;">ID</button>
+            <button class="btn btn-secondary btn-sm active" onclick="sortCards('time')" id="sortCardsByTime" style="font-size:11px;">Time ↓</button>
+        </div>
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+            <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)">
+            Select All
+        </label>
+        <span id="selectedCount" style="font-size:12px; color:#6c757d; min-width:60px;">(0 selected)</span>
+        <button class="btn btn-primary btn-sm" onclick="batchRender()" id="batchRenderBtn" disabled>Batch Render</button>
+        <button class="btn btn-secondary btn-sm" onclick="showBatchEditAllModal()" id="batchEditBtn" disabled>Batch Edit</button>
+        <button class="btn btn-success btn-sm" onclick="showBatchGen3DModal()" id="batchGen3DBtn" disabled>Batch Gen 3D</button>
+        <button class="btn btn-secondary btn-sm" onclick="showRefreshAllLpipsCommand()" id="refreshAllDreamsimBtn" title="Generate a command to recompute Stage2 LPIPS for all refreshable models">Update All LPIPS</button>
+        <button class="btn btn-info btn-sm" onclick="downloadSelectedModels()" title="Download selected or all 3D models">⬇ Download</button>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding:12px; background:#f8f9fa; border-radius:8px; border:1px solid #e9ecef;">
+    <span style="font-size:12px; font-weight:500; color:#495057;">Filter:</span>
+    <div style="display:flex; gap:4px; flex-wrap:wrap;">
+        <button class="btn btn-sm filter-btn status-filter-btn active" data-filter="all" onclick="applyFilter('all')" style="font-size:11px;">All</button>
+        <button class="btn btn-sm filter-btn status-filter-btn" data-filter="has-instr" onclick="applyFilter('has-instr')" style="font-size:11px;">Has Instr</button>
+        <button class="btn btn-sm filter-btn status-filter-btn" data-filter="no-instr" onclick="applyFilter('no-instr')" style="font-size:11px;">No Instr</button>
+        <button class="btn btn-sm filter-btn status-filter-btn" data-filter="has-views" onclick="applyFilter('has-views')" style="font-size:11px;">Has Views</button>
+        <button class="btn btn-sm filter-btn status-filter-btn" data-filter="instr-no-views" onclick="applyFilter('instr-no-views')" style="font-size:11px;" title="Has instructions but no rendered views - needs rendering">Instr w/o Views</button>
+        <button class="btn btn-sm filter-btn status-filter-btn" data-filter="has-edits" onclick="applyFilter('has-edits')" style="font-size:11px;">Has Edits</button>
+        <button class="btn btn-sm filter-btn status-filter-btn" data-filter="views-no-edits" onclick="applyFilter('views-no-edits')" style="font-size:11px;" title="Has rendered views but no edited views - needs editing">Views w/o Edits</button>
+        <button class="btn btn-sm filter-btn status-filter-btn" data-filter="edits-no-target" onclick="applyFilter('edits-no-target')" style="font-size:11px;" title="Has edited views but no Target 3D generated - needs 3D generation">Edits w/o Target 3D</button>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-left:8px; padding-left:8px; border-left:1px solid #dee2e6;">
+        <label for="experimentFilterMode" style="font-size:12px; font-weight:500; color:#495057; margin:0;">Experiment Filter:</label>
+        <select id="experimentFilterMode" class="form-select filter-select" onchange="setExperimentFilterMode(this.value)">
+            <option value="all">All Models</option>
+            <option value="provider_pair">Provider Pair</option>
+            <option value="yaml">YAML</option>
+        </select>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-left:8px;">
+        <label for="categoryFilterSelect" style="font-size:12px; font-weight:500; color:#495057; margin:0;">Category:</label>
+        <select id="categoryFilterSelect" class="form-select filter-select" onchange="setCategoryFilter(this.value)">
+            <option value="all">All Categories</option>
+        </select>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="clearModelFilters()" style="font-size:11px;">Clear Filters</button>
+    <span id="filterCount" style="font-size:11px; color:#6c757d; margin-left:auto;">(showing all)</span>
+    <div id="experimentFilterDetails" class="experiment-filter-details filter-section-hidden">
+        <div id="providerPairFilters" class="filter-section-hidden" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <label for="sourceProviderFilterSelect" style="font-size:12px; font-weight:500; color:#495057; margin:0;">Source Provider:</label>
+            <select id="sourceProviderFilterSelect" class="form-select filter-select" onchange="setSourceProviderFilter(this.value)">
+                <option value="all">All Source Providers</option>
+            </select>
+            <label for="targetProviderFilterSelect" style="font-size:12px; font-weight:500; color:#495057; margin:0;">Target Provider:</label>
+            <select id="targetProviderFilterSelect" class="form-select filter-select" onchange="setTargetProviderFilter(this.value)">
+                <option value="all">All Target Providers</option>
+            </select>
+        </div>
+        <div id="yamlFilters" class="filter-section-hidden" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <label for="yamlFilterSelect" style="font-size:12px; font-weight:500; color:#495057; margin:0;">YAML:</label>
+            <select id="yamlFilterSelect" class="form-select filter-select" onchange="setYamlFilter(this.value)">
+                <option value="all">All YAML Files</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div id="modelSearchBar" style="display:flex; gap:8px; align-items:center; margin-bottom:12px; padding:10px 14px; background:#f0f4ff; border-radius:8px; border:1px solid #c7d5f5;">
+    <span style="font-size:12px; font-weight:500; color:#495057; white-space:nowrap;">Search:</span>
+    <input type="text" id="modelSearchInput" placeholder="ID, object name, or category…"
+           style="flex:1; min-width:0; padding:5px 10px; font-size:13px; border:1px solid #ced4da; border-radius:6px;"
+           onkeydown="if(event.key==='Enter') searchModels()">
+    <button class="btn btn-primary btn-sm" onclick="searchModels()" style="white-space:nowrap;">Search</button>
+    <button class="btn btn-secondary btn-sm" id="clearSearchBtn" onclick="clearModelSearch()" style="display:none; white-space:nowrap;">✕ Clear</button>
+    <span id="searchResultCount" style="display:none; font-size:12px; color:#495057; white-space:nowrap;"></span>
+</div>
+
+{% if experiment_filter_error %}
+<div class="card" style="margin-bottom:16px; border-color:#f5c2c7; background:#fff5f5;">
+    <div class="card-body" style="color:#842029; font-size:13px; padding:12px 16px;">
+        Experiment filter metadata is temporarily unavailable.
+        {{ experiment_filter_error }}
+    </div>
+</div>
+{% endif %}
+
+<div class="page-with-sidebar">
+    <!-- Sidebar TOC -->
+    <div class="sidebar-toc" id="sidebarToc">
+        <h4>📋 Directory <span id="tocCount" style="font-size:12px; color:#6c757d; font-weight:normal;">(0)</span></h4>
+        <div class="toc-controls">
+            <button class="btn btn-secondary btn-sm active" onclick="sortToc('id')" id="sortById">ID</button>
+            <button class="btn btn-secondary btn-sm" onclick="sortToc('provider')" id="sortByProvider">Provider</button>
+        </div>
+        <input type="text" placeholder="Search..." id="tocSearch" oninput="filterTocList()">
+        <ul class="toc-list" id="tocList"></ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div id="modelsInitialLoading" style="text-align:center; padding:80px 40px; display:none;">
+            <div style="font-size:15px; color:#495057; margin-bottom:8px;">Loading models...</div>
+            <div style="font-size:12px; color:#adb5bd;" id="modelsInitialLoadingHint"></div>
+        </div>
+        <div class="grid grid-3" id="modelsGrid"></div>
+        <div id="modelsLoadingIndicator" style="text-align:center; padding:40px; display:none;">
+            <div style="color:#6c757d;">Loading more models...</div>
+        </div>
+        <div id="noModelsMessage" class="card" style="display:none;">
+            <div class="card-body text-muted" style="text-align:center; padding:40px;">
+                No 3D models found. Generate some from the Images page.
+            </div>
+        </div>
+        <div id="modelsLoadMoreSentinel" style="height:1px;"></div>
+    </div>
+</div>
+
+</div>
+
+<!-- Instruction View Modal -->
+<div id="instrModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 600px; max-width: 90vw; max-height: 80vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="instrModalTitle">Editing Instructions</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeInstrModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <div id="instrList" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Command Display Modal -->
+<div id="commandModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 700px; max-width: 95vw;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="commandModalTitle">Command</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeCommandModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body">
+            <div id="commandModalMessage"></div>
+            <div style="position:relative;">
+                <pre id="commandModalCode" style="background:#1e1e1e; color:#d4d4d4; padding:16px; border-radius:6px; overflow-x:auto; font-size:13px; margin:0; white-space:pre-wrap; word-break:break-all;"></pre>
+                <button class="btn btn-secondary btn-sm" onclick="copyCommand(this)" style="position:absolute; top:8px; right:8px; padding:4px 8px; font-size:11px;">Copy</button>
+            </div>
+            <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeCommandModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Modal with Edit Option -->
+<div id="viewModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 700px; max-width: 95vw; max-height: 90vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="viewModalTitle">View</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeViewModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <img id="viewModalImage" src="" alt="Rendered View" style="width:100%; border-radius:4px; max-height:400px; object-fit:contain; background:#f8f9fa;">
+            
+            <!-- Instruction Selection -->
+            <div class="mt-3">
+                <label style="display:block; margin-bottom:8px; font-weight:500;">Edit this single view:</label>
+                
+                <!-- Existing instructions from source image -->
+                <div id="existingInstructions" style="display:none; margin-bottom:12px;">
+                    <div style="font-size:12px; color:#6c757d; margin-bottom:6px;">Available instructions from source image:</div>
+                    <div id="instrSelectList" style="display:flex; flex-direction:column; gap:6px; max-height:150px; overflow-y:auto;"></div>
+                </div>
+                
+                <!-- Custom instruction input -->
+                <textarea id="viewEditInstruction" class="form-control" style="width:100%; height:60px; padding:8px; border:1px solid #ced4da; border-radius:4px;" placeholder="Or enter a custom instruction..."></textarea>
+            </div>
+            
+            <div class="mt-3" style="display:flex; gap:8px; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeViewModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="applyEditToView()">Apply Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch Edit Modal (3 views: front/back/right) -->
+<div id="batchEditModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 600px; max-width: 95vw; max-height: 90vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Edit 3 Views (front/back/right)</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeBatchEditModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <p style="font-size:13px; color:#6c757d; margin-bottom:12px;">
+                This will apply the same editing instruction to <strong>front</strong>, <strong>back</strong>, and <strong>right</strong> views.
+            </p>
+            
+            <!-- Existing instructions from source image -->
+            <div id="batchExistingInstructions" style="display:none; margin-bottom:12px;">
+                <div style="font-size:12px; color:#6c757d; margin-bottom:6px;">Available instructions from source image:</div>
+                <div id="batchInstrSelectList" style="display:flex; flex-direction:column; gap:6px; max-height:150px; overflow-y:auto;"></div>
+            </div>
+            
+            <textarea id="batchEditInstruction" class="form-control" style="width:100%; height:80px; padding:8px; border:1px solid #ced4da; border-radius:4px;" placeholder="Enter editing instruction..."></textarea>
+            
+            <div class="mt-3" style="display:flex; gap:8px; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeBatchEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="applyBatchEdit()">Apply to 3 Views</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch Edit All Selected Models Modal -->
+<div id="batchEditAllModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 700px; max-width: 95vw; max-height: 90vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Batch Edit <span id="batchEditAllCount">0</span> Models</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeBatchEditAllModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <p style="font-size:13px; color:#6c757d; margin-bottom:12px;">
+                Apply each model's own instructions to <strong>all 6 views</strong>. Automatically skips models already edited with the same instruction.
+            </p>
+            
+            <!-- Instruction selection mode -->
+            <div class="form-group mb-3">
+                <label style="display:block; margin-bottom:6px; font-weight:500;">Use instruction:</label>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <input type="radio" name="batchInstrMode" value="0" checked> 
+                        <span>1st instruction (Remove)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <input type="radio" name="batchInstrMode" value="1"> 
+                        <span>2nd instruction (Replace)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <input type="radio" name="batchInstrMode" value="all"> 
+                        <span>All instructions (each creates a batch)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Preview of models and their instructions -->
+            <div class="form-group mb-3">
+                <label style="display:block; margin-bottom:6px; font-weight:500;">Preview (<span id="batchEditPreviewCount">0</span> models with instructions):</label>
+                <div id="batchEditPreview" style="max-height:200px; overflow-y:auto; border:1px solid #dee2e6; border-radius:4px; padding:8px; background:#f8f9fa; font-size:12px;">
+                    Loading...
+                </div>
+            </div>
+            
+            <div class="mt-3" style="display:flex; gap:8px; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeBatchEditAllModal()">Cancel</button>
+                <button class="btn btn-outline-primary" onclick="showBatchEditCommand()">Show Command</button>
+                <button class="btn btn-primary" onclick="applyBatchEditAll()">Apply via API</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch Gen 3D Modal -->
+<div id="batchGen3DModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 600px; max-width: 95vw; max-height: 90vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Batch Generate Target 3D</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeBatchGen3DModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <p style="font-size:13px; color:#6c757d; margin-bottom:12px;">
+                Generate Target 3D models from edited views. Automatically skips edit batches that already have Target 3D.
+            </p>
+            
+            <!-- Provider selection -->
+            <div class="form-group mb-3">
+                <label style="display:block; margin-bottom:6px; font-weight:500;">3D Provider:</label>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <input type="radio" name="batchGen3DProvider" value="hunyuan" checked> 
+                        <span>Hunyuan</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <input type="radio" name="batchGen3DProvider" value="tripo"> 
+                        <span>Tripo</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <input type="radio" name="batchGen3DProvider" value="rodin"> 
+                        <span>Rodin</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Preview of models with edits -->
+            <div class="form-group mb-3">
+                <label style="display:block; margin-bottom:6px; font-weight:500;">Models with edited views (<span id="batchGen3DCount">0</span>):</label>
+                <div id="batchGen3DPreview" style="max-height:200px; overflow-y:auto; border:1px solid #dee2e6; border-radius:4px; padding:8px; background:#f8f9fa; font-size:12px;">
+                    Loading...
+                </div>
+            </div>
+            
+            <div class="mt-3" style="display:flex; gap:8px; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeBatchGen3DModal()">Cancel</button>
+                <button class="btn btn-success" onclick="showBatchGen3DCommand()">Show Command</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Target 3D Model Viewer Modal -->
+<div id="target3DModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 600px; max-width: 95vw; max-height: 90vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="target3DModalTitle">Target 3D Model</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeTarget3DModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <div style="height:400px; background:#f8f9fa; border-radius:8px; position:relative;">
+                <model-viewer
+                    id="target3DViewer"
+                    camera-controls
+                    auto-rotate
+                    shadow-intensity="1"
+                    environment-image="neutral"
+                    style="width:100%; height:100%;"
+                ></model-viewer>
+            </div>
+            <div class="mt-3" style="display:flex; gap:8px; justify-content:space-between; align-items:center;">
+                <span id="target3DFilename" style="font-size:12px; color:#6c757d;"></span>
+                <div style="display:flex; gap:8px;">
+                    <a id="target3DDownload" href="#" download class="btn btn-primary btn-sm">Download GLB</a>
+                    <button class="btn btn-secondary" onclick="closeTarget3DModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Model Path Display Modal -->
+<div id="modelPathModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 700px; max-width: 95vw;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="modelPathModalTitle">Server Path</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeModelPathModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body">
+            <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:12px; font-weight:500; color:#495057; margin-bottom:4px;">Absolute Path:</label>
+                <div style="position:relative;">
+                    <input type="text" id="modelAbsolutePath" readonly style="width:100%; padding:8px 60px 8px 8px; border:1px solid #ced4da; border-radius:4px; background:#f8f9fa; font-family:monospace; font-size:13px;">
+                    <button class="btn btn-primary btn-sm" onclick="copyToClipboard('modelAbsolutePath')" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); padding:4px 8px; font-size:11px;">Copy</button>
+                </div>
+            </div>
+            <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:12px; font-weight:500; color:#495057; margin-bottom:4px;">Relative Path:</label>
+                <div style="position:relative;">
+                    <input type="text" id="modelRelativePath" readonly style="width:100%; padding:8px 60px 8px 8px; border:1px solid #ced4da; border-radius:4px; background:#f8f9fa; font-family:monospace; font-size:13px;">
+                    <button class="btn btn-secondary btn-sm" onclick="copyToClipboard('modelRelativePath')" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); padding:4px 8px; font-size:11px;">Copy</button>
+                </div>
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#495057; margin-bottom:4px;">Filename:</label>
+                <input type="text" id="modelFilename" readonly style="width:100%; padding:8px; border:1px solid #ced4da; border-radius:4px; background:#f8f9fa; font-family:monospace; font-size:13px;">
+            </div>
+            <div class="mt-3" style="display:flex; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeModelPathModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentModelId = null;
+let currentViewName = null;
+
+// ============ Target 3D Modal Functions ============
+function showTarget3DModal(modelId, modelPath, filename) {
+    document.getElementById('target3DModalTitle').textContent = `Target 3D: ${modelId}`;
+    const viewer = document.getElementById('target3DViewer');
+    viewer.setAttribute('src', modelPath);
+    document.getElementById('target3DFilename').textContent = filename;
+    document.getElementById('target3DDownload').href = modelPath;
+    document.getElementById('target3DModal').style.display = 'flex';
+}
+
+function closeTarget3DModal() {
+    document.getElementById('target3DModal').style.display = 'none';
+    // Unload model to free memory
+    document.getElementById('target3DViewer').removeAttribute('src');
+}
+
+// ============ Instruction Modal Functions ============
+let currentInstrModelId = null;
+
+function normalizeInstructionItem(instr) {
+    if (typeof instr === 'string') {
+        return { text: instr, instruction_display_text: instr, type: 'edit' };
+    }
+    return instr || {};
+}
+
+function getInstructionDisplayText(instr) {
+    const item = normalizeInstructionItem(instr);
+    return item.instruction_display_text || item.text || item.instruction || '';
+}
+
+
+function viewInstruction(modelId) {
+    currentInstrModelId = modelId;
+    fetch(`/api/images/${modelId}/instruction`)
+        .then(r => r.json())
+        .then(data => {
+            const instructions = data.instruction_items || data.instructions || (data.instruction ? [data.instruction] : []);
+            if (instructions.length === 0) {
+                showToast('No instructions found');
+                return;
+            }
+
+            document.getElementById('instrModalTitle').textContent = `Instructions - ${modelId}`;
+            const listContainer = document.getElementById('instrList');
+            listContainer.innerHTML = '';
+
+            instructions.forEach((instr, idx) => {
+                const itemData = (typeof instr === 'string') ? { text: instr, instruction_display_text: instr, type: 'edit' } : (instr || {});
+                const text = itemData.instruction_display_text || itemData.text || itemData.instruction || JSON.stringify(itemData);
+                const type = itemData.type || 'edit';
+                const item = document.createElement('div');
+                item.className = 'instr-item';
+                item.id = `instr-item-${modelId}-${idx}`;
+                item.style.cssText = 'padding:12px; background:#f8f9fa; border-radius:6px; border:1px solid #dee2e6;';
+
+                const contentDiv = document.createElement('div');
+                contentDiv.style.cssText = 'display:flex; justify-content:space-between; align-items:flex-start; gap:12px;';
+
+                const textDiv = document.createElement('div');
+                textDiv.style.flex = '1';
+                textDiv.innerHTML = `<span style="font-weight:500; color:#495057;">#${idx + 1}</span> <span class="badge" style="background:#17a2b8; color:#fff; font-size:10px;">${type}</span>`;
+
+                const textP = document.createElement('p');
+                textP.style.cssText = 'margin:8px 0 0 0; color:#212529; white-space:pre-wrap;';
+                textP.textContent = text;
+                textDiv.appendChild(textP);
+
+                const btnGroup = document.createElement('div');
+                btnGroup.style.cssText = 'display:flex; flex-direction:column; gap:4px;';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm';
+                deleteBtn.style.cssText = 'background:#dc3545; border-color:#dc3545; color:#fff;';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteInstructionFromModels(modelId, idx);
+
+                btnGroup.appendChild(deleteBtn);
+
+                contentDiv.appendChild(textDiv);
+                contentDiv.appendChild(btnGroup);
+                item.appendChild(contentDiv);
+                listContainer.appendChild(item);
+            });
+
+            document.getElementById('instrModal').style.display = 'flex';
+        })
+        .catch(err => {
+            showToast('Error loading instructions: ' + err.message);
+        });
+}
+
+function closeInstrModal() {
+    document.getElementById('instrModal').style.display = 'none';
+    currentInstrModelId = null;
+}
+
+function deleteInstructionFromModels(modelId, instrIndex) {
+    if (!confirm(`Delete instruction #${instrIndex + 1}?`)) return;
+
+    fetch(`/api/images/${modelId}/instruction/${instrIndex}`, { method: 'DELETE' })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                throw new Error(data.error || `HTTP ${res.status}`);
+            }
+
+            showToast('Instruction deleted');
+
+            // Refresh the modal
+            if (data.remaining_count > 0) {
+                viewInstruction(modelId);
+            } else {
+                // Close modal if no instructions left
+                closeInstrModal();
+                // Update card to remove "Has Instr" badge and button
+                const card = document.getElementById('card-' + modelId);
+                if (card) {
+                    const instrBadge = card.querySelector('.badge-instr');
+                    if (instrBadge) instrBadge.remove();
+                    const viewBtn = card.querySelector('.view-instr-btn');
+                    if (viewBtn) viewBtn.remove();
+                }
+            }
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+        });
+}
+
+// ============ Model Detail Modal Functions ============
+function showModelDetail(modelId) {
+    document.getElementById('modelDetailTitle').textContent = `Model: ${modelId}`;
+    document.getElementById('modelDetailContent').innerHTML = '<div style="text-align:center; padding:40px; color:#6c757d;">Loading...</div>';
+    document.getElementById('modelDetailModal').style.display = 'flex';
+    
+    fetch(`/api/model/${modelId}`)
+        .then(res => res.json())
+        .then(model => {
+            renderModelDetail(model);
+        })
+        .catch(err => {
+            document.getElementById('modelDetailContent').innerHTML = `<div style="color:#dc3545;">Error: ${err.message}</div>`;
+        });
+}
+
+function closeModelDetail() {
+    document.getElementById('modelDetailModal').style.display = 'none';
+    // Unload any model viewers
+    const viewers = document.querySelectorAll('#modelDetailContent model-viewer');
+    viewers.forEach(v => v.removeAttribute('src'));
+}
+
+function renderModelDetail(model) {
+    let html = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <!-- Left Column: Source 3D + Rendered Views -->
+        <div>
+            <div style="font-weight:600; margin-bottom:8px; font-size:14px;">📦 Source 3D Model</div>
+            <div style="background:#f8f9fa; border-radius:8px; height:200px; position:relative;">
+                <model-viewer
+                    src="/${model.path}"
+                    camera-controls
+                    auto-rotate
+                    shadow-intensity="1"
+                    environment-image="neutral"
+                    style="width:100%; height:100%;"
+                ></model-viewer>
+            </div>
+            <div style="font-size:12px; color:#6c757d; margin-top:4px;">
+                <span class="badge badge-${model.provider || 'pending'}">${model.provider || 'unknown'}</span>
+                ${model.filename}
+            </div>
+            
+            ${model.source_image ? `
+            <div style="margin-top:12px;">
+                <div style="font-size:12px; font-weight:500; margin-bottom:6px;">Source Image:</div>
+                <img src="/${model.source_image}" loading="lazy" decoding="async" style="height:60px; border-radius:4px;">
+            </div>
+            ` : ''}
+            
+            ${model.has_views ? `
+            <div style="margin-top:16px;">
+                <div style="font-weight:600; margin-bottom:8px; font-size:14px;">🎬 Rendered Views (Source 3D)</div>
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;">
+                    ${model.rendered_views.map(v => `
+                    <div style="position:relative; cursor:pointer;" onclick="showViewModal('${model.id}', '${v.name}', '/${v.path}')">
+                        <img src="/${v.path}" loading="lazy" decoding="async" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:4px; border:1px solid #dee2e6;">
+                        <div style="font-size:10px; text-align:center; color:#6c757d; background:rgba(255,255,255,0.9); padding:1px 4px; border-radius:2px; position:absolute; bottom:2px; left:50%; transform:translateX(-50%);">${v.name}</div>
+                    </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top:8px;">
+                    <button class="btn btn-primary btn-sm" onclick="closeModelDetail(); showBatchEditModal('${model.id}')">
+                        Edit 3 Views (front/back/right)
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="renderViews('${model.id}', this)">
+                        Re-render
+                    </button>
+                </div>
+            </div>
+            ` : `
+            <div style="margin-top:16px;">
+                <button class="btn btn-primary" onclick="renderViews('${model.id}', this)">
+                    Render Views
+                </button>
+            </div>
+            `}
+        </div>
+        
+        <!-- Right Column: Edited Versions -->
+        <div>
+            <div style="font-weight:600; margin-bottom:8px; font-size:14px;">✏️ Edited Versions (${model.edited_batches ? model.edited_batches.length : 0})</div>
+            ${model.has_edits ? `
+            <div style="max-height:500px; overflow-y:auto;">
+                ${model.edited_batches.map((batch, idx) => `
+                <div class="edit-batch" style="background:#f8f9fa; border-radius:8px; padding:12px; margin-bottom:12px; border:1px solid #e9ecef;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                        <div style="font-size:11px; color:#6c757d; flex:1;" title="${batch.instruction_display_text || batch.instruction}">
+                            <strong>#${idx + 1}</strong> ${(batch.instruction_display_text || batch.instruction).substring(0, 60)}${(batch.instruction_display_text || batch.instruction).length > 60 ? '...' : ''}
+                        </div>
+                        ${batch.target_3d ? '<span class="badge" style="background:#17a2b8; color:#fff; font-size:10px;">Has Target 3D</span>' : ''}
+                    </div>
+                    
+                    <!-- Source vs Edited comparison -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <div style="font-size:10px; color:#6c757d; margin-bottom:4px;">Edited Views:</div>
+                            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:3px;">
+                                ${batch.views.map(v => `
+                                <img src="/${v.path}" loading="lazy" decoding="async" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:3px; border:1px solid #dee2e6;" title="${v.name}">
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            ${batch.target_3d ? `
+                            <div style="font-size:10px; color:#6c757d; margin-bottom:4px;">Target 3D:</div>
+                            <div style="background:#e9ecef; border-radius:4px; height:80px; position:relative;">
+                                <model-viewer
+                                    data-src="/${batch.target_3d.path}"
+                                    camera-controls
+                                    auto-rotate
+                                    shadow-intensity="1"
+                                    environment-image="neutral"
+                                    style="width:100%; height:100%;"
+                                    class="lazy-detail-model"
+                                ></model-viewer>
+                                <button class="btn btn-secondary btn-sm" style="position:absolute; bottom:4px; right:4px; padding:2px 6px; font-size:10px;" onclick="loadDetailModel(this)">Load</button>
+                            </div>
+                            ` : `
+                            <div style="font-size:10px; color:#6c757d; margin-bottom:4px;">Target 3D:</div>
+                            <div style="background:#f8f9fa; border-radius:4px; height:80px; display:flex; align-items:center; justify-content:center; border:1px dashed #dee2e6;">
+                                <button class="btn btn-success btn-sm" onclick="generate3DFromEdit('${model.id}', '${batch.edit_id}', this)" style="font-size:11px;">
+                                    Gen 3D (${model.provider || 'tripo'})
+                                </button>
+                            </div>
+                            `}
+                        </div>
+                    </div>
+                    
+                    ${batch.target_3d ? `
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-outline-primary btn-sm" onclick="showTarget3DModal('${batch.target_3d.id}', '/${batch.target_3d.path}', '${batch.target_3d.filename}')" style="font-size:11px;">
+                            🔍 View Full 3D
+                        </button>
+                    </div>
+                    ` : ''}
+                </div>
+                `).join('')}
+            </div>
+            ` : `
+            <div style="background:#f8f9fa; border-radius:8px; padding:20px; text-align:center; color:#6c757d;">
+                No edited versions yet.<br>
+                <button class="btn btn-primary btn-sm mt-2" onclick="closeModelDetail(); showBatchEditModal('${model.id}')" ${!model.has_views ? 'disabled' : ''}>
+                    Create Edit
+                </button>
+            </div>
+            `}
+        </div>
+    </div>
+    
+    <div style="margin-top:20px; padding-top:16px; border-top:1px solid #e9ecef; display:flex; justify-content:space-between;">
+        <button class="btn btn-secondary btn-sm" style="background:#dc3545; border-color:#dc3545; color:#fff;" onclick="deleteAsset('${model.id}')">
+            Delete Model
+        </button>
+        <button class="btn btn-secondary" onclick="closeModelDetail()">Close</button>
+    </div>
+    `;
+    
+    document.getElementById('modelDetailContent').innerHTML = html;
+}
+
+function loadDetailModel(btn) {
+    const viewer = btn.parentElement.querySelector('model-viewer.lazy-detail-model');
+    if (viewer) {
+        const src = viewer.getAttribute('data-src');
+        if (src) {
+            viewer.setAttribute('src', src);
+            btn.style.display = 'none';
+        }
+    }
+}
+
+
+
+// ============ Lazy load model-viewer ============
+function hydrateModelViewer(el) {
+    if (el.dataset.loaded === 'true') return;
+    const src = el.getAttribute('data-src');
+    if (!src) return;
+    el.setAttribute('src', src);
+    el.dataset.loaded = 'true';
+    const btn = el.parentElement ? el.parentElement.querySelector('.lazy-model-btn') : null;
+    if (btn) btn.style.display = 'none';
+}
+
+function loadModelNow(btn) {
+    const container = btn.closest('.lazy-model-container');
+    if (!container) return;
+    const viewer = container.querySelector('model-viewer.lazy-model');
+    if (viewer) hydrateModelViewer(viewer);
+}
+
+// Models are only loaded when user clicks "Load 3D" button
+// No auto-loading to reduce page load time and memory usage
+
+// ============ Card Sorting Functions ============
+let allTocItems = [];
+let loadedModelIds = new Set();
+let currentPage = 0;
+let isLoading = false;
+let hasMore = true;
+const perPage = 20;
+let cardSortBy = 'time'; // 'id' or 'time'
+let currentFilter = 'all'; // Current active filter
+let currentCategoryFilter = 'all';
+let currentExperimentFilterMode = 'all';
+let currentSourceProviderFilter = 'all';
+let currentTargetProviderFilter = 'all';
+let currentYamlFilter = 'all';
+let tocSortBy = 'id'; // 'id' or 'provider'
+let searchMode = false;
+let searchQuery = '';
+let savedGridHTML = null;
+let savedPaginationState = null;
+const MODELS_PAGE_STATE_KEY = 'models-page-state:v1';
+const MODELS_PAGE_STATE_TTL_MS = 15 * 60 * 1000;
+let modelsStateSaveTimer = null;
+
+let allModelsData = {};
+const experimentFilterData = {{ experiment_filter_data_json | safe }};
+const experimentFilterError = {{ (experiment_filter_error or '') | tojson }};
+
+function getModelMeta(modelId) {
+    return allModelsData[modelId] || null;
+}
+
+function buildModelMetaFromPayload(model) {
+    const targetCount = Array.isArray(model.edited_batches)
+        ? model.edited_batches.filter(batch => batch.target_3d).length
+        : 0;
+    const editCount = Array.isArray(model.edited_batches)
+        ? model.edited_batches.length
+        : (model.edit_count || 0);
+
+    return {
+        ...model,
+        created_at: model.created_at || '',
+        provider: model.provider || 'unknown',
+        category_name: model.category_name || 'Unknown Category',
+        object_name: model.object_name || '',
+        has_views: model.has_views === true,
+        has_instructions: model.has_instructions === true,
+        has_edits: model.has_edits === true,
+        instructions_count: model.instructions_count || 0,
+        rendered_views_count: Array.isArray(model.rendered_views)
+            ? model.rendered_views.length
+            : (model.rendered_views_count || 0),
+        edit_count: editCount,
+        target_ready_count: targetCount,
+        ready_pair_count: targetCount,
+        edits_without_target: editCount > 0 && targetCount < editCount,
+    };
+}
+
+function sortTocItemsInPlace(by) {
+    allTocItems.sort((a, b) => {
+        if (by === 'id') {
+            return (a.id || '').localeCompare(b.id || '');
+        }
+        return (a.provider || '').localeCompare(b.provider || '');
+    });
+}
+
+function mergeLoadedModelsIntoToc(models) {
+    const items = Array.isArray(models) ? models : [];
+    let tocNeedsRender = false;
+
+    items.forEach(model => {
+        if (!model || typeof model.id !== 'string' || !model.id) {
+            return;
+        }
+
+        const normalized = buildModelMetaFromPayload(model);
+        const existing = allModelsData[normalized.id];
+        if (existing) {
+            Object.assign(existing, normalized);
+            tocNeedsRender = true;
+            return;
+        }
+
+        allModelsData[normalized.id] = normalized;
+        allTocItems.push(normalized);
+        tocNeedsRender = true;
+    });
+
+    if (tocNeedsRender) {
+        sortTocItemsInPlace(tocSortBy);
+        renderTocList();
+        populateCategoryFilterOptions();
+        updateTocVisibility();
+    }
+}
+
+function createModelCard(model) {
+    const targetCount = Array.isArray(model.edited_batches)
+        ? model.edited_batches.filter(batch => batch.target_3d).length
+        : 0;
+    const editsWithoutTarget = Array.isArray(model.edited_batches)
+        && model.edited_batches.length > 0
+        && targetCount < model.edited_batches.length;
+    const filterCategoryName = model.category_name || 'Unknown Category';
+    const filterObjectName = model.object_name || '';
+    const sourceImage = model.source_image
+        ? `<div class="mt-2" style="display:flex; align-items:center; gap:8px;">
+                <img src="/${model.source_image}" class="img-thumb" alt="source" loading="lazy" decoding="async" fetchpriority="low" style="height:128px; border-radius:4px;">
+                ${model.has_views && Array.isArray(model.rendered_views) && model.rendered_views.length > 0
+                    ? `<img src="/${model.rendered_views[0].path}" alt="front" loading="lazy" decoding="async" fetchpriority="low" style="height:128px; border-radius:4px; border:1px solid #dee2e6;">`
+                    : ''
+                }
+            </div>`
+        : '';
+    const objectLine = model.category_name || model.object_name
+        ? `<div style="font-size:12px; color:#6c757d; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${model.category_name || 'Unknown Category'}${model.object_name ? ` · ${model.object_name}` : ''}
+           </div>`
+        : '';
+
+    return `
+    <div class="item-card" id="card-${model.id}" data-model-id="${model.id}"
+         data-has-views="${model.has_views ? 'true' : 'false'}"
+         data-has-instructions="${model.has_instructions ? 'true' : 'false'}"
+         data-has-edits="${model.has_edits ? 'true' : 'false'}"
+         data-edits-without-target="${editsWithoutTarget ? 'true' : 'false'}"
+         data-provider="${model.provider || 'unknown'}"
+         data-category="${filterCategoryName}"
+         data-object-name="${filterObjectName}">
+        <div style="position:relative;">
+            <div style="position:absolute; top:8px; right:8px; z-index:10; display:flex; gap:4px;">
+                <button class="btn btn-sm" onclick="event.stopPropagation(); showModelPath('${model.id}')" title="Show Server Path" style="background:rgba(255,255,255,0.9); border:1px solid #ddd; padding:4px 6px; font-size:11px;">📁</button>
+                <button class="btn btn-sm" onclick="event.stopPropagation(); downloadFile('/${model.path}', '${model.id}.glb')" title="Download GLB" style="background:rgba(255,255,255,0.9); border:1px solid #ddd; padding:4px 6px; font-size:11px;">⬇</button>
+            </div>
+            <div class="lazy-model-container" style="position:relative; cursor:pointer;" onclick="window.open('/model/${model.id}', '_blank')">
+                <model-viewer
+                    data-src="/${model.path}"
+                    camera-controls
+                    auto-rotate
+                    shadow-intensity="1"
+                    environment-image="neutral"
+                    alt="${model.id}"
+                    class="lazy-model"
+                    style="pointer-events:none;"
+                ></model-viewer>
+                <button class="btn btn-secondary btn-sm lazy-model-btn" style="position:absolute; inset:auto 8px 8px 8px; width:auto;" onclick="event.stopPropagation(); loadModelNow(this)">Load 3D</button>
+            </div>
+        </div>
+        <div class="item-card-body">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <input type="checkbox" class="item-select" data-id="${model.id}" data-has-views="${model.has_views ? 'true' : 'false'}" onchange="updateSelectedCount()" style="width:16px; height:16px; cursor:pointer; flex-shrink:0;">
+                <div style="flex:1; min-width:0; cursor:pointer;" onclick="window.open('/model/${model.id}', '_blank')" title="${model.id}">
+                    <div class="item-card-title">${model.id}</div>
+                    ${objectLine}
+                </div>
+            </div>
+            <div class="item-card-meta">
+                <span class="badge badge-${model.provider || 'pending'}">${model.provider || 'unknown'}</span>
+                ${model.has_instructions ? `<span class="badge badge-completed badge-instr" title="${model.instructions_count || 0} instruction(s)">Has Instr</span>` : ''}
+                ${model.has_views ? `<span class="badge badge-completed">${Array.isArray(model.rendered_views) ? model.rendered_views.length : 0} Views</span>` : ''}
+                ${model.has_edits ? `<span class="badge" style="background:#28a745; color:#fff;">${Array.isArray(model.edited_batches) ? model.edited_batches.length : 0} Edits</span>` : ''}
+                ${targetCount > 0 ? `<span class="badge" style="background:#17a2b8; color:#fff;">${targetCount} Target 3D</span>` : ''}
+                ${(model.stage2_passed_count || 0) > 0 ? `<span class="badge" style="background:#28a745; color:#fff;">${model.stage2_passed_count} Passed</span>` : ''}
+            </div>
+            ${sourceImage}
+            <div class="mt-2 item-card-actions">
+                <a href="/model/${model.id}" target="_blank" class="btn btn-primary btn-sm" style="flex:1; text-decoration:none; text-align:center;">View Details</a>
+                ${model.has_instructions ? `<button class="btn btn-secondary btn-sm view-instr-btn" onclick="event.stopPropagation(); viewInstruction('${model.id}')">View Instr</button>` : ''}
+                ${!model.has_views ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); renderViews('${model.id}', this)">Render</button>` : ''}
+                <button class="btn btn-secondary btn-sm" style="background:#dc3545; border-color:#dc3545; color:#fff;" onclick="event.stopPropagation(); deleteAsset('${model.id}')">×</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+function loadModelsPageState() {
+    try {
+        const raw = sessionStorage.getItem(MODELS_PAGE_STATE_KEY);
+        if (!raw) return null;
+        const state = JSON.parse(raw);
+        if (!state || typeof state !== 'object') return null;
+        if (Date.now() - (state.saved_at || 0) > MODELS_PAGE_STATE_TTL_MS) return null;
+        return state;
+    } catch (err) {
+        console.warn('Failed to load models page state:', err);
+        return null;
+    }
+}
+
+function persistModelsPageState() {
+    try {
+        const state = {
+            saved_at: Date.now(),
+            cardSortBy,
+            currentFilter,
+            currentCategoryFilter,
+            currentExperimentFilterMode,
+            currentSourceProviderFilter,
+            currentTargetProviderFilter,
+            currentYamlFilter,
+            tocSortBy,
+            tocSearch: document.getElementById('tocSearch')?.value || '',
+            scrollY: window.scrollY || 0,
+        };
+        sessionStorage.setItem(MODELS_PAGE_STATE_KEY, JSON.stringify(state));
+    } catch (err) {
+        console.warn('Failed to persist models page state:', err);
+    }
+}
+
+function schedulePersistModelsPageState() {
+    if (modelsStateSaveTimer) {
+        clearTimeout(modelsStateSaveTimer);
+    }
+    modelsStateSaveTimer = setTimeout(() => {
+        modelsStateSaveTimer = null;
+        persistModelsPageState();
+    }, 120);
+}
+
+const restoredModelsPageState = loadModelsPageState();
+if (restoredModelsPageState) {
+    cardSortBy = restoredModelsPageState.cardSortBy || cardSortBy;
+    currentFilter = restoredModelsPageState.currentFilter || currentFilter;
+    currentCategoryFilter = restoredModelsPageState.currentCategoryFilter || currentCategoryFilter;
+    currentExperimentFilterMode = restoredModelsPageState.currentExperimentFilterMode || currentExperimentFilterMode;
+    currentSourceProviderFilter = restoredModelsPageState.currentSourceProviderFilter || currentSourceProviderFilter;
+    currentTargetProviderFilter = restoredModelsPageState.currentTargetProviderFilter || currentTargetProviderFilter;
+    currentYamlFilter = restoredModelsPageState.currentYamlFilter || currentYamlFilter;
+}
+
+// ============ Filter Functions ============
+function applyFilter(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    refreshModelFilters();
+    schedulePersistModelsPageState();
+}
+
+function setExperimentFilterMode(mode) {
+    currentExperimentFilterMode = mode || 'all';
+    const experimentFilterDetails = document.getElementById('experimentFilterDetails');
+    const providerPairFilters = document.getElementById('providerPairFilters');
+    const yamlFilters = document.getElementById('yamlFilters');
+
+    if (experimentFilterDetails) {
+        experimentFilterDetails.classList.toggle(
+            'filter-section-hidden',
+            currentExperimentFilterMode === 'all'
+        );
+    }
+    if (providerPairFilters) {
+        providerPairFilters.classList.toggle('filter-section-hidden', currentExperimentFilterMode !== 'provider_pair');
+    }
+    if (yamlFilters) {
+        yamlFilters.classList.toggle('filter-section-hidden', currentExperimentFilterMode !== 'yaml');
+    }
+
+    refreshModelFilters();
+    schedulePersistModelsPageState();
+}
+
+function setSourceProviderFilter(provider) {
+    currentSourceProviderFilter = provider || 'all';
+    refreshModelFilters();
+    schedulePersistModelsPageState();
+}
+
+function setTargetProviderFilter(provider) {
+    currentTargetProviderFilter = provider || 'all';
+    refreshModelFilters();
+    schedulePersistModelsPageState();
+}
+
+function getYamlFilteredIds(yamlPath) {
+    if (!yamlPath || yamlPath === 'all') return [];
+    const modelIndex = experimentFilterData.model_index || {};
+    return Object.entries(modelIndex)
+        .filter(([id, meta]) => id && id !== 'null' && Array.isArray(meta.plan_paths) && meta.plan_paths.includes(yamlPath))
+        .map(([id]) => id);
+}
+
+async function loadYamlPriorityModels(yamlPath) {
+    const ids = getYamlFilteredIds(yamlPath);
+    if (!ids.length) return;
+
+    const grid = document.getElementById('modelsGrid');
+    const hint = document.getElementById('modelsInitialLoadingHint');
+    if (hint) hint.textContent = `Loading ${ids.length} models from selected YAML...`;
+
+    // Load in batches of 50 (API cap)
+    for (let i = 0; i < ids.length; i += 50) {
+        const batch = ids.slice(i, i + 50);
+        try {
+            const res = await fetch(`/api/models/batch?ids=${batch.map(encodeURIComponent).join(',')}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Batch load failed');
+            const items = Array.isArray(data.items) ? data.items : [];
+            mergeLoadedModelsIntoToc(items);
+            items.forEach(model => {
+                if (!loadedModelIds.has(model.id)) {
+                    grid.insertAdjacentHTML('beforeend', createModelCard(model));
+                    loadedModelIds.add(model.id);
+                }
+            });
+        } catch (err) {
+            console.warn('YAML priority batch load error:', err);
+        }
+    }
+    sortCards(cardSortBy);
+    refreshModelFilters();
+}
+
+function setYamlFilter(planPath) {
+    currentYamlFilter = planPath || 'all';
+    // If switching to a specific YAML, front-load its models immediately
+    if (currentYamlFilter !== 'all') {
+        const priorityIds = getYamlFilteredIds(currentYamlFilter);
+        if (priorityIds.length > 0) {
+            const missing = priorityIds.filter(id => !loadedModelIds.has(id));
+            if (missing.length > 0) {
+                loadYamlPriorityModels(currentYamlFilter);
+            }
+        }
+    }
+    refreshModelFilters();
+    schedulePersistModelsPageState();
+}
+
+function getCategoryFilteredIds(category) {
+    if (!category || category === 'all') return [];
+    return allTocItems
+        .filter(item => (item.category_name || 'Unknown Category') === category)
+        .map(item => item.id);
+}
+
+async function loadCategoryPriorityModels(category) {
+    const ids = getCategoryFilteredIds(category);
+    if (!ids.length) return;
+    const missing = ids.filter(id => !loadedModelIds.has(id));
+    if (!missing.length) return;
+
+    const grid = document.getElementById('modelsGrid');
+    const hint = document.getElementById('modelsInitialLoadingHint');
+    if (hint) {
+        hint.textContent = `Loading ${missing.length} models for ${category}...`;
+        hint.style.display = '';
+    }
+
+    for (let i = 0; i < missing.length; i += 50) {
+        const batch = missing.slice(i, i + 50);
+        try {
+            const res = await fetch(`/api/models/batch?ids=${batch.map(encodeURIComponent).join(',')}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Batch load failed');
+            const items = Array.isArray(data.items) ? data.items : [];
+            mergeLoadedModelsIntoToc(items);
+            items.forEach(model => {
+                if (!loadedModelIds.has(model.id)) {
+                    grid.insertAdjacentHTML('beforeend', createModelCard(model));
+                    loadedModelIds.add(model.id);
+                }
+            });
+        } catch (err) {
+            console.warn('Category priority batch load error:', err);
+        }
+    }
+    if (hint) hint.style.display = 'none';
+    sortCards(cardSortBy);
+    refreshModelFilters();
+}
+
+function setCategoryFilter(category) {
+    currentCategoryFilter = category || 'all';
+    if (currentCategoryFilter !== 'all') {
+        loadCategoryPriorityModels(currentCategoryFilter);
+    }
+    refreshModelFilters();
+    schedulePersistModelsPageState();
+}
+
+function clearModelFilters() {
+    currentFilter = 'all';
+    currentCategoryFilter = 'all';
+    currentExperimentFilterMode = 'all';
+    currentSourceProviderFilter = 'all';
+    currentTargetProviderFilter = 'all';
+    currentYamlFilter = 'all';
+
+    const categorySelect = document.getElementById('categoryFilterSelect');
+    const tocSearch = document.getElementById('tocSearch');
+    const experimentFilterMode = document.getElementById('experimentFilterMode');
+    const sourceProviderFilterSelect = document.getElementById('sourceProviderFilterSelect');
+    const targetProviderFilterSelect = document.getElementById('targetProviderFilterSelect');
+    const yamlFilterSelect = document.getElementById('yamlFilterSelect');
+    if (categorySelect) categorySelect.value = 'all';
+    if (tocSearch) tocSearch.value = '';
+    if (experimentFilterMode) experimentFilterMode.value = 'all';
+    if (sourceProviderFilterSelect) sourceProviderFilterSelect.value = 'all';
+    if (targetProviderFilterSelect) targetProviderFilterSelect.value = 'all';
+    if (yamlFilterSelect) yamlFilterSelect.value = 'all';
+
+    document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === 'all');
+    });
+    setExperimentFilterMode('all');
+    refreshModelFilters();
+    schedulePersistModelsPageState();
+}
+
+function metaMatchesStatusFilter(meta) {
+    switch (currentFilter) {
+        case 'all':
+            return true;
+        case 'has-instr':
+            return meta.has_instructions === true;
+        case 'no-instr':
+            return meta.has_instructions !== true;
+        case 'has-views':
+            return meta.has_views === true;
+        case 'instr-no-views':
+            return meta.has_instructions === true && meta.has_views !== true;
+        case 'has-edits':
+            return meta.has_edits === true;
+        case 'views-no-edits':
+            return meta.has_views === true && meta.has_edits !== true;
+        case 'edits-no-target':
+            return meta.edits_without_target === true;
+        default:
+            return true;
+    }
+}
+
+function metaMatchesExperimentFilter(meta) {
+    if (currentExperimentFilterMode === 'all') {
+        return true;
+    }
+
+    const modelId = meta.id || '';
+    const experimentMeta = experimentFilterData.model_index[modelId];
+    if (!experimentMeta) {
+        return false;
+    }
+
+    if (currentExperimentFilterMode === 'provider_pair') {
+        const pairKey = `${currentSourceProviderFilter}::${currentTargetProviderFilter}`;
+
+        if (currentSourceProviderFilter !== 'all' && !experimentMeta.source_providers.includes(currentSourceProviderFilter)) {
+            return false;
+        }
+        if (currentTargetProviderFilter !== 'all' && !experimentMeta.target_providers.includes(currentTargetProviderFilter)) {
+            return false;
+        }
+        if (currentSourceProviderFilter !== 'all' && currentTargetProviderFilter !== 'all') {
+            return experimentMeta.provider_pairs.includes(pairKey);
+        }
+        return true;
+    }
+
+    if (currentExperimentFilterMode === 'yaml') {
+        if (currentYamlFilter === 'all') {
+            return true;
+        }
+        return experimentMeta.plan_paths.includes(currentYamlFilter);
+    }
+
+    return true;
+}
+
+function metaMatchesCombinedFilters(meta) {
+    if (!metaMatchesStatusFilter(meta)) {
+        return false;
+    }
+
+    if (!metaMatchesExperimentFilter(meta)) {
+        return false;
+    }
+
+    const category = meta.category_name || 'Unknown Category';
+    if (currentCategoryFilter !== 'all' && category !== currentCategoryFilter) {
+        return false;
+    }
+
+    return true;
+}
+
+function populateCategoryFilterOptions() {
+    const categorySelect = document.getElementById('categoryFilterSelect');
+    if (!categorySelect) return;
+
+    const categories = Array.from(
+        new Set(allTocItems.map(item => item.category_name || 'Unknown Category'))
+    );
+
+    categories.sort((a, b) => {
+        if (a === 'Unknown Category') return 1;
+        if (b === 'Unknown Category') return -1;
+        return a.localeCompare(b);
+    });
+
+    categorySelect.innerHTML = '<option value="all">All Categories</option>';
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+    });
+}
+
+function populateExperimentFilterOptions() {
+    const sourceSelect = document.getElementById('sourceProviderFilterSelect');
+    const targetSelect = document.getElementById('targetProviderFilterSelect');
+    const yamlSelect = document.getElementById('yamlFilterSelect');
+
+    const providers = Array.isArray(experimentFilterData.providers) ? experimentFilterData.providers : [];
+    const yamlFiles = Array.isArray(experimentFilterData.yaml_files) ? experimentFilterData.yaml_files : [];
+
+    if (sourceSelect) {
+        sourceSelect.innerHTML = '<option value="all">All Source Providers</option>';
+        if (providers.length === 0) {
+            const option = document.createElement('option');
+            option.value = 'all';
+            option.textContent = 'No recorded source providers';
+            sourceSelect.appendChild(option);
+        } else {
+            providers.forEach(provider => {
+                const option = document.createElement('option');
+                option.value = provider;
+                option.textContent = provider;
+                sourceSelect.appendChild(option);
+            });
+        }
+    }
+
+    if (targetSelect) {
+        targetSelect.innerHTML = '<option value="all">All Target Providers</option>';
+        if (providers.length === 0) {
+            const option = document.createElement('option');
+            option.value = 'all';
+            option.textContent = 'No recorded target providers';
+            targetSelect.appendChild(option);
+        } else {
+            providers.forEach(provider => {
+                const option = document.createElement('option');
+                option.value = provider;
+                option.textContent = provider;
+                targetSelect.appendChild(option);
+            });
+        }
+    }
+
+    if (yamlSelect) {
+        yamlSelect.innerHTML = '<option value="all">All YAML Files</option>';
+        if (yamlFiles.length === 0) {
+            const option = document.createElement('option');
+            option.value = 'all';
+            option.textContent = 'No recorded YAML files';
+            yamlSelect.appendChild(option);
+        } else {
+            yamlFiles.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.plan_path;
+                option.textContent = item.label || item.yaml_name;
+                yamlSelect.appendChild(option);
+            });
+        }
+    }
+}
+
+function refreshModelFilters() {
+    const cards = document.querySelectorAll('.item-card');
+    const visibleCount = allTocItems.filter(metaMatchesCombinedFilters).length;
+
+    cards.forEach(card => {
+        const meta = getModelMeta(card.dataset.modelId || '') || {};
+        const show = metaMatchesCombinedFilters(meta);
+        card.classList.toggle('filtered-out', !show);
+    });
+
+    const filterCountEl = document.getElementById('filterCount');
+    const isDefaultFilterState = currentFilter === 'all'
+        && currentExperimentFilterMode === 'all'
+        && currentSourceProviderFilter === 'all'
+        && currentTargetProviderFilter === 'all'
+        && currentYamlFilter === 'all'
+        && currentCategoryFilter === 'all';
+
+    if (filterCountEl) {
+        if (isDefaultFilterState) {
+            filterCountEl.textContent = `(showing all ${allTocItems.length})`;
+        } else {
+            filterCountEl.textContent = `(${visibleCount} of ${allTocItems.length})`;
+        }
+    }
+
+    document.querySelectorAll('.item-select').forEach(cb => cb.checked = false);
+    document.getElementById('selectAll').checked = false;
+    updateSelectedCount();
+    updateTocVisibility();
+}
+
+function sortCards(by) {
+    cardSortBy = by;
+    document.getElementById('sortCardsById').classList.toggle('active', by === 'id');
+    document.getElementById('sortCardsByTime').classList.toggle('active', by === 'time');
+    
+    // Update button text to show sort direction
+    document.getElementById('sortCardsById').textContent = by === 'id' ? 'ID ↓' : 'ID';
+    document.getElementById('sortCardsByTime').textContent = by === 'time' ? 'Time ↓' : 'Time';
+    
+    const grid = document.querySelector('.main-content .grid');
+    const cards = Array.from(grid.querySelectorAll('.item-card'));
+    
+    cards.sort((a, b) => {
+        const aId = a.dataset.modelId || '';
+        const bId = b.dataset.modelId || '';
+        
+        if (by === 'id') {
+            return aId.localeCompare(bId);
+        } else {
+            // Sort by time (newest first)
+            const aTime = allModelsData[aId]?.created_at || '';
+            const bTime = allModelsData[bId]?.created_at || '';
+            return bTime.localeCompare(aTime);
+        }
+    });
+    
+    cards.forEach(card => grid.appendChild(card));
+    schedulePersistModelsPageState();
+}
+
+// ============ TOC Functions ============
+function sortToc(by) {
+    tocSortBy = by;
+    document.getElementById('sortById').classList.toggle('active', by === 'id');
+    document.getElementById('sortByProvider').classList.toggle('active', by === 'provider');
+    sortTocItemsInPlace(by);
+    renderTocList();
+    updateTocVisibility();
+    schedulePersistModelsPageState();
+}
+
+function filterTocList() {
+    updateTocVisibility();
+    schedulePersistModelsPageState();
+}
+
+function renderTocList() {
+    const tocList = document.getElementById('tocList');
+    if (!tocList) return;
+    tocList.innerHTML = allTocItems.map(item => {
+        const category = item.category_name || 'Unknown Category';
+        const objectName = item.object_name || '';
+        return `<li class="toc-item" data-id="${item.id}" data-provider="${item.provider || 'unknown'}" data-category="${category}" data-object-name="${objectName}" onclick="scrollToCard('${item.id}')">${item.id.slice(0, 12)}</li>`;
+    }).join('');
+}
+
+function updateTocVisibility() {
+    const query = (document.getElementById('tocSearch').value || '').toLowerCase();
+    let visibleCount = 0;
+
+    document.querySelectorAll('#tocList .toc-item').forEach(item => {
+        const meta = getModelMeta(item.dataset.id || '') || {};
+        const haystack = [
+            item.dataset.id || '',
+            item.dataset.provider || '',
+            item.dataset.category || '',
+            item.dataset.objectName || '',
+        ].join(' ').toLowerCase();
+        const matchesQuery = !query || haystack.includes(query);
+        const show = metaMatchesCombinedFilters(meta) && matchesQuery;
+
+        item.style.display = show ? 'block' : 'none';
+        if (show) {
+            visibleCount++;
+        }
+    });
+
+    const tocCountEl = document.getElementById('tocCount');
+    if (tocCountEl) {
+        tocCountEl.textContent = `(${visibleCount})`;
+    }
+}
+
+async function scrollToCard(id) {
+    if (!document.getElementById('card-' + id)) {
+        // Use search to fetch the target model immediately instead of paginating through all pages
+        document.getElementById('modelSearchInput').value = id;
+        await searchModels();
+    }
+    const card = document.getElementById('card-' + id);
+    if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.style.boxShadow = '0 0 0 3px #007bff';
+        setTimeout(() => card.style.boxShadow = '', 1500);
+    } else {
+        showToast(`Model ${id} not found`);
+    }
+    document.querySelectorAll('#tocList .toc-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.id === id);
+    });
+    schedulePersistModelsPageState();
+}
+
+async function searchModels() {
+    const query = document.getElementById('modelSearchInput').value.trim();
+    if (!query) {
+        clearModelSearch();
+        return;
+    }
+
+    const grid = document.getElementById('modelsGrid');
+
+    // Save existing pagination state the first time we enter search mode
+    if (!searchMode) {
+        savedGridHTML = grid.innerHTML;
+        savedPaginationState = { currentPage, hasMore, loadedModelIds: new Set(loadedModelIds) };
+    }
+
+    searchMode = true;
+    searchQuery = query;
+    hasMore = false; // prevent infinite scroll from firing during search
+
+    grid.innerHTML = '';
+    loadedModelIds.clear();
+    document.getElementById('noModelsMessage').style.display = 'none';
+    document.getElementById('modelsLoadingIndicator').style.display = 'block';
+
+    try {
+        const res = await fetch(`/api/models/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Search failed');
+
+        const items = Array.isArray(data.items) ? data.items : [];
+        mergeLoadedModelsIntoToc(items);
+        if (items.length === 0) {
+            document.getElementById('noModelsMessage').style.display = 'block';
+        } else {
+            items.forEach(model => {
+                grid.insertAdjacentHTML('beforeend', createModelCard(model));
+                loadedModelIds.add(model.id);
+            });
+        }
+
+        const countEl = document.getElementById('searchResultCount');
+        countEl.textContent = `${data.total} result(s) for "${query}"`;
+        countEl.style.display = '';
+        document.getElementById('clearSearchBtn').style.display = '';
+
+        sortCards(cardSortBy);
+        refreshModelFilters();
+    } catch (err) {
+        showToast('Search error: ' + err.message);
+    } finally {
+        document.getElementById('modelsLoadingIndicator').style.display = 'none';
+    }
+}
+
+function clearModelSearch() {
+    if (!searchMode) return;
+
+    searchMode = false;
+    searchQuery = '';
+    document.getElementById('modelSearchInput').value = '';
+    document.getElementById('clearSearchBtn').style.display = 'none';
+    document.getElementById('searchResultCount').style.display = 'none';
+    document.getElementById('noModelsMessage').style.display = 'none';
+
+    if (savedGridHTML !== null) {
+        const grid = document.getElementById('modelsGrid');
+        grid.innerHTML = savedGridHTML;
+        currentPage = savedPaginationState.currentPage;
+        hasMore = savedPaginationState.hasMore;
+        loadedModelIds = savedPaginationState.loadedModelIds;
+        savedGridHTML = null;
+        savedPaginationState = null;
+        refreshModelFilters();
+    }
+}
+
+async function loadModelsToc() {
+    const res = await fetch('/api/models/toc');
+    const data = await res.json();
+    if (!res.ok) {
+        throw new Error(data.error || 'Failed to load models directory');
+    }
+
+    allTocItems = Array.isArray(data.items) ? data.items : [];
+    allModelsData = {};
+    allTocItems.forEach(item => {
+        allModelsData[item.id] = item;
+    });
+    sortTocItemsInPlace(tocSortBy);
+    renderTocList();
+    populateCategoryFilterOptions();
+    updateTocVisibility();
+}
+
+async function loadMoreModels() {
+    if (isLoading || !hasMore || searchMode) return;
+
+    isLoading = true;
+    document.getElementById('modelsLoadingIndicator').style.display = 'block';
+
+    try {
+        const res = await fetch(`/api/models?page=${currentPage + 1}&per_page=${perPage}`);
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.error || 'Failed to load models');
+        }
+
+        const items = Array.isArray(data.items) ? data.items : [];
+        const grid = document.getElementById('modelsGrid');
+        mergeLoadedModelsIntoToc(items);
+
+        if (items.length === 0 && currentPage === 0) {
+            document.getElementById('noModelsMessage').style.display = 'block';
+            hasMore = false;
+            return;
+        }
+
+        items.forEach(model => {
+            if (!loadedModelIds.has(model.id)) {
+                grid.insertAdjacentHTML('beforeend', createModelCard(model));
+                loadedModelIds.add(model.id);
+            }
+        });
+
+        currentPage = data.page || currentPage + 1;
+        hasMore = Boolean(data.has_more);
+        sortCards(cardSortBy);
+        refreshModelFilters();
+        schedulePersistModelsPageState();
+    } catch (err) {
+        console.error('Error loading models:', err);
+        showToast('Error loading models: ' + err.message);
+        hasMore = false;
+    } finally {
+        isLoading = false;
+        document.getElementById('modelsLoadingIndicator').style.display = 'none';
+    }
+    // If a filter hides all loaded cards but more pages exist, keep loading
+    // (IntersectionObserver won't re-fire when sentinel was already visible)
+    if (hasMore && document.querySelectorAll('.item-card:not(.filtered-out)').length === 0) {
+        loadMoreModels();
+    }
+}
+
+function setupModelsInfiniteScroll() {
+    const sentinel = document.getElementById('modelsLoadMoreSentinel');
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+            loadMoreModels();
+        }
+    }, { rootMargin: '300px' });
+    observer.observe(sentinel);
+}
+
+// ============ Batch Selection Functions ============
+function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.item-select:checked')).map(cb => cb.dataset.id);
+}
+
+function getVisibleCheckboxes() {
+    return Array.from(document.querySelectorAll('.item-card:not(.filtered-out) .item-select'));
+}
+
+function updateSelectedCount() {
+    const selectedCount = getSelectedIds().length;
+    const visibleCheckboxes = getVisibleCheckboxes();
+    const visibleSelectedCount = visibleCheckboxes.filter(cb => cb.checked).length;
+
+    document.getElementById('selectedCount').textContent = `(${selectedCount} selected)`;
+    document.getElementById('batchRenderBtn').disabled = selectedCount === 0;
+    document.getElementById('batchEditBtn').disabled = selectedCount === 0;
+    document.getElementById('batchGen3DBtn').disabled = selectedCount === 0;
+
+    // Update "Select All" checkbox state - only considers visible items
+    const allVisibleChecked = visibleCheckboxes.length > 0 && visibleSelectedCount === visibleCheckboxes.length;
+    document.getElementById('selectAll').checked = allVisibleChecked;
+}
+
+function toggleSelectAll(checked) {
+    // Only toggle visible (non-filtered) checkboxes
+    getVisibleCheckboxes().forEach(cb => {
+        cb.checked = checked;
+    });
+    updateSelectedCount();
+}
+
+// ============ Download Function (uses common module) ============
+function downloadSelectedModels() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) {
+        // If no selection, ask if user wants to download all
+        if (!confirm('No models selected. Download all models?')) return;
+    }
+    const includeViews = confirm('Include rendered views in the download?');
+    const btn = document.querySelector('button[onclick="downloadSelectedModels()"]');
+    downloadModelsZip(ids.length > 0 ? ids : [], includeViews, btn);
+}
+
+// ============ Update All LPIPS ============
+function showRefreshAllLpipsCommand() {
+    const projectRoot = '/seaweedfs/xiaoliang/code3/2d3d_v2';
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const bashCmd = `${pythonPath} scripts/batch_process.py refresh-all-lpips`;
+
+    showCommandModal(
+        'Update All LPIPS Command',
+        `<p style="margin-bottom:8px;">Copy this command and run it on the backend server to recompute Stage2 LPIPS for all refreshable target 3D results across the whole pipeline:</p>
+        <p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Automatically scans all source models and only evaluates existing target 3D providers &nbsp;• Uses existing target renders when available &nbsp;• Writes fresh Stage2 results back to target meta.json</p>`,
+        bashCmd
+    );
+}
+
+// ============ Batch Render ============
+function batchRender() {
+    const allIds = getSelectedIds();
+    if (allIds.length === 0) {
+        showToast('Please select at least one model');
+        return;
+    }
+    
+    // Filter out models that already have rendered views
+    const ids = allIds.filter(id => {
+        const checkbox = document.querySelector(`.item-select[data-id="${id}"]`);
+        return checkbox && checkbox.dataset.hasViews !== 'true';
+    });
+    
+    const skipped = allIds.length - ids.length;
+    if (ids.length === 0) {
+        showToast(`All ${skipped} selected models already have rendered views`);
+        return;
+    }
+    
+    // Generate bash command using unified batch_process.py
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+    
+    const bashCmd = `${pythonPath} ${scriptPath} render --ids ${ids.join(' ')}`;
+    
+    let message = '';
+    if (skipped > 0) {
+        message = `<p style="color:#6c757d; margin-bottom:12px;">Skipped ${skipped} models that already have rendered views.</p>`;
+    }
+    message += `<p style="margin-bottom:8px;">Run this command to render <strong>${ids.length}</strong> model(s):</p>`;
+    message += `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Respects config concurrency limits &nbsp;• Auto-skips existing views</p>`;
+    
+    showCommandModal('Batch Render Command', message, bashCmd);
+}
+
+// ============ Batch Edit All Modal ============
+let batchEditModelsData = {}; // Cache for model instructions
+
+async function showBatchEditAllModal() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) {
+        showToast('Please select at least one model');
+        return;
+    }
+    document.getElementById('batchEditAllCount').textContent = ids.length;
+    document.getElementById('batchEditAllModal').style.display = 'flex';
+    
+    // Load instructions for each model
+    document.getElementById('batchEditPreview').innerHTML = '<span style="color:#6c757d;">Loading instructions...</span>';
+    batchEditModelsData = {};
+    
+    let modelsWithInstructions = 0;
+    const previewHtml = [];
+    
+    for (const id of ids) {
+        try {
+            const res = await fetch(`/api/images/${id}/instruction`);
+            const data = await res.json();
+            const instructions = data.instruction_items || data.instructions || [];
+            batchEditModelsData[id] = instructions;
+            
+            if (instructions.length > 0) {
+                modelsWithInstructions++;
+                const instrPreview = instructions.map((instr, i) => {
+                    const text = getInstructionDisplayText(instr);
+                    const shortText = text.length > 60 ? text.substring(0, 60) + '...' : text;
+                    return `<span style="color:#495057;">[${i+1}]</span> ${shortText}`;
+                }).join('<br>');
+                previewHtml.push(`<div style="margin-bottom:8px; padding:6px; background:#fff; border-radius:4px; border-left:3px solid #28a745;"><strong>${id}</strong><br>${instrPreview}</div>`);
+            } else {
+                previewHtml.push(`<div style="margin-bottom:8px; padding:6px; background:#fff; border-radius:4px; border-left:3px solid #dc3545; color:#6c757d;"><strong>${id}</strong> - No instructions</div>`);
+            }
+        } catch (e) {
+            previewHtml.push(`<div style="margin-bottom:8px; padding:6px; background:#fff; border-radius:4px; border-left:3px solid #ffc107;"><strong>${id}</strong> - Error loading</div>`);
+        }
+    }
+    
+    document.getElementById('batchEditPreviewCount').textContent = modelsWithInstructions;
+    document.getElementById('batchEditPreview').innerHTML = previewHtml.join('') || '<span style="color:#6c757d;">No models selected</span>';
+}
+
+function closeBatchEditAllModal() {
+    document.getElementById('batchEditAllModal').style.display = 'none';
+}
+
+function showBatchEditCommand() {
+    const ids = getSelectedIds();
+    const modeRadio = document.querySelector('input[name="batchInstrMode"]:checked');
+    const mode = modeRadio ? modeRadio.value : '0';
+    
+    if (ids.length === 0) {
+        showToast('No models selected');
+        return;
+    }
+    
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+    
+    let modeArg = '';
+    if (mode === 'all') {
+        modeArg = ' --all-instructions';
+    } else if (mode === '1') {
+        modeArg = ' --instr-index 1';
+    }
+    // mode '0' is default, no extra arg needed
+    
+    const bashCmd = `${pythonPath} ${scriptPath} edit${modeArg} --ids ${ids.join(' ')}`;
+    
+    closeBatchEditAllModal();
+    showCommandModal(
+        'Batch Edit Command',
+        `<p style="margin-bottom:8px;">Run this command to edit <strong>${ids.length}</strong> models:</p>
+        <p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Automatically skips already-edited (same instruction) &nbsp;• Use --force to re-edit</p>`,
+        bashCmd
+    );
+}
+
+function applyBatchEditAll() {
+    const ids = getSelectedIds();
+    const modeRadio = document.querySelector('input[name="batchInstrMode"]:checked');
+    const mode = modeRadio ? modeRadio.value : '0';
+    
+    // Build edits based on each model's own instructions
+    const edits = [];
+    const views = ['front', 'back', 'right'];
+    let skippedCount = 0;
+    
+    for (const id of ids) {
+        const instructions = batchEditModelsData[id] || [];
+        if (instructions.length === 0) {
+            skippedCount++;
+            continue;
+        }
+        
+        if (mode === 'all') {
+            // Use all instructions - each instruction creates edits for all views
+            instructions.forEach((instr, idx) => {
+                const text = getInstructionDisplayText(instr);
+                if (text) {
+                    views.forEach(view => {
+                        edits.push({ model_id: id, view_name: view, instruction: text });
+                    });
+                }
+            });
+        } else {
+            // Use specific instruction index
+            const idx = parseInt(mode);
+            if (idx < instructions.length) {
+                const instr = instructions[idx];
+                const text = getInstructionDisplayText(instr);
+                if (text) {
+                    views.forEach(view => {
+                        edits.push({ model_id: id, view_name: view, instruction: text });
+                    });
+                }
+            } else {
+                skippedCount++;
+            }
+        }
+    }
+    
+    if (edits.length === 0) {
+        showToast('No valid instructions found for selected models');
+        return;
+    }
+    
+    closeBatchEditAllModal();
+    
+    const btn = document.getElementById('batchEditBtn');
+    btn.disabled = true;
+    btn.textContent = `Editing...`;
+    
+    if (skippedCount > 0) {
+        showToast(`Skipped ${skippedCount} models without matching instructions`);
+    }
+    
+    // Send batch edit request with explicit edits
+    triggerAction('/api/batch/edit', { edits: edits })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                btn.textContent = 'Batch Edit';
+                return;
+            }
+            
+            showToast(`Created ${res.created} edit tasks`);
+            
+            // Poll all tasks
+            let completed = 0;
+            let failed = 0;
+            const totalTasks = res.tasks.length;
+            
+            if (totalTasks === 0) {
+                btn.disabled = false;
+                btn.textContent = 'Batch Edit';
+                return;
+            }
+            
+            res.tasks.forEach(t => {
+                pollTask(t.task_id,
+                    (task) => {
+                        completed++;
+                        btn.textContent = `Editing ${completed}/${totalTasks}...`;
+                        if (completed + failed === totalTasks) {
+                            showToast(`Batch complete: ${completed} succeeded, ${failed} failed. Refresh to see.`);
+                            btn.disabled = false;
+                            btn.textContent = 'Batch Edit';
+                            // Manual refresh - removed auto reload for stability
+                            // setTimeout(() => window.location.reload(), 1500);
+                        }
+                    },
+                    (err) => {
+                        failed++;
+                        if (completed + failed === totalTasks) {
+                            showToast(`Batch complete: ${completed} succeeded, ${failed} failed`);
+                            btn.disabled = false;
+                            btn.textContent = 'Batch Edit';
+                        }
+                    }
+                );
+            });
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = 'Batch Edit';
+        });
+}
+
+// ============ Batch Gen 3D Modal ============
+let batchGen3DData = {}; // Cache for model edit info
+
+async function showBatchGen3DModal() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) {
+        showToast('Please select at least one model');
+        return;
+    }
+    
+    document.getElementById('batchGen3DModal').style.display = 'flex';
+    document.getElementById('batchGen3DPreview').innerHTML = '<span style="color:#6c757d;">Loading...</span>';
+    
+    batchGen3DData = {};
+    const previewHtml = [];
+    let modelsWithEdits = 0;
+    
+    for (const id of ids) {
+        const meta = getModelMeta(id);
+        const editableBatches = Array.isArray(meta?.edited_batches)
+            ? meta.edited_batches.filter(batch => !batch.has_target_3d)
+            : [];
+
+        if (editableBatches.length > 0) {
+            modelsWithEdits++;
+            const editIds = editableBatches.map(batch => batch.edit_id);
+            batchGen3DData[id] = editIds;
+            previewHtml.push(`<div style="margin-bottom:8px; padding:6px; background:#fff; border-radius:4px; border-left:3px solid #28a745;"><strong>${id}</strong> - ${editIds.length} edit batch(es)</div>`);
+        } else {
+            previewHtml.push(`<div style="margin-bottom:8px; padding:6px; background:#fff; border-radius:4px; border-left:3px solid #dc3545; color:#6c757d;"><strong>${id}</strong> - No edits</div>`);
+        }
+    }
+    
+    document.getElementById('batchGen3DCount').textContent = modelsWithEdits;
+    document.getElementById('batchGen3DPreview').innerHTML = previewHtml.join('') || '<span style="color:#6c757d;">No models selected</span>';
+}
+
+function closeBatchGen3DModal() {
+    document.getElementById('batchGen3DModal').style.display = 'none';
+}
+
+function showBatchGen3DCommand() {
+    const ids = getSelectedIds();
+    const providerRadio = document.querySelector('input[name="batchGen3DProvider"]:checked');
+    const provider = providerRadio ? providerRadio.value : 'hunyuan';
+
+    // If specific models are selected, use --ids to filter
+    // Otherwise, generate for all edit batches
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+
+    let bashCmd;
+    if (ids.length > 0) {
+        // Filter by selected source model IDs
+        bashCmd = `${pythonPath} ${scriptPath} gen3d-from-edits --provider ${provider} --ids ${ids.join(' ')}`;
+    } else {
+        // Generate for all edit batches
+        bashCmd = `${pythonPath} ${scriptPath} gen3d-from-edits --provider ${provider}`;
+    }
+
+    closeBatchGen3DModal();
+    showCommandModal(
+        'Batch Gen 3D Command',
+        `<p style="margin-bottom:8px;">Run this command to generate Target 3D models from edited views:</p>
+        <p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Automatically skips existing Target 3D models &nbsp;• Use --force to regenerate</p>`,
+        bashCmd
+    );
+}
+
+function renderViews(modelId, btn) {
+    // Generate bash command for user to run
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+    const bashCmd = `${pythonPath} ${scriptPath} render --ids ${modelId}`;
+    
+    showCommandModal('Render Command', `<p style="margin-bottom:8px;">Run this command to render model <strong>${modelId}</strong>:</p>`, bashCmd);
+}
+
+function showViewModal(modelId, viewName, imagePath) {
+    currentModelId = modelId;
+    currentViewName = viewName;
+    document.getElementById('viewModalTitle').textContent = viewName + ' - ' + modelId;
+    document.getElementById('viewModalImage').src = imagePath;
+    document.getElementById('viewEditInstruction').value = '';
+    document.getElementById('viewModal').style.display = 'flex';
+    
+    // Load existing instructions from source image
+    const existingDiv = document.getElementById('existingInstructions');
+    const listDiv = document.getElementById('instrSelectList');
+    existingDiv.style.display = 'none';
+    listDiv.innerHTML = '';
+    
+    fetch(`/api/images/${modelId}/instruction`)
+        .then(r => r.json())
+        .then(data => {
+            const instructions = data.instruction_items || data.instructions || [];
+            if (instructions.length > 0) {
+                existingDiv.style.display = 'block';
+                instructions.forEach((instr, idx) => {
+                    const instrText = getInstructionDisplayText(instr);
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display:flex; gap:8px; align-items:center; padding:6px 10px; background:#f8f9fa; border-radius:4px; border:1px solid #e9ecef;';
+                    
+                    const text = document.createElement('span');
+                    text.style.cssText = 'flex:1; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
+                    text.textContent = instrText;
+                    text.title = instrText;
+                    
+                    const useBtn = document.createElement('button');
+                    useBtn.className = 'btn btn-primary btn-sm';
+                    useBtn.style.cssText = 'padding:2px 8px; font-size:11px; flex-shrink:0;';
+                    useBtn.textContent = 'Use';
+                    useBtn.onclick = () => {
+                        document.getElementById('viewEditInstruction').value = instrText;
+                    };
+                    
+                    const applyBtn = document.createElement('button');
+                    applyBtn.className = 'btn btn-success btn-sm';
+                    applyBtn.style.cssText = 'padding:2px 8px; font-size:11px; flex-shrink:0;';
+                    applyBtn.textContent = 'Apply Now';
+                    applyBtn.onclick = () => {
+                        document.getElementById('viewEditInstruction').value = instrText;
+                        applyEditToView();
+                    };
+                    
+                    item.appendChild(text);
+                    item.appendChild(useBtn);
+                    item.appendChild(applyBtn);
+                    listDiv.appendChild(item);
+                });
+            }
+        })
+        .catch(err => console.log('No instructions found:', err));
+}
+
+function closeViewModal() {
+    document.getElementById('viewModal').style.display = 'none';
+    currentModelId = null;
+    currentViewName = null;
+}
+
+function applyEditToView() {
+    const instruction = document.getElementById('viewEditInstruction').value;
+    if (!instruction) {
+        showToast('Please enter an instruction');
+        return;
+    }
+    
+    if (!currentModelId || !currentViewName) return;
+
+    const modelId = currentModelId;
+    const viewName = currentViewName;
+    const encodedViewName = encodeURIComponent(viewName);
+    
+    closeViewModal();
+    showToast('Starting edit task...');
+    
+    triggerAction(`/api/models/${modelId}/views/${encodedViewName}/edit`, { instruction })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                return;
+            }
+            
+            pollTask(res.task_id,
+                (task) => {
+                    showToast('Edit completed! Refresh to see.');
+                    // Manual refresh - removed auto reload for stability
+                    // setTimeout(() => window.location.reload(), 1000);
+                },
+                (err) => {
+                    showToast('Error: ' + err);
+                }
+            );
+        });
+}
+
+// Batch Edit Modal Functions
+let batchEditModelId = null;
+
+function showBatchEditModal(modelId) {
+    batchEditModelId = modelId;
+    document.getElementById('batchEditInstruction').value = '';
+    document.getElementById('batchEditModal').style.display = 'flex';
+    
+    // Load existing instructions
+    const existingDiv = document.getElementById('batchExistingInstructions');
+    const listDiv = document.getElementById('batchInstrSelectList');
+    existingDiv.style.display = 'none';
+    listDiv.innerHTML = '';
+    
+    fetch(`/api/images/${modelId}/instruction`)
+        .then(r => r.json())
+        .then(data => {
+            const instructions = data.instruction_items || data.instructions || [];
+            if (instructions.length > 0) {
+                existingDiv.style.display = 'block';
+                instructions.forEach((instr, idx) => {
+                    const instrText = getInstructionDisplayText(instr);
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display:flex; gap:8px; align-items:center; padding:6px 10px; background:#f8f9fa; border-radius:4px; border:1px solid #e9ecef;';
+                    
+                    const text = document.createElement('span');
+                    text.style.cssText = 'flex:1; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
+                    text.textContent = instrText;
+                    text.title = instrText;
+                    
+                    const useBtn = document.createElement('button');
+                    useBtn.className = 'btn btn-primary btn-sm';
+                    useBtn.style.cssText = 'padding:2px 8px; font-size:11px; flex-shrink:0;';
+                    useBtn.textContent = 'Use';
+                    useBtn.onclick = () => {
+                        document.getElementById('batchEditInstruction').value = instrText;
+                    };
+                    
+                    item.appendChild(text);
+                    item.appendChild(useBtn);
+                    listDiv.appendChild(item);
+                });
+            }
+        })
+        .catch(err => console.log('No instructions found:', err));
+}
+
+function closeBatchEditModal() {
+    document.getElementById('batchEditModal').style.display = 'none';
+    batchEditModelId = null;
+}
+
+function applyBatchEdit() {
+    const instruction = document.getElementById('batchEditInstruction').value;
+    if (!instruction) {
+        showToast('Please enter an instruction');
+        return;
+    }
+    
+    if (!batchEditModelId) return;
+    
+    const modelId = batchEditModelId;
+    closeBatchEditModal();
+    showToast('Starting batch edit (3 views)...');
+    
+    // Use "_batch" as view_name to trigger default 3-view edit
+    triggerAction(`/api/models/${modelId}/views/_batch/edit`, { instruction })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                return;
+            }
+            
+            pollTask(res.task_id,
+                (task) => {
+                    showToast('Batch edit completed! Refresh to see.');
+                    // Manual refresh - removed auto reload for stability
+                    // setTimeout(() => window.location.reload(), 1000);
+                },
+                (err) => {
+                    showToast('Error: ' + err);
+                }
+            );
+        });
+}
+
+// Generate 3D from edited views
+function generate3DFromEdit(modelId, editId, btn) {
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    
+    triggerAction(`/api/models/${modelId}/edits/${editId}/generate-3d`, {})
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                btn.textContent = originalText;
+                return;
+            }
+            
+            showToast('3D generation started!');
+            
+            pollTask(res.task_id,
+                (task) => {
+                    showToast('Target 3D generated! Refresh to see.');
+                    btn.textContent = 'Done ✓';
+                    // Manual refresh - removed auto reload for stability
+                    // setTimeout(() => window.location.reload(), 1500);
+                },
+                (err) => {
+                    showToast('Error: ' + err);
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            );
+        });
+}
+
+// ============ Initial Data Load ============
+document.addEventListener('DOMContentLoaded', async () => {
+    populateExperimentFilterOptions();
+
+    if (experimentFilterError) {
+        const experimentFilterMode = document.getElementById('experimentFilterMode');
+        if (experimentFilterMode) {
+            experimentFilterMode.value = 'all';
+            experimentFilterMode.disabled = true;
+            experimentFilterMode.title = experimentFilterError;
+        }
+        showToast(experimentFilterError);
+        currentExperimentFilterMode = 'all';
+    }
+
+    const categorySelect = document.getElementById('categoryFilterSelect');
+    const experimentFilterModeSelect = document.getElementById('experimentFilterMode');
+    const sourceProviderFilterSelect = document.getElementById('sourceProviderFilterSelect');
+    const targetProviderFilterSelect = document.getElementById('targetProviderFilterSelect');
+    const yamlFilterSelect = document.getElementById('yamlFilterSelect');
+    const tocSearchInput = document.getElementById('tocSearch');
+
+    if (categorySelect) categorySelect.value = currentCategoryFilter;
+    if (experimentFilterModeSelect) experimentFilterModeSelect.value = currentExperimentFilterMode;
+    if (sourceProviderFilterSelect) sourceProviderFilterSelect.value = currentSourceProviderFilter;
+    if (targetProviderFilterSelect) targetProviderFilterSelect.value = currentTargetProviderFilter;
+    if (yamlFilterSelect) yamlFilterSelect.value = currentYamlFilter;
+    if (tocSearchInput && restoredModelsPageState) {
+        tocSearchInput.value = restoredModelsPageState.tocSearch || '';
+    }
+    document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === currentFilter);
+    });
+
+    const initialLoadingEl = document.getElementById('modelsInitialLoading');
+    const initialLoadingHint = document.getElementById('modelsInitialLoadingHint');
+    if (initialLoadingEl) initialLoadingEl.style.display = 'block';
+
+    try {
+        setExperimentFilterMode(currentExperimentFilterMode);
+        await loadModelsToc();
+        refreshModelFilters();
+        sortToc(tocSortBy);
+
+        // If a YAML filter is active on page load, front-load its models first
+        const activeYaml = currentYamlFilter !== 'all' ? currentYamlFilter : null;
+        if (activeYaml) {
+            const priorityIds = getYamlFilteredIds(activeYaml);
+            if (priorityIds.length > 0) {
+                if (initialLoadingHint) initialLoadingHint.textContent = `Loading ${priorityIds.length} models from selected YAML...`;
+                // Load YAML models via batch, then continue normal pagination
+                await loadYamlPriorityModels(activeYaml);
+            } else {
+                await loadMoreModels();
+            }
+        } else {
+            await loadMoreModels();
+        }
+
+        setupModelsInfiniteScroll();
+
+        if (restoredModelsPageState) {
+            window.scrollTo({ top: Number(restoredModelsPageState.scrollY || 0), behavior: 'auto' });
+        }
+    } catch (err) {
+        console.error('Failed to initialize models page:', err);
+        showToast('Failed to load models page');
+    } finally {
+        if (initialLoadingEl) initialLoadingEl.style.display = 'none';
+    }
+});
+
+window.addEventListener('pagehide', persistModelsPageState);
+window.addEventListener('scroll', schedulePersistModelsPageState, { passive: true });
+</script>
+{% endblock %}

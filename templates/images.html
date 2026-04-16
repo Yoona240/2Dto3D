@@ -1,0 +1,1161 @@
+{% extends 'base.html' %}
+{% set page = 'images' %}
+
+{% block title %}Images{% endblock %}
+
+{% block content %}
+<style>
+/* Sidebar TOC Styles */
+.page-with-sidebar { display: flex; gap: 16px; }
+.sidebar-toc {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+}
+.sidebar-toc h4 { margin: 0 0 8px 0; font-size: 14px; color: #495057; }
+.sidebar-toc .toc-controls { display: flex; gap: 4px; margin-bottom: 8px; }
+.sidebar-toc .toc-controls button { flex: 1; padding: 4px 8px; font-size: 11px; }
+.sidebar-toc .toc-controls button.active { background: #007bff; color: #fff; }
+.sidebar-toc input { width: 100%; padding: 6px; font-size: 12px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 8px; }
+.toc-list { list-style: none; padding: 0; margin: 0; max-height: 60vh; overflow-y: auto; }
+.toc-item { padding: 6px 8px; font-size: 12px; cursor: pointer; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toc-item:hover { background: #f0f0f0; }
+.toc-item.active { background: #e7f1ff; color: #0d6efd; }
+.main-content { flex: 1; min-width: 0; }
+@media (max-width: 900px) { .sidebar-toc { display: none; } .main-content { width: 100%; } }
+
+/* Filter button styles */
+.filter-btn {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    color: #495057;
+}
+.filter-btn:hover {
+    background: #e9ecef;
+}
+.filter-btn.active {
+    background: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+.item-card.filtered-out {
+    display: none !important;
+}
+</style>
+
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+    <div>
+        <h1 class="page-title">Images</h1>
+        <p class="page-desc">Generated images from T2I pipeline</p>
+    </div>
+    <div class="batch-actions" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <div style="display:flex; gap:4px; align-items:center; margin-right:8px; padding-right:8px; border-right:1px solid #dee2e6;">
+            <span style="font-size:12px; color:#6c757d;">Sort:</span>
+            <button class="btn btn-secondary btn-sm" onclick="sortCards('id')" id="sortCardsById" style="font-size:11px;">ID</button>
+            <button class="btn btn-secondary btn-sm active" onclick="sortCards('time')" id="sortCardsByTime" style="font-size:11px;">Time ↓</button>
+        </div>
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+            <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)">
+            Select All
+        </label>
+        <span id="selectedCount" style="font-size:12px; color:#6c757d; min-width:60px;">(0 selected)</span>
+        <button class="btn btn-primary btn-sm" onclick="batchGen3D()" id="batchGen3DBtn" disabled>Batch Gen 3D</button>
+        <button class="btn btn-secondary btn-sm" onclick="batchGenInstr()" id="batchGenInstrBtn" disabled>Batch Gen Instr</button>
+        <button class="btn btn-success btn-sm" onclick="downloadSelectedImages()" title="Download selected or all images">⬇ Download</button>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding:12px; background:#f8f9fa; border-radius:8px; border:1px solid #e9ecef;">
+    <span style="font-size:12px; font-weight:500; color:#495057;">Filter:</span>
+    <div style="display:flex; gap:4px; flex-wrap:wrap;">
+        <button class="btn btn-sm filter-btn active" data-filter="all" onclick="applyFilter('all')" style="font-size:11px;">All</button>
+        <button class="btn btn-sm filter-btn" data-filter="has-3d" onclick="applyFilter('has-3d')" style="font-size:11px;">Has 3D</button>
+        <button class="btn btn-sm filter-btn" data-filter="no-3d" onclick="applyFilter('no-3d')" style="font-size:11px;">No 3D</button>
+        <button class="btn btn-sm filter-btn" data-filter="has-instr" onclick="applyFilter('has-instr')" style="font-size:11px;">Has Instr</button>
+        <button class="btn btn-sm filter-btn" data-filter="no-instr" onclick="applyFilter('no-instr')" style="font-size:11px;">No Instr</button>
+    </div>
+    <span id="filterCount" style="font-size:11px; color:#6c757d; margin-left:auto;">(showing all)</span>
+</div>
+
+<div class="page-with-sidebar">
+    <!-- Sidebar TOC -->
+    <div class="sidebar-toc" id="sidebarToc">
+        <h4>📋 Directory <span id="tocCount" style="font-size:12px; color:#6c757d; font-weight:normal;">(0)</span></h4>
+        <div class="toc-controls">
+            <button class="btn btn-secondary btn-sm active" onclick="sortToc('id')" id="sortById">ID</button>
+            <button class="btn btn-secondary btn-sm" onclick="sortToc('time')" id="sortByTime">Time</button>
+        </div>
+        <input type="text" placeholder="Search..." id="tocSearch" oninput="filterTocList()">
+        <ul class="toc-list" id="tocList">
+            <!-- Populated dynamically -->
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="grid grid-4" id="imagesGrid">
+            <!-- Images will be loaded dynamically -->
+        </div>
+        <div id="loadingIndicator" style="text-align:center; padding:40px; display:none;">
+            <div style="color:#6c757d;">Loading more images...</div>
+        </div>
+        <div id="noImagesMessage" class="card" style="display:none;">
+            <div class="card-body text-muted" style="text-align: center; padding: 40px;">
+                No images found. Generate some from the Prompts page.
+            </div>
+        </div>
+        <div id="loadMoreSentinel" style="height:1px;"></div>
+    </div>
+</div>
+
+<!-- 3D Provider Selection Modal (Single Image) -->
+<div id="providerModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 300px;">
+        <div class="card-header">Select 3D Provider</div>
+        <div class="card-body">
+            <div style="display:flex; gap:12px; flex-direction:column;">
+                <button class="btn btn-primary" onclick="confirmProvider('tripo')">Tripo 3.0 ultra</button>
+                <button class="btn btn-primary" style="background: #6610f2; border-color: #6610f2;" onclick="confirmProvider('hunyuan')">Hunyuan 3D (Pro)</button>
+                <button class="btn btn-primary" style="background: #fd7e14; border-color: #fd7e14;" onclick="confirmProvider('rodin')">Rodin (Gen2)</button>
+                <div style="border-top: 1px solid #dee2e6; margin: 4px 0;"></div>
+                <button class="btn btn-secondary" onclick="closeProviderModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch 3D Provider Selection Modal -->
+<div id="batchProviderModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 320px;">
+        <div class="card-header">Batch 3D Generation</div>
+        <div class="card-body">
+            <p style="font-size:13px; color:#6c757d; margin-bottom:12px;">
+                Generate 3D models for <strong id="batchCountDisplay">0</strong> selected images.
+            </p>
+            <div style="font-size:12px; color:#6c757d; margin-bottom:8px;">Run on server (API call):</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                <button class="btn btn-primary btn-sm" onclick="confirmBatchProvider('tripo')">Tripo</button>
+                <button class="btn btn-primary btn-sm" style="background: #6610f2; border-color: #6610f2;" onclick="confirmBatchProvider('hunyuan')">Hunyuan</button>
+                <button class="btn btn-primary btn-sm" style="background: #fd7e14; border-color: #fd7e14;" onclick="confirmBatchProvider('rodin')">Rodin</button>
+            </div>
+            <div style="border-top: 1px solid #dee2e6; margin: 8px 0;"></div>
+            <div style="font-size:12px; color:#6c757d; margin-bottom:8px;">Generate bash command (run manually):</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                <button class="btn btn-secondary btn-sm" onclick="showBatch3DCommand('tripo')">Tripo Cmd</button>
+                <button class="btn btn-secondary btn-sm" onclick="showBatch3DCommand('hunyuan')">Hunyuan Cmd</button>
+                <button class="btn btn-secondary btn-sm" onclick="showBatch3DCommand('rodin')">Rodin Cmd</button>
+            </div>
+            <div style="border-top: 1px solid #dee2e6; margin: 8px 0;"></div>
+            <button class="btn btn-secondary" onclick="document.getElementById('batchProviderModal').style.display='none'">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Instruction View Modal (Enhanced for list) -->
+<div id="instrModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 600px; max-width: 90vw; max-height: 80vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Editing Instructions</span>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('instrModal').style.display='none'" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <div id="instrList" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Image Modal -->
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 400px; max-width: 90vw;">
+        <div class="card-header">Edit Image</div>
+        <div class="card-body">
+            <div class="form-group mb-4">
+                <label style="display:block; margin-bottom:8px; font-weight:500;">Instruction</label>
+                <textarea id="editInstruction" class="form-control" style="width:100%; height:80px; padding:8px; border:1px solid #ced4da; border-radius:4px;" placeholder="e.g. Turn the car red"></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmEdit()">Generate Variant</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Command Display Modal -->
+<div id="commandModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1001; align-items:center; justify-content:center;">
+    <div class="card" style="width: 700px; max-width: 95vw;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="commandModalTitle">Command</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeCommandModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body">
+            <div id="commandModalMessage"></div>
+            <div style="position:relative;">
+                <pre id="commandModalCode" style="background:#1e1e1e; color:#d4d4d4; padding:16px; border-radius:6px; overflow-x:auto; font-size:13px; margin:0; white-space:pre-wrap; word-break:break-all;"></pre>
+                <button class="btn btn-secondary btn-sm" onclick="copyCommand(this)" style="position:absolute; top:8px; right:8px; padding:4px 8px; font-size:11px;">Copy</button>
+            </div>
+            <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeCommandModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Caption View Modal -->
+<div id="captionModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="width: 600px; max-width: 90vw; max-height: 80vh; display:flex; flex-direction:column;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>📝 T2I Caption / Prompt</span>
+            <button class="btn btn-secondary btn-sm" onclick="closeCaptionModal()" style="padding:4px 8px;">&times;</button>
+        </div>
+        <div class="card-body" style="overflow-y:auto;">
+            <div id="captionContent" style="white-space:pre-wrap; word-break:break-word; font-size:14px; line-height:1.6;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ============ Infinite Scroll State ============
+let currentPage = 0;
+let isLoading = false;
+let hasMore = true;
+const perPage = 20;
+let allLoadedImages = [];  // Store all loaded images for Select All
+const IMAGES_PAGE_STATE_KEY = 'images-page-state:v1';
+const IMAGES_PAGE_STATE_TTL_MS = 15 * 60 * 1000;
+let imagesStateSaveTimer = null;
+
+function loadImagesPageState() {
+    try {
+        const raw = sessionStorage.getItem(IMAGES_PAGE_STATE_KEY);
+        if (!raw) return null;
+        const state = JSON.parse(raw);
+        if (!state || typeof state !== 'object') return null;
+        if (Date.now() - (state.saved_at || 0) > IMAGES_PAGE_STATE_TTL_MS) return null;
+        return state;
+    } catch (err) {
+        console.warn('Failed to load images page state:', err);
+        return null;
+    }
+}
+
+function persistImagesPageState() {
+    try {
+        const state = {
+            saved_at: Date.now(),
+            currentPage,
+            hasMore,
+            isFirstLoad,
+            allLoadedImages,
+            allTocItems,
+            cardSortBy,
+            tocSortBy,
+            currentFilter,
+            scrollY: window.scrollY || 0,
+        };
+        sessionStorage.setItem(IMAGES_PAGE_STATE_KEY, JSON.stringify(state));
+    } catch (err) {
+        console.warn('Failed to persist images page state:', err);
+    }
+}
+
+function schedulePersistImagesPageState() {
+    if (imagesStateSaveTimer) {
+        clearTimeout(imagesStateSaveTimer);
+    }
+    imagesStateSaveTimer = setTimeout(() => {
+        imagesStateSaveTimer = null;
+        persistImagesPageState();
+    }, 120);
+}
+
+function restoreImagesPageState(state) {
+    if (!state) return false;
+
+    currentPage = Number.isInteger(state.currentPage) ? state.currentPage : 0;
+    hasMore = Boolean(state.hasMore);
+    isFirstLoad = Boolean(state.isFirstLoad);
+    allLoadedImages = Array.isArray(state.allLoadedImages) ? state.allLoadedImages : [];
+    allTocItems = Array.isArray(state.allTocItems) ? state.allTocItems : [];
+    cardSortBy = state.cardSortBy || 'time';
+    tocSortBy = state.tocSortBy || 'id';
+    currentFilter = state.currentFilter || 'all';
+
+    const grid = document.getElementById('imagesGrid');
+    const noImagesMessage = document.getElementById('noImagesMessage');
+    if (!grid || !noImagesMessage) return false;
+
+    grid.innerHTML = '';
+    allLoadedImages.forEach(img => {
+        grid.insertAdjacentHTML('beforeend', createImageCard(img));
+    });
+
+    noImagesMessage.style.display = allLoadedImages.length === 0 && !hasMore ? 'block' : 'none';
+    updateTocList();
+    sortCards(cardSortBy);
+    applyFilter(currentFilter);
+
+    const savedScrollY = Number(state.scrollY || 0);
+    requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, behavior: 'auto' }));
+    return allLoadedImages.length > 0 || currentPage > 0 || !hasMore;
+}
+
+// ============ Create Image Card HTML ============
+function createImageCard(img) {
+    // Handle model_path: could be null, undefined, or empty string
+    const hasModel = img.model_path && img.model_path.length > 0;
+    const has3d = hasModel ? 'true' : 'false';
+    const hasInstr = img.instruction ? 'true' : 'false';
+    const subject = img.display_subject || img.subject || img.id;
+    const shortId = img.id.substring(0, 8);
+
+    let badges = `<span class="badge" style="background:#e9ecef; color:#495057;">${shortId}</span>`;
+    if (hasModel) {
+        badges += '<span class="badge badge-completed">Has 3D</span>';
+    }
+    if (img.instruction) {
+        badges += '<span class="badge badge-completed badge-instr">Has Instr</span>';
+    }
+
+    let actions = '';
+    if (!hasModel) {
+        actions += `<button class="btn btn-primary btn-sm" onclick="generate3D('${img.id}', this)">Gen 3D</button>`;
+    } else {
+        actions += `<a href="/model/${img.id}" class="btn btn-primary btn-sm">View 3D</a>`;
+    }
+    actions += `<button class="btn btn-secondary btn-sm" onclick="genInstruction('${img.id}', this)" title="生成 1 条 Remove + 1 条 Replace 指令">Gen Instr (R+R)</button>`;
+    if (img.instruction) {
+        actions += `<button class="btn btn-secondary btn-sm view-instr-btn" onclick="viewInstruction('${img.id}')">View Instr</button>`;
+    }
+    actions += `<button class="btn btn-secondary btn-sm" onclick="editImage('${img.id}', this)">Edit</button>`;
+    actions += `<button class="btn btn-secondary btn-sm" style="background:#dc3545; border-color:#dc3545; color:#fff;" onclick="deleteAsset('${img.id}')">Delete</button>`;
+
+    return `
+        <div class="item-card" id="card-${img.id}" data-image-id="${img.id}" data-caption="${escapeHtml(img.prompt || img.caption || '')}"
+             data-has-3d="${has3d}" data-has-instr="${hasInstr}">
+            <div style="position:relative;">
+                <input type="checkbox" class="item-select" data-id="${img.id}" data-has-3d="${has3d}" onchange="updateSelectedCount()" style="position:absolute; top:8px; left:8px; width:18px; height:18px; z-index:10; cursor:pointer;">
+                <button class="btn btn-sm" onclick="downloadFile('/${img.path}', '${img.id}.png')" title="Download Image" style="position:absolute; top:8px; right:8px; z-index:10; background:rgba(255,255,255,0.9); border:1px solid #ddd; padding:4px 6px; font-size:11px;">⬇</button>
+                <img src="/${img.path}" alt="${subject}" class="item-card-img" loading="lazy" onclick="showCaption('${img.id}')" style="cursor:pointer;" title="点击查看 Caption">
+            </div>
+            <div class="item-card-body">
+                <div class="item-card-title" title="${subject}" onclick="showCaption('${img.id}')" style="cursor:pointer;">${subject}</div>
+                <div class="item-card-meta">${badges}</div>
+                <div class="item-card-actions">${actions}</div>
+            </div>
+        </div>
+    `;
+}
+
+// ============ Load Images ============
+let isFirstLoad = true;
+
+async function loadMoreImages() {
+    if (isLoading || !hasMore) return;
+    
+    isLoading = true;
+    document.getElementById('loadingIndicator').style.display = 'block';
+    
+    try {
+        const response = await fetch(`/api/images?page=${currentPage + 1}&per_page=${perPage}`);
+        const data = await response.json();
+        
+        if (data.items && data.items.length > 0) {
+            const grid = document.getElementById('imagesGrid');
+            data.items.forEach(img => {
+                grid.insertAdjacentHTML('beforeend', createImageCard(img));
+                allLoadedImages.push(img);
+            });
+            currentPage = data.page;
+            hasMore = data.has_more;
+            // Update TOC
+            updateTocList();
+            
+            // Sort cards after first load (default: time descending)
+            if (isFirstLoad) {
+                isFirstLoad = false;
+                sortCards('time');
+            }
+            schedulePersistImagesPageState();
+        } else if (currentPage === 0) {
+            // No images at all
+            document.getElementById('noImagesMessage').style.display = 'block';
+            hasMore = false;
+            schedulePersistImagesPageState();
+        }
+    } catch (err) {
+        console.error('Error loading images:', err);
+        showToast('Error loading images');
+    } finally {
+        isLoading = false;
+        document.getElementById('loadingIndicator').style.display = 'none';
+    }
+}
+
+// ============ Intersection Observer for Infinite Scroll ============
+function setupInfiniteScroll() {
+    const sentinel = document.getElementById('loadMoreSentinel');
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+            loadMoreImages();
+        }
+    }, { rootMargin: '200px' });
+    
+    observer.observe(sentinel);
+}
+
+// ============ Initialize ============
+let allTocItems = []; // All items for TOC (loaded upfront)
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const restored = restoreImagesPageState(loadImagesPageState());
+    if (!restored) {
+        // Load a lightweight TOC payload first, then page cards separately.
+        try {
+            const tocRes = await fetch('/api/images/toc');
+            const tocData = await tocRes.json();
+            if (tocData.items) {
+                allTocItems = tocData.items;
+                updateTocList();
+            }
+        } catch (e) {
+            console.error('Failed to load TOC:', e);
+        }
+
+        // Then start lazy loading cards
+        loadMoreImages();
+    }
+    setupInfiniteScroll();
+});
+
+window.addEventListener('pagehide', persistImagesPageState);
+window.addEventListener('scroll', schedulePersistImagesPageState, { passive: true });
+
+// ============ Caption Functions ============
+
+
+function showCaption(imageId) {
+    const card = document.getElementById('card-' + imageId);
+    if (!card) return;
+    const caption = card.dataset.caption || '无 Caption 信息';
+    document.getElementById('captionContent').textContent = caption;
+    document.getElementById('captionModal').style.display = 'flex';
+}
+
+function closeCaptionModal() {
+    document.getElementById('captionModal').style.display = 'none';
+}
+
+// ============ Card Sorting Functions ============
+let cardSortBy = 'time'; // 'id' or 'time'
+
+function sortCards(by) {
+    cardSortBy = by;
+    document.getElementById('sortCardsById').classList.toggle('active', by === 'id');
+    document.getElementById('sortCardsByTime').classList.toggle('active', by === 'time');
+    
+    // Update button text to show sort direction
+    document.getElementById('sortCardsById').textContent = by === 'id' ? 'ID ↓' : 'ID';
+    document.getElementById('sortCardsByTime').textContent = by === 'time' ? 'Time ↓' : 'Time';
+    
+    const grid = document.getElementById('imagesGrid');
+    const cards = Array.from(grid.querySelectorAll('.item-card'));
+    
+    cards.sort((a, b) => {
+        const aId = a.dataset.imageId || '';
+        const bId = b.dataset.imageId || '';
+        const aImg = allLoadedImages.find(img => img.id === aId);
+        const bImg = allLoadedImages.find(img => img.id === bId);
+        
+        if (by === 'id') {
+            return aId.localeCompare(bId);
+        } else {
+            // Sort by time (newest first)
+            const aTime = aImg?.created_at || '';
+            const bTime = bImg?.created_at || '';
+            return bTime.localeCompare(aTime);
+        }
+    });
+    
+    cards.forEach(card => grid.appendChild(card));
+    schedulePersistImagesPageState();
+}
+
+// ============ TOC Functions ============
+let tocSortBy = 'id'; // 'id' or 'time'
+
+function updateTocList() {
+    const tocList = document.getElementById('tocList');
+    if (!tocList) return;
+    
+    // Use allTocItems (loaded upfront) for TOC
+    let items = [...allTocItems];
+    
+    // Sort
+    if (tocSortBy === 'id') {
+        items.sort((a, b) => a.id.localeCompare(b.id));
+    } else {
+        items.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+    }
+    
+    tocList.innerHTML = items.map(img => {
+        const label = img.display_subject || img.subject || img.id.substring(0, 8);
+        return `<li class="toc-item" data-id="${img.id}" data-subject="${(label || '').toLowerCase()}" onclick="scrollToCard('${img.id}')">${label}</li>`;
+    }).join('');
+    
+    // Update TOC count badge
+    const tocCount = document.getElementById('tocCount');
+    if (tocCount) tocCount.textContent = items.length;
+}
+
+function sortToc(by) {
+    tocSortBy = by;
+    document.getElementById('sortById').classList.toggle('active', by === 'id');
+    document.getElementById('sortByTime').classList.toggle('active', by === 'time');
+    updateTocList();
+    schedulePersistImagesPageState();
+}
+
+function filterTocList() {
+    const query = (document.getElementById('tocSearch').value || '').toLowerCase();
+    document.querySelectorAll('#tocList .toc-item').forEach(item => {
+        const subject = item.dataset.subject || '';
+        const id = item.dataset.id || '';
+        item.style.display = (subject.includes(query) || id.includes(query)) ? 'block' : 'none';
+    });
+}
+
+function scrollToCard(id) {
+    let card = document.getElementById('card-' + id);
+    
+    // If card not loaded yet, we need to load it first
+    if (!card) {
+        // Find the item in allTocItems
+        const item = allTocItems.find(img => img.id === id);
+        if (item) {
+            // Check if already in allLoadedImages to avoid duplicates
+            const alreadyLoaded = allLoadedImages.some(img => img.id === id);
+            if (!alreadyLoaded) {
+                // Create and insert the card
+                const grid = document.getElementById('imagesGrid');
+                const cardHtml = createImageCard(item);
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+                allLoadedImages.push(item);
+            }
+            card = document.getElementById('card-' + id);
+        }
+    }
+    
+    if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight briefly
+        card.style.boxShadow = '0 0 0 3px #007bff';
+        setTimeout(() => card.style.boxShadow = '', 1500);
+    }
+    // Update active state
+    document.querySelectorAll('#tocList .toc-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.id === id);
+    });
+    schedulePersistImagesPageState();
+}
+
+let currentImageId = null;
+let currentBtn = null;
+
+
+
+// ============ Filter Functions ============
+let currentFilter = 'all';
+
+function applyFilter(filter) {
+    currentFilter = filter;
+
+    // Update button states
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+
+    // Apply filter to cards
+    const cards = document.querySelectorAll('.item-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const show = checkCardFilter(card, filter);
+        card.classList.toggle('filtered-out', !show);
+        if (show) visibleCount++;
+    });
+
+    // Update filter count display
+    const filterCountEl = document.getElementById('filterCount');
+    if (filter === 'all') {
+        filterCountEl.textContent = `(showing all ${cards.length})`;
+    } else {
+        filterCountEl.textContent = `(${visibleCount} of ${cards.length})`;
+    }
+
+    // Reset selection when filter changes
+    document.querySelectorAll('.item-select').forEach(cb => cb.checked = false);
+    document.getElementById('selectAll').checked = false;
+    updateSelectedCount();
+    schedulePersistImagesPageState();
+}
+
+function checkCardFilter(card, filter) {
+    switch (filter) {
+        case 'all':
+            return true;
+        case 'has-3d':
+            return card.dataset.has3d === 'true';
+        case 'no-3d':
+            return card.dataset.has3d !== 'true';
+        case 'has-instr':
+            return card.dataset.hasInstr === 'true';
+        case 'no-instr':
+            return card.dataset.hasInstr !== 'true';
+        default:
+            return true;
+    }
+}
+
+// ============ Batch Selection Functions ============
+function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.item-select:checked')).map(cb => cb.dataset.id);
+}
+
+function getVisibleCheckboxes() {
+    return Array.from(document.querySelectorAll('.item-card:not(.filtered-out) .item-select'));
+}
+
+function updateSelectedCount() {
+    const selectedCount = getSelectedIds().length;
+    const visibleCheckboxes = getVisibleCheckboxes();
+    const visibleSelectedCount = visibleCheckboxes.filter(cb => cb.checked).length;
+
+    document.getElementById('selectedCount').textContent = `(${selectedCount} selected)`;
+    document.getElementById('batchGen3DBtn').disabled = selectedCount === 0;
+    document.getElementById('batchGenInstrBtn').disabled = selectedCount === 0;
+
+    // Update "Select All" checkbox state - only considers visible items
+    const allVisibleChecked = visibleCheckboxes.length > 0 && visibleSelectedCount === visibleCheckboxes.length;
+    document.getElementById('selectAll').checked = allVisibleChecked;
+}
+
+function toggleSelectAll(checked) {
+    // Only toggle visible (non-filtered) checkboxes
+    getVisibleCheckboxes().forEach(cb => {
+        cb.checked = checked;
+    });
+    updateSelectedCount();
+}
+
+function showBatch3DCommand(provider) {
+    const ids = filteredBatch3DIds;
+    document.getElementById('batchProviderModal').style.display = 'none';
+    
+    if (ids.length === 0) {
+        showToast('No images to generate');
+        return;
+    }
+    
+    // Generate bash command using unified batch_process.py
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+    
+    // Use batch_process.py which respects config concurrency limits
+    const bashCmd = `${pythonPath} ${scriptPath} gen3d --provider ${provider} --ids ${ids.join(' ')}`;
+    
+    const providerNames = { tripo: 'Tripo', hunyuan: 'Hunyuan', rodin: 'Rodin' };
+    const message = `<p style="margin-bottom:8px;">Run this command to generate <strong>${ids.length}</strong> 3D model(s) using <strong>${providerNames[provider] || provider}</strong>:</p>
+<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Respects config concurrency limits &nbsp;• Auto-skips existing 3D models</p>`;
+    
+    showCommandModal('Batch 3D Generation Command', message, bashCmd);
+}
+
+// ============ Batch 3D Generation ============
+let batchProvider = null;
+let filteredBatch3DIds = [];  // Store filtered ids for batch 3D generation
+
+function batchGen3D() {
+    const allIds = getSelectedIds();
+    if (allIds.length === 0) {
+        showToast('Please select at least one image');
+        return;
+    }
+    // Filter out images that already have 3D models
+    filteredBatch3DIds = allIds.filter(id => {
+        const checkbox = document.querySelector(`.item-select[data-id="${id}"]`);
+        if (!checkbox) return true;  // If checkbox not found, include it
+        const has3d = checkbox.dataset.has3d;
+        // Check for various truthy representations
+        return has3d !== 'true' && has3d !== 'True' && has3d !== '1';
+    });
+    
+    const skipped = allIds.length - filteredBatch3DIds.length;
+    console.log(`[batchGen3D] Total: ${allIds.length}, Filtered: ${filteredBatch3DIds.length}, Skipped: ${skipped}`);
+    
+    if (filteredBatch3DIds.length === 0) {
+        showToast(`All ${skipped} selected images already have 3D models`);
+        return;
+    }
+    if (skipped > 0) {
+        showToast(`Skipping ${skipped} images that already have 3D models`);
+    }
+    // Update count display and show provider modal for batch
+    document.getElementById('batchCountDisplay').textContent = filteredBatch3DIds.length;
+    document.getElementById('batchProviderModal').style.display = 'flex';
+}
+
+function confirmBatchProvider(provider) {
+    const ids = filteredBatch3DIds;  // Use filtered ids
+    document.getElementById('batchProviderModal').style.display = 'none';
+    
+    if (ids.length === 0) return;
+    
+    const btn = document.getElementById('batchGen3DBtn');
+    btn.disabled = true;
+    btn.textContent = `Starting ${ids.length} tasks...`;
+    
+    triggerAction('/api/batch/generate-3d', { image_ids: ids, provider: provider })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                btn.textContent = 'Batch Gen 3D';
+                return;
+            }
+            
+            showToast(`Created ${res.created} 3D generation tasks`);
+            btn.textContent = `${res.created} tasks running...`;
+            
+            // Poll all tasks
+            let completed = 0;
+            let failed = 0;
+            res.tasks.forEach(t => {
+                pollTask(t.task_id,
+                    (task) => {
+                        completed++;
+                        if (completed + failed === res.created) {
+                            showToast(`Batch complete: ${completed} succeeded, ${failed} failed. Refresh to see.`);
+                            btn.disabled = false;
+                            btn.textContent = 'Batch Gen 3D';
+                            // Manual refresh - removed auto reload for stability
+                            // setTimeout(() => window.location.reload(), 1500);
+                        }
+                    },
+                    (err) => {
+                        failed++;
+                        if (completed + failed === res.created) {
+                            showToast(`Batch complete: ${completed} succeeded, ${failed} failed`);
+                            btn.disabled = false;
+                            btn.textContent = 'Batch Gen 3D';
+                        }
+                    },
+                    5000
+                );
+            });
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = 'Batch Gen 3D';
+        });
+}
+
+// ============ Download Function (uses common module) ============
+function downloadSelectedImages() {
+    const ids = getSelectedIds();
+    const btn = document.querySelector('button[onclick="downloadSelectedImages()"]');
+    downloadImagesZip(ids.length > 0 ? ids : [], btn);
+}
+
+// ============ Batch Instruction Generation ============
+function batchGenInstr() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) {
+        showToast('Please select at least one image');
+        return;
+    }
+    
+    const btn = document.getElementById('batchGenInstrBtn');
+    btn.disabled = true;
+    btn.textContent = `Generating for ${ids.length}...`;
+    
+    triggerAction('/api/batch/generate-instruction', { image_ids: ids, mode: 'batch' })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                btn.textContent = 'Batch Gen Instr';
+                return;
+            }
+            
+            showToast(`Created ${res.created} instruction tasks`);
+            
+            // Poll all tasks
+            let completed = 0;
+            let failed = 0;
+            res.tasks.forEach(t => {
+                pollTask(t.task_id,
+                    (task) => {
+                        completed++;
+                        if (completed + failed === res.created) {
+                            showToast(`Batch complete: ${completed} succeeded, ${failed} failed. Refresh to see.`);
+                            btn.disabled = false;
+                            btn.textContent = 'Batch Gen Instr';
+                            // Manual refresh - removed auto reload for stability
+                            // setTimeout(() => window.location.reload(), 1500);
+                        }
+                    },
+                    (err) => {
+                        failed++;
+                        if (completed + failed === res.created) {
+                            showToast(`Batch complete: ${completed} succeeded, ${failed} failed`);
+                            btn.disabled = false;
+                            btn.textContent = 'Batch Gen Instr';
+                        }
+                    }
+                );
+            });
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = 'Batch Gen Instr';
+        });
+}
+
+function generate3D(imageId, btn) {
+    currentImageId = imageId;
+    currentBtn = btn;
+    document.getElementById('providerModal').style.display = 'flex';
+}
+
+function closeProviderModal() {
+    document.getElementById('providerModal').style.display = 'none';
+    currentImageId = null;
+    currentBtn = null;
+}
+
+function confirmProvider(provider) {
+    if (!currentImageId || !currentBtn) {
+        closeProviderModal();
+        return;
+    }
+    
+    const btn = currentBtn;
+    const imageId = currentImageId;
+    
+    closeProviderModal();
+    
+    btn.disabled = true;
+    btn.textContent = 'Starting...';
+    
+    triggerAction(`/api/images/${imageId}/generate-3d`, { provider })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                btn.textContent = 'Gen 3D';
+                return;
+            }
+            
+            btn.textContent = 'Generating...';
+            showToast('3D generation started');
+            
+            pollTask(res.task_id,
+                (task) => {
+                    showToast('3D model generated');
+                    btn.textContent = 'Done';
+                    // Add badge
+                    const card = document.getElementById('card-' + imageId);
+                    const meta = card.querySelector('.item-card-meta');
+                    meta.innerHTML += '<span class="badge badge-completed">Has 3D</span>';
+                },
+                (err) => {
+                    showToast('Error: ' + err);
+                    btn.disabled = false;
+                    btn.textContent = 'Retry';
+                },
+                5000  // Poll every 5s for 3D
+            );
+        });
+}
+
+function genInstruction(imageId, btn, mode = 'batch') {
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    
+    // mode: 'batch' (default, 1 remove + 1 replace), 'remove', or 'replace'
+    triggerAction(`/api/images/${imageId}/generate-instruction`, { mode: mode })
+        .then(res => {
+            if (res.error) {
+                showToast('Error: ' + res.error);
+                btn.disabled = false;
+                btn.textContent = originalText;
+                return;
+            }
+            
+            pollTask(res.task_id,
+                (task) => {
+                    const result = task.result || {};
+                    const newCount = result.new_count || 1;
+                    showToast(`${newCount} instruction(s) generated`);
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    const card = document.getElementById('card-' + imageId);
+                    const meta = card.querySelector('.item-card-meta');
+                    if (!meta.querySelector('.badge-instr')) {
+                        const badge = document.createElement('span');
+                        badge.className = 'badge badge-completed badge-instr';
+                        badge.textContent = 'Has Instr';
+                        meta.appendChild(badge);
+                    }
+
+                    const actions = card.querySelector('.item-card-actions');
+                    if (!actions.querySelector('.view-instr-btn')) {
+                        const viewBtn = document.createElement('button');
+                        viewBtn.className = 'btn btn-secondary btn-sm view-instr-btn';
+                        viewBtn.textContent = 'View Instr';
+                        viewBtn.onclick = () => viewInstruction(imageId);
+                        const editBtn = actions.querySelector('button[onclick^="editImage"]');
+                        if (editBtn) {
+                            actions.insertBefore(viewBtn, editBtn);
+                        } else {
+                            actions.appendChild(viewBtn);
+                        }
+                    }
+                },
+                (err) => {
+                    showToast('Error: ' + err);
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            );
+        });
+}
+
+function viewInstruction(imageId) {
+    fetch(`/api/images/${imageId}/instruction`)
+        .then(r => r.json())
+        .then(data => {
+            const instructions = data.instruction_items || data.instructions || (data.instruction ? [data.instruction] : []);
+            if (instructions.length === 0) {
+                showToast('No instructions found');
+                return;
+            }
+
+            const listContainer = document.getElementById('instrList');
+            listContainer.innerHTML = '';
+
+            instructions.forEach((instr, idx) => {
+                const text = getInstructionDisplayText(instr) || JSON.stringify(instr);
+                const item = document.createElement('div');
+                item.className = 'instr-item';
+                item.id = `instr-item-${imageId}-${idx}`;
+                item.style.cssText = 'padding:12px; background:#f8f9fa; border-radius:6px; border:1px solid #dee2e6;';
+
+                const contentDiv = document.createElement('div');
+                contentDiv.style.cssText = 'display:flex; justify-content:space-between; align-items:flex-start; gap:12px;';
+
+                const textDiv = document.createElement('div');
+                textDiv.style.flex = '1';
+                textDiv.innerHTML = `<span style="font-weight:500; color:#495057;">#${idx + 1}</span>`;
+
+                const textP = document.createElement('p');
+                textP.style.cssText = 'margin:8px 0 0 0; color:#212529; white-space:pre-wrap;';
+                textP.textContent = text;
+                textDiv.appendChild(textP);
+
+                const btnGroup = document.createElement('div');
+                btnGroup.style.cssText = 'display:flex; flex-direction:column; gap:4px;';
+
+                const applyBtn = document.createElement('button');
+                applyBtn.className = 'btn btn-primary btn-sm';
+                applyBtn.textContent = 'Apply';
+                applyBtn.onclick = () => applyInstructionFromView(imageId, text);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm';
+                deleteBtn.style.cssText = 'background:#dc3545; border-color:#dc3545; color:#fff;';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteInstruction(imageId, idx);
+
+                btnGroup.appendChild(applyBtn);
+                btnGroup.appendChild(deleteBtn);
+
+                contentDiv.appendChild(textDiv);
+                contentDiv.appendChild(btnGroup);
+                item.appendChild(contentDiv);
+                listContainer.appendChild(item);
+            });
+
+            document.getElementById('instrModal').style.display = 'flex';
+        })
+        .catch(err => {
+            showToast('Error loading instructions: ' + err.message);
+        });
+}
+
+function deleteInstruction(imageId, instrIndex) {
+    if (!confirm(`Delete instruction #${instrIndex + 1}?`)) return;
+
+    fetch(`/api/images/${imageId}/instruction/${instrIndex}`, { method: 'DELETE' })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                throw new Error(data.error || `HTTP ${res.status}`);
+            }
+
+            showToast('Instruction deleted');
+
+            // Remove the item from the modal
+            const item = document.getElementById(`instr-item-${imageId}-${instrIndex}`);
+            if (item) {
+                item.style.transition = 'opacity 0.3s, transform 0.3s';
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    item.remove();
+                    // Renumber remaining items
+                    const listContainer = document.getElementById('instrList');
+                    const items = listContainer.querySelectorAll('.instr-item');
+                    if (items.length === 0) {
+                        // Close modal if no instructions left
+                        document.getElementById('instrModal').style.display = 'none';
+                        // Update card to remove "Has Instr" badge
+                        const card = document.getElementById('card-' + imageId);
+                        if (card) {
+                            const instrBadge = card.querySelector('.badge-instr');
+                            if (instrBadge) instrBadge.remove();
+                            const viewBtn = card.querySelector('.view-instr-btn');
+                            if (viewBtn) viewBtn.remove();
+                        }
+                    } else {
+                        // Refresh the modal to update indices
+                        viewInstruction(imageId);
+                    }
+                }, 300);
+            }
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+        });
+}
+
+function applyInstructionFromView(imageId, instruction) {
+    document.getElementById('instrModal').style.display = 'none';
+    
+    // Check if this image has views (3D rendered)
+    // For now, just use the edit endpoint for the source image
+    showToast('Applying instruction...');
+    
+    fetch(`/api/images/${imageId}/edit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instruction })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.error) {
+            showToast('Error: ' + res.error);
+            return;
+        }
+        
+        pollTask(res.task_id,
+            (task) => {
+                showToast('Edit completed! Refresh to see.');
+                // Manual refresh - removed auto reload for stability
+                // setTimeout(() => window.location.reload(), 1000);
+            },
+            (err) => {
+                showToast('Error: ' + err);
+            }
+        );
+    });
+}
+
+
+// Edit Modal Logic
+function editImage(imageId, btn) {
+    currentImageId = imageId;
+    currentBtn = btn;
+    document.getElementById('editInstruction').value = '';
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    currentImageId = null;
+    currentBtn = null;
+}
+
+function confirmEdit() {
+    const instruction = document.getElementById('editInstruction').value;
+    if (!instruction) {
+        showToast('Please enter an instruction');
+        return;
+    }
+    
+    if (!currentImageId || !currentBtn) return;
+    
+    const btn = currentBtn;
+    const imageId = currentImageId;
+    
+    closeEditModal();
+    
+    const formData = new FormData();
+    formData.append('instruction', instruction);
+    
+    btn.disabled = true;
+    btn.textContent = 'Starting...';
+    
+    fetch(`/api/images/${imageId}/edit`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.error) {
+            showToast('Error: ' + res.error);
+            btn.disabled = false;
+            btn.textContent = 'Edit';
+            return;
+        }
+        
+        btn.textContent = 'Editing...';
+        showToast('Edit task started');
+        
+        pollTask(res.task_id,
+            (task) => {
+                showToast('Image edited successfully. Refresh to see.');
+                btn.textContent = 'Edit';
+                btn.disabled = false;
+                // Manual refresh - removed auto reload for stability
+                // setTimeout(() => window.location.reload(), 1000);
+            },
+            (err) => {
+                showToast('Error: ' + err);
+                btn.disabled = false;
+                btn.textContent = 'Edit';
+            }
+        );
+    })
+    .catch(err => {
+        showToast('Network Error');
+        btn.disabled = false;
+        btn.textContent = 'Edit';
+    });
+}
+</script>
+{% endblock %}

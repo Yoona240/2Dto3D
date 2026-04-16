@@ -1,0 +1,507 @@
+// ============ Provider Tab Switching ============
+const BACKEND_PROJECT_ROOT = '/seaweedfs/xiaoliang/code3/2d3d_v2';
+const BACKEND_PYTHON_PATH = '/home/xiaoliang/local_envs/2d3d/bin/python';
+const BATCH_PROCESS_SCRIPT = 'scripts/batch_process.py';
+
+function buildBackendBatchProcessCommand(args) {
+    return `cd ${BACKEND_PROJECT_ROOT} && ${BACKEND_PYTHON_PATH} ${BATCH_PROCESS_SCRIPT} ${args}`;
+}
+
+function switchProviderTab(group, index, btn) {
+    // Update tab buttons
+    document.querySelectorAll(`.provider-tab[data-group="${group}"]`).forEach(tab => {
+        tab.style.background = '#fff';
+        tab.style.color = '#495057';
+        tab.classList.remove('provider-tab-active');
+    });
+    btn.style.background = '#0d6efd';
+    btn.style.color = '#fff';
+    btn.classList.add('provider-tab-active');
+
+    // Switch panels
+    document.querySelectorAll(`.provider-panel[data-group="${group}"]`).forEach(panel => {
+        panel.style.display = 'none';
+    });
+    const targetPanel = document.querySelector(`.provider-panel[data-group="${group}"][data-index="${index}"]`);
+    if (targetPanel) {
+        targetPanel.style.display = '';
+        // Lazy-load model-viewer if needed
+        const viewer = targetPanel.querySelector('model-viewer[data-src]');
+        if (viewer) {
+            viewer.setAttribute('src', viewer.getAttribute('data-src'));
+            viewer.removeAttribute('data-src');
+        }
+    }
+}
+
+// ============ Target 3D Modal Functions ============
+function showTarget3DModal(modelId, modelPath, filename) {
+    document.getElementById('target3DModalTitle').textContent = `Target 3D: ${modelId}`;
+    const viewer = document.getElementById('target3DViewer');
+    viewer.setAttribute('src', modelPath);
+    document.getElementById('target3DFilename').textContent = filename;
+    document.getElementById('target3DDownload').href = modelPath;
+    document.getElementById('target3DModal').style.display = 'flex';
+}
+
+function closeTarget3DModal() {
+    document.getElementById('target3DModal').style.display = 'none';
+    document.getElementById('target3DViewer').removeAttribute('src');
+}
+
+// ============ View Modal Functions ============
+function showViewModal(modelId, viewName, viewPath) {
+    currentViewName = viewName;
+    document.getElementById('viewModalTitle').textContent = `${modelId} - ${viewName}`;
+    document.getElementById('viewModalImage').src = viewPath;
+    document.getElementById('viewEditInstruction').value = '';
+    
+    // Load available instructions from source image
+    loadInstructionsForView(modelId);
+    
+    document.getElementById('viewModal').style.display = 'flex';
+}
+
+function closeViewModal() {
+    document.getElementById('viewModal').style.display = 'none';
+}
+
+async function loadInstructionsForView(modelId) {
+    try {
+        const res = await fetch(`/api/images/${modelId}/instruction`);
+        const data = await res.json();
+        const instructions = data.instruction_items || data.instructions || [];
+
+        if (instructions.length > 0) {
+            const listHtml = instructions.map((instr, idx) => {
+                const text = getInstructionDisplayText(instr);
+                const type = typeof instr === 'object' ? (instr.type || 'edit') : 'edit';
+                return `
+                <div style="display:flex; align-items:flex-start; gap:6px; padding:8px; background:#fff; border:1px solid #dee2e6; border-radius:4px;">
+                    <input type="radio" name="instrSelect" value="${idx}" style="margin-top:2px; cursor:pointer;">
+                    <span style="flex:1; font-size:12px;">${text}</span>
+                    <span class="badge" style="background:#17a2b8; color:#fff; font-size:10px;">${type}</span>
+                    <button class="btn btn-sm" onclick="deleteInstructionFromDetail('${modelId}', ${idx}, 'view')" style="background:#dc3545; border-color:#dc3545; color:#fff; padding:2px 6px; font-size:10px;" title="Delete this instruction">🗑️</button>
+                </div>`;
+            }).join('');
+
+            document.getElementById('instrSelectList').innerHTML = listHtml;
+            document.getElementById('existingInstructions').style.display = 'block';
+
+            // Add radio change listener to copy text to textarea
+            document.querySelectorAll('input[name="instrSelect"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const idx = parseInt(e.target.value);
+                    const instr = instructions[idx];
+                    const text = getInstructionDisplayText(instr);
+                    document.getElementById('viewEditInstruction').value = text;
+                });
+            });
+        } else {
+            document.getElementById('existingInstructions').style.display = 'none';
+        }
+    } catch (err) {
+        document.getElementById('existingInstructions').style.display = 'none';
+    }
+}
+
+function applyEditToView() {
+    const instruction = document.getElementById('viewEditInstruction').value.trim();
+    if (!instruction) {
+        showToast('Please enter an instruction');
+        return;
+    }
+    
+    // TODO: Implement single view edit API call
+    showToast('Single view edit feature coming soon');
+    closeViewModal();
+}
+
+// ============ Batch Edit Modal Functions ============
+// Track which provider's views we're editing
+let currentViewsProviderId = null;
+
+function switchViewsProviderTab(providerId, index, btn) {
+    // Update tab button styles
+    document.querySelectorAll('.provider-tab[data-group="views"]').forEach(tab => {
+        tab.style.background = '#fff';
+        tab.style.color = '#495057';
+        tab.classList.remove('provider-tab-active');
+    });
+    btn.style.background = '#0d6efd';
+    btn.style.color = '#fff';
+    btn.classList.add('provider-tab-active');
+
+    // Switch panels
+    document.querySelectorAll('.views-provider-panel').forEach(panel => {
+        panel.style.display = 'none';
+    });
+    const targetPanel = document.querySelector(`.views-provider-panel[data-provider-id="${providerId}"]`);
+    if (targetPanel) {
+        targetPanel.style.display = '';
+    }
+
+    currentViewsProviderId = providerId;
+}
+
+// Re-render prompt: shows CLI command with --provider flag
+function renderViewsPrompt(modelId, availableProviders) {
+    const providers = availableProviders ? availableProviders.split(',').filter(Boolean) : [];
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+
+    if (providers.length === 1) {
+        const provider = providers[0].trim();
+        const bashCmd = `${pythonPath} ${scriptPath} render --provider ${provider} --ids ${modelId}`;
+        showCommandModal('Render Command', `<p style="margin-bottom:8px;">Run this command to render model <strong>${modelId}</strong> (provider: <strong>${provider}</strong>):</p>`, bashCmd);
+    } else {
+        // Multiple providers — show all commands
+        const cmds = providers.map(p => {
+            const provider = p.trim();
+            return `# Provider: ${provider}\n${pythonPath} ${scriptPath} render --provider ${provider} --ids ${modelId}`;
+        }).join('\n\n');
+        showCommandModal('Render Command', `<p style="margin-bottom:8px;">Run one of these commands to render <strong>${modelId}</strong> for a specific provider:</p>`, cmds);
+    }
+}
+
+function showBatchEditModal(modelId, viewsProviderId) {
+    currentModelId = modelId;
+    currentViewsProviderId = viewsProviderId || null;
+    document.getElementById('batchEditInstruction').value = '';
+    
+    // Show which provider's views will be edited
+    const providerLabel = document.getElementById('editProviderLabel');
+    if (providerLabel) {
+        const hasExplicitProvider = currentViewsProviderId && currentViewsProviderId !== 'legacy';
+        providerLabel.textContent = hasExplicitProvider ? `Editing views from: ${currentViewsProviderId}` : '';
+        providerLabel.style.display = hasExplicitProvider ? 'block' : 'none';
+    }
+
+    // Load available instructions from source image
+    loadInstructionsForBatch(modelId);
+    
+    // Reset to multiview mode
+    document.querySelector('input[name="editMode"][value="multiview"]').checked = true;
+    updateEditModeUI();
+    
+    // Add event listeners for mode change
+    document.querySelectorAll('input[name="editMode"]').forEach(radio => {
+        radio.onchange = updateEditModeUI;
+    });
+    
+    document.getElementById('batchEditModal').style.display = 'flex';
+}
+
+function updateEditModeUI() {
+    const mode = document.querySelector('input[name="editMode"]:checked').value;
+    const descEl = document.getElementById('editModeDesc');
+    const btnEl = document.getElementById('applyEditBtn');
+    
+    if (mode === 'multiview') {
+        descEl.innerHTML = 'This will stitch <strong>all 6 views</strong> into a 3×2 grid, edit the combined image, then split back into individual views.';
+        btnEl.textContent = 'Apply to 6 Views (Multiview)';
+    } else {
+        descEl.innerHTML = 'This will apply the same editing instruction to <strong>front</strong>, <strong>back</strong>, and <strong>right</strong> views independently.';
+        btnEl.textContent = 'Apply to 3 Views';
+    }
+}
+
+function closeBatchEditModal() {
+    document.getElementById('batchEditModal').style.display = 'none';
+}
+
+async function loadInstructionsForBatch(modelId) {
+    try {
+        const res = await fetch(`/api/images/${modelId}/instruction`);
+        const data = await res.json();
+        const instructions = data.instruction_items || data.instructions || [];
+
+        if (instructions.length > 0) {
+            const listHtml = instructions.map((instr, idx) => {
+                const text = getInstructionDisplayText(instr);
+                const type = typeof instr === 'object' ? (instr.type || 'edit') : 'edit';
+                return `
+                <div style="display:flex; align-items:flex-start; gap:6px; padding:8px; background:#fff; border:1px solid #dee2e6; border-radius:4px;">
+                    <input type="radio" name="batchInstrSelect" value="${idx}" style="margin-top:2px; cursor:pointer;">
+                    <span style="flex:1; font-size:12px;">${text}</span>
+                    <span class="badge" style="background:#17a2b8; color:#fff; font-size:10px;">${type}</span>
+                    <button class="btn btn-sm" onclick="deleteInstructionFromDetail('${modelId}', ${idx}, 'batch')" style="background:#dc3545; border-color:#dc3545; color:#fff; padding:2px 6px; font-size:10px;" title="Delete this instruction">🗑️</button>
+                </div>`;
+            }).join('');
+
+            document.getElementById('batchInstrSelectList').innerHTML = listHtml;
+            document.getElementById('batchExistingInstructions').style.display = 'block';
+
+            // Add radio change listener
+            document.querySelectorAll('input[name="batchInstrSelect"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const idx = parseInt(e.target.value);
+                    const instr = instructions[idx];
+                    const text = getInstructionDisplayText(instr);
+                    document.getElementById('batchEditInstruction').value = text;
+                });
+            });
+        } else {
+            document.getElementById('batchExistingInstructions').style.display = 'none';
+        }
+    } catch (err) {
+        document.getElementById('batchExistingInstructions').style.display = 'none';
+    }
+}
+
+function showEditCmd() {
+    const instruction = document.getElementById('batchEditInstruction').value.trim();
+    if (!instruction) {
+        showToast('Please enter an instruction first');
+        return;
+    }
+
+    const editMode = document.querySelector('input[name="editMode"]:checked').value;
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+
+    let providerArg = '';
+    if (currentViewsProviderId && currentViewsProviderId !== 'legacy') {
+        providerArg = ` --provider-id ${currentViewsProviderId}`;
+    }
+
+    const modeArg = editMode === 'multiview' ? ' --mode multiview' : ' --mode single';
+    const bashCmd = `${pythonPath} ${scriptPath} edit --ids ${currentModelId}${providerArg}${modeArg} --instruction "${instruction}"`;
+
+    showCommandModal(
+        'Edit Views Command',
+        `<p style="margin-bottom:8px;">Run this command to edit views for model <strong>${currentModelId}</strong>:</p>` +
+        (currentViewsProviderId ? `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Uses rendered views from provider: <strong>${currentViewsProviderId}</strong></p>` : '') +
+        `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Skips if same instruction already applied &nbsp;• Use --force to redo</p>`,
+        bashCmd
+    );
+}
+
+function showEditQualityCheckCmd(modelId, editId, method) {
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+    const bashCmd = `${pythonPath} ${scriptPath} check-edit-quality --ids ${modelId} --edit-id ${editId}`;
+
+    let desc;
+    if (method === 'two_stage_recon') {
+        desc = `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">` +
+            `• Method: <strong>two_stage_recon</strong> (Stage 1A: VLM diff + Stage 1B: LLM judge)` +
+            `<br>• Writes result back to meta.json • Failed result will move this batch to Failed Editing</p>`;
+    } else {
+        desc = `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">` +
+            `• Method: <strong>grid_vlm</strong> (before/after 6-view stitched grids)` +
+            `<br>• Writes result back to meta.json • Failed result will move this batch to Failed Editing</p>`;
+    }
+
+    showCommandModal(
+        'Edit Quality Check Command',
+        `<p style="margin-bottom:8px;">Run this command to re-check quality for edit batch <strong>${editId}</strong> of model <strong>${modelId}</strong>:</p>` + desc,
+        bashCmd
+    );
+}
+
+function showTargetConsistencyCmd(modelId, editId, groupName, fallbackTargetId, fallbackProvider) {
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+
+    let targetId = fallbackTargetId || `${modelId}_edit_${editId}`;
+    let provider = (fallbackProvider || '').toLowerCase();
+
+    const activeTab = document.querySelector(`.provider-tab[data-group="${groupName}"].provider-tab-active`)
+        || document.querySelector(`.provider-tab[data-group="${groupName}"]`);
+    if (activeTab) {
+        targetId = activeTab.dataset.targetId || targetId;
+        provider = (activeTab.dataset.provider || provider || '').toLowerCase();
+    }
+
+    if (!provider) {
+        provider = 'hunyuan';
+    }
+
+    const bashCmd = `${pythonPath} ${scriptPath} check-target-consistency --provider ${provider} --ids ${modelId} --edit-id ${editId}`;
+
+    showCommandModal(
+        'Target 3D Consistency Command',
+        `<p style="margin-bottom:8px;">Run this command to compute Stage2 consistency for edit batch <strong>${editId}</strong> (target: <strong>${targetId}</strong>, provider: <strong>${provider}</strong>):</p>` +
+        `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Will render target views if needed (so semantic alignment can run) + LPIPS consistency check + write <code>target_quality_check</code> to target meta.json</p>`,
+        bashCmd
+    );
+}
+
+function refreshModelLpips(modelId, btn) {
+    const bashCmd = buildBackendBatchProcessCommand(`refresh-all-lpips --ids ${modelId}`);
+
+    showCommandModal(
+        'Update LPIPS Command',
+        `<p style="margin-bottom:8px;">Run this command on the backend server to recompute Stage2 LPIPS for all refreshable target 3D results under model <strong>${modelId}</strong>:</p>` +
+        `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• The command is scoped to this source model only &nbsp;• Add <code>--dry-run</code> first if you want to preview what will be refreshed</p>`,
+        bashCmd
+    );
+}
+
+function generateMissingMasksForModel(modelId, btn) {
+    const bashCmd = buildBackendBatchProcessCommand(`materialize-edit-artifacts --ids ${modelId}`);
+
+    showCommandModal(
+        'Generate Missing Masks Command',
+        `<p style="margin-bottom:8px;">Run this command on the backend server to generate missing mask artifacts for edit batches under model <strong>${modelId}</strong>:</p>` +
+        `<p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Only missing mask files will be materialized by default &nbsp;• Add <code>--force</code> to recompute existing masks &nbsp;• Add <code>--edit-id &lt;edit_id&gt;</code> to scope to one edit batch &nbsp;• Add <code>--dry-run</code> first if needed</p>`,
+        bashCmd
+    );
+}
+
+function applyBatchEdit() {
+    const instruction = document.getElementById('batchEditInstruction').value.trim();
+    if (!instruction) {
+        showToast('Please enter an instruction');
+        return;
+    }
+    
+    const editMode = document.querySelector('input[name="editMode"]:checked').value;
+    
+    closeBatchEditModal();
+    showToast('Applying edit...');
+    
+    const body = { 
+        instruction: instruction,
+        edit_mode: editMode,
+    };
+    // Pass provider_id so the server knows which rendered views to read
+    if (currentViewsProviderId && currentViewsProviderId !== 'legacy') {
+        body.provider_id = currentViewsProviderId;
+    }
+
+    fetch(`/api/models/${currentModelId}/views/_batch/edit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    })
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        
+        if (data.task_id) {
+            pollTask(data.task_id,
+                (task) => {
+                    showToast('Edit completed! Refreshing...');
+                    setTimeout(() => location.reload(), 1000);
+                },
+                (err) => {
+                    showToast('Error: ' + err);
+                }
+            );
+        } else {
+            showToast('Edit task created');
+        }
+    })
+    .catch(err => {
+        console.error('applyBatchEdit error:', err);
+        showToast('Error: ' + err.message);
+    });
+}
+
+function generate3DFromEdit(modelId, editId, btn) {
+    // Store context for later use
+    window.gen3dContext = { modelId, editId, btn };
+    
+    // Show provider selection modal
+    document.getElementById('providerSelectModal').style.display = 'flex';
+}
+
+function closeProviderSelectModal() {
+    document.getElementById('providerSelectModal').style.display = 'none';
+    window.gen3dContext = null;
+}
+
+function confirmProviderSelection() {
+    if (!window.gen3dContext) return;
+    
+    const { modelId, editId, btn } = window.gen3dContext;
+    const provider = document.querySelector('input[name="gen3dProvider"]:checked').value;
+    
+    closeProviderSelectModal();
+    
+    const pythonPath = '/home/xiaoliang/local_envs/2d3d/bin/python';
+    const scriptPath = 'scripts/batch_process.py';
+    const bashCmd = `${pythonPath} ${scriptPath} gen3d-from-edits --provider ${provider} --ids ${modelId} --edit-id ${editId}`;
+
+    showCommandModal('Generate 3D Command', `<p style="margin-bottom:8px;">Run this command to generate Target 3D for edit batch <strong>${editId}</strong> using <strong>${provider}</strong>:</p><p style="font-size:12px; color:#6c757d; margin-bottom:8px;">• Skips if Target 3D already exists &nbsp;• Use --force to regenerate</p>`, bashCmd);
+}
+
+function restoreFailedEdit(modelId, editId) {
+    if (!confirm('Mark this failed edit as valid and allow 3D generation?')) return;
+    const reason = prompt('Recovery reason (optional):', 'manual restore from UI') || 'manual restore from UI';
+
+    fetch(`/api/models/${modelId}/edits/${editId}/restore`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            reviewer: 'ui',
+            reason: reason,
+        }),
+    })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+            showToast('Failed edit restored');
+            setTimeout(() => { location.reload(); }, 300);
+        })
+        .catch(err => showToast('Error: ' + err.message));
+}
+
+function deleteEditBatch(modelId, editId) {
+    if (!confirm('Delete this edit batch and its associated 3D model?')) return;
+    if (!confirm('This action is irreversible. Confirm delete?')) return;
+    
+    fetch(`/api/models/${modelId}/edits/${editId}`, { method: 'DELETE' })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+            showToast('Edit batch deleted');
+            setTimeout(() => { location.reload(); }, 300);
+        })
+        .catch(err => showToast('Error: ' + err.message));
+}
+
+function deleteTargetProvider(modelId, editId, providerId) {
+    if (!providerId) {
+        showToast('Error: missing provider id');
+        return;
+    }
+    if (!confirm(`Delete target provider "${providerId}" for edit ${editId}?`)) return;
+    if (!confirm('This action is irreversible. Confirm delete?')) return;
+
+    const url = `/api/models/${encodeURIComponent(modelId)}/edits/${encodeURIComponent(editId)}/targets/${encodeURIComponent(providerId)}`;
+    fetch(url, { method: 'DELETE' })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+            showToast(`Deleted target provider: ${providerId}`);
+            setTimeout(() => { location.reload(); }, 300);
+        })
+        .catch(err => showToast('Error: ' + err.message));
+}
+
+function deleteInstructionFromDetail(modelId, instrIndex, context) {
+    if (!confirm(`Delete instruction #${instrIndex + 1}?`)) return;
+
+    fetch(`/api/images/${modelId}/instruction/${instrIndex}`, { method: 'DELETE' })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                throw new Error(data.error || `HTTP ${res.status}`);
+            }
+
+            showToast('Instruction deleted');
+
+            // Reload the instruction list based on context
+            if (context === 'view') {
+                loadInstructionsForView(modelId);
+            } else if (context === 'batch') {
+                loadInstructionsForBatch(modelId);
+            }
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message);
+        });
+}

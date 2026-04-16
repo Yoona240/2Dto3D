@@ -1,0 +1,1271 @@
+{
+    "data": [
+        {
+            "id": "gpt-4o",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "openai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gpt-4o",
+            "parent": null
+        },
+        {
+            "id": "gpt-4o-mini",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "openai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gpt-4o-mini",
+            "parent": null
+        },
+        {
+            "id": "gpt-4.1",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "openai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gpt-4.1",
+            "parent": null
+        },
+        {
+            "id": "qwen-turbo",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "qwen-turbo",
+            "parent": null
+        },
+        {
+            "id": "qwen-plus",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "qwen-plus",
+            "parent": null
+        },
+        {
+            "id": "qwen-max",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "qwen-max",
+            "parent": null
+        },
+        {
+            "id": "qwen-vl-max",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "qwen-vl-max",
+            "parent": null
+        },
+        {
+            "id": "qwen-vl-max-latest",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "qwen-vl-max-latest",
+            "parent": null
+        },
+        {
+            "id": "qwen-vl-plus",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "qwen-vl-plus",
+            "parent": null
+        },
+        {
+            "id": "qwen-vl-plus-latest",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "qwen-vl-plus-latest",
+            "parent": null
+        },
+        {
+            "id": "text-embedding-v3",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "text-embedding-v3",
+            "parent": null
+        },
+        {
+            "id": "deepseek-r1",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "ali",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "deepseek-r1",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-lite",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "tencent",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "hunyuan-lite",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-standard",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "tencent",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "hunyuan-standard",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-standard-256K",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "tencent",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "hunyuan-standard-256K",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-pro",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "tencent",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "hunyuan-pro",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-vision",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "tencent",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "hunyuan-vision",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-embedding",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "tencent",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "hunyuan-embedding",
+            "parent": null
+        },
+        {
+            "id": "gemini-2.5-pro",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "vertexai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gemini-2.5-pro",
+            "parent": null
+        },
+        {
+            "id": "gemini-2.5-flash",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "vertexai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gemini-2.5-flash",
+            "parent": null
+        },
+        {
+            "id": "gemini-2.5-flash-image",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "vertexai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gemini-2.5-flash-image",
+            "parent": null
+        },
+        {
+            "id": "moonshot-v1-8k",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "moonshot",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "moonshot-v1-8k",
+            "parent": null
+        },
+        {
+            "id": "moonshot-v1-32k",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "moonshot",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "moonshot-v1-32k",
+            "parent": null
+        },
+        {
+            "id": "moonshot-v1-128k",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "moonshot",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "moonshot-v1-128k",
+            "parent": null
+        },
+        {
+            "id": "gpt-4o",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "openai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gpt-4o",
+            "parent": null
+        },
+        {
+            "id": "gpt-4o-mini",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "openai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gpt-4o-mini",
+            "parent": null
+        },
+        {
+            "id": "gpt-4.1",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "openai",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "gpt-4.1",
+            "parent": null
+        },
+        {
+            "id": "deepseek-r1",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "baiduv2",
+            "permission": [
+                {
+                    "id": "modelperm-LwHkVFn8AcMItP432fKKDIKJ",
+                    "object": "model_permission",
+                    "created": 1626777600,
+                    "allow_create_engine": true,
+                    "allow_sampling": true,
+                    "allow_logprobs": true,
+                    "allow_search_indices": false,
+                    "allow_view": true,
+                    "allow_fine_tuning": false,
+                    "organization": "*",
+                    "group": null,
+                    "is_blocking": false
+                }
+            ],
+            "root": "deepseek-r1",
+            "parent": null
+        },
+        {
+            "id": "gemini-3.1-pro-preview",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3.1-pro-preview",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-3d-pro",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "hunyuan-3d-pro",
+            "parent": null
+        },
+        {
+            "id": "imagen-4.0-generate-001",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "imagen-4.0-generate-001",
+            "parent": null
+        },
+        {
+            "id": "doubao-seedream-3.0-t2i",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seedream-3.0-t2i",
+            "parent": null
+        },
+        {
+            "id": "glm-4.7",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "glm-4.7",
+            "parent": null
+        },
+        {
+            "id": "gpt-5-chat",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gpt-5-chat",
+            "parent": null
+        },
+        {
+            "id": "gpt-5.2",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gpt-5.2",
+            "parent": null
+        },
+        {
+            "id": "qwen3-coder-plus",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "qwen3-coder-plus",
+            "parent": null
+        },
+        {
+            "id": "gemini-3-pro-thinking",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3-pro-thinking",
+            "parent": null
+        },
+        {
+            "id": "gemini-3-flash-preview",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3-flash-preview",
+            "parent": null
+        },
+        {
+            "id": "gpt-5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gpt-5",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-2.0-code",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-2.0-code",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-2.0-mini",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-2.0-mini",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-1.6-thinking",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-1.6-thinking",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-1.6-vision",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-1.6-vision",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-1.8",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-1.8",
+            "parent": null
+        },
+        {
+            "id": "gpt-5-mini",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gpt-5-mini",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2-thinking",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2-thinking",
+            "parent": null
+        },
+        {
+            "id": "claude-opus-4-5-20251101",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-opus-4-5-20251101",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-1.6-flash",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-1.6-flash",
+            "parent": null
+        },
+        {
+            "id": "moonshot-v1-8k-vision",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "moonshot-v1-8k-vision",
+            "parent": null
+        },
+        {
+            "id": "claude-sonnet-4-5-20250929",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-sonnet-4-5-20250929",
+            "parent": null
+        },
+        {
+            "id": "deepseek-v3.1",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "deepseek-v3.1",
+            "parent": null
+        },
+        {
+            "id": "gpt-5.1",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gpt-5.1",
+            "parent": null
+        },
+        {
+            "id": "MiniMax-M2.5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "MiniMax-M2.5",
+            "parent": null
+        },
+        {
+            "id": "bge-m3-1024d",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "bge-m3-1024d",
+            "parent": null
+        },
+        {
+            "id": "gpt-5.2-chat",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gpt-5.2-chat",
+            "parent": null
+        },
+        {
+            "id": "claude-haiku-4-5-20251001",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-haiku-4-5-20251001",
+            "parent": null
+        },
+        {
+            "id": "gemini-3-flash-thinking",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3-flash-thinking",
+            "parent": null
+        },
+        {
+            "id": "glm-5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "glm-5",
+            "parent": null
+        },
+        {
+            "id": "qwen3-max",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "qwen3-max",
+            "parent": null
+        },
+        {
+            "id": "text-embedding-v4",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "text-embedding-v4",
+            "parent": null
+        },
+        {
+            "id": "claude-opus-4-5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-opus-4-5",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2-thinking-turbo",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2-thinking-turbo",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2-0905-preview",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2-0905-preview",
+            "parent": null
+        },
+        {
+            "id": "claude-haiku-4-5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-haiku-4-5",
+            "parent": null
+        },
+        {
+            "id": "gemini-3-pro-preview",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3-pro-preview",
+            "parent": null
+        },
+        {
+            "id": "gpt-4.1-mini",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gpt-4.1-mini",
+            "parent": null
+        },
+        {
+            "id": "moonshot-v1-128k-vision",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "moonshot-v1-128k-vision",
+            "parent": null
+        },
+        {
+            "id": "doubao-seededit-3.0-i2i",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seededit-3.0-i2i",
+            "parent": null
+        },
+        {
+            "id": "gemini-3-flash",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3-flash",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-2.0-pro",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-2.0-pro",
+            "parent": null
+        },
+        {
+            "id": "gemini-3-pro",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3-pro",
+            "parent": null
+        },
+        {
+            "id": "gemini-3-pro-image-preview",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3-pro-image-preview",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2-turbo",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2-turbo",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2.5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2.5",
+            "parent": null
+        },
+        {
+            "id": "claude-opus-4-6",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-opus-4-6",
+            "parent": null
+        },
+        {
+            "id": "claude-sonnet-4-5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-sonnet-4-5",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2-0711-preview",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2-0711-preview",
+            "parent": null
+        },
+        {
+            "id": "moonshot-v1-32k-vision",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "moonshot-v1-32k-vision",
+            "parent": null
+        },
+        {
+            "id": "claude-sonnet-4-6",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "claude-sonnet-4-6",
+            "parent": null
+        },
+        {
+            "id": "qwen3-vl-plus",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "qwen3-vl-plus",
+            "parent": null
+        },
+        {
+            "id": "gemini-3.1-pro-thinking",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3.1-pro-thinking",
+            "parent": null
+        },
+        {
+            "id": "hunyuan-3d-rapid",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "hunyuan-3d-rapid",
+            "parent": null
+        },
+        {
+            "id": "doubao-seedream-4.0",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seedream-4.0",
+            "parent": null
+        },
+        {
+            "id": "gemini-3.1-pro",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "gemini-3.1-pro",
+            "parent": null
+        },
+        {
+            "id": "deepseek-v3.2",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "deepseek-v3.2",
+            "parent": null
+        },
+        {
+            "id": "doubao-seedance-pro",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seedance-pro",
+            "parent": null
+        },
+        {
+            "id": "deepseek-v3.2-exp",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "deepseek-v3.2-exp",
+            "parent": null
+        },
+        {
+            "id": "doubao-seed-1.6",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seed-1.6",
+            "parent": null
+        },
+        {
+            "id": "doubao-seedream-4.5",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "doubao-seedream-4.5",
+            "parent": null
+        },
+        {
+            "id": "kimi-k2.5-thinking",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "kimi-k2.5-thinking",
+            "parent": null
+        },
+        {
+            "id": "qwen3.5-plus",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "qwen3.5-plus",
+            "parent": null
+        },
+        {
+            "id": "MiniMax-M2.1",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "MiniMax-M2.1",
+            "parent": null
+        },
+        {
+            "id": "deepseek-r1-0528",
+            "object": "model",
+            "created": 1626777600,
+            "owned_by": "custom",
+            "permission": null,
+            "root": "deepseek-r1-0528",
+            "parent": null
+        }
+    ],
+    "object": "list"
+}

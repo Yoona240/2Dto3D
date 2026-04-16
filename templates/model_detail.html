@@ -1,0 +1,209 @@
+﻿{% extends 'base.html' %}
+{% set page = 'models' %}
+{% from 'edit_batch_card_macro.html' import render_edit_batch %}
+
+{% set all_edit_batches = (model.edited_batches or []) + (model.failed_edit_batches or []) %}
+{% set refreshable_target_batches = all_edit_batches | selectattr('target_3d_models') | list %}
+{% set has_refreshable_dreamsim_targets = refreshable_target_batches | length > 0 %}
+{% set missing_mask_batches = all_edit_batches | selectattr('mask_missing') | list %}
+{% set has_missing_masks = missing_mask_batches | length > 0 %}
+{% set has_any_edit_batches = all_edit_batches | length > 0 %}
+{% set default_views_provider_id = (model.rendered_views_by_provider.keys() | list | first) if model.rendered_views_by_provider else '' %}
+{% block title %}{{ model.id }} - Model Detail{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+        <h1 class="page-title">{{ model.id }}</h1>
+        <p class="page-desc">
+            <span class="badge badge-{{ model.provider or 'pending' }}">{{ model.provider or 'unknown' }}</span>
+            <span style="margin-left:8px; font-size:13px; color:#6c757d;">{{ model.filename }}</span>
+        </p>
+    </div>
+    <div style="display:flex; gap:8px;">
+        <a href="/models" class="btn btn-secondary btn-sm">Back to Models</a>
+        <button class="btn btn-secondary btn-sm" style="background:#dc3545; border-color:#dc3545; color:#fff;" onclick="deleteAsset('{{ model.id }}', {confirmMessage: 'Delete this 3D model AND all related assets (image / instructions / renders)?', onSuccess: () => { window.location.href = '/models'; }})">
+            Delete Model
+        </button>
+    </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:20px;">
+    <div>
+        <div class="card">
+            <div class="card-header" style="font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Source 3D Model</span>
+                <div style="display:flex; gap:4px;">
+                    <button class="btn btn-sm" onclick="showModelPath('{{ model.id }}')" title="Show Server Path" style="background:#17a2b8; color:#fff; border:none; padding:4px 10px; font-size:12px;">Path</button>
+                    <button class="btn btn-sm" onclick="downloadFile('/{{ model.path }}', '{{ model.id }}.glb')" title="Download GLB" style="background:#28a745; color:#fff; border:none; padding:4px 10px; font-size:12px;">Download GLB</button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if model.source_3d_models|length > 1 %}
+                <div style="display:flex; gap:4px; margin-bottom:12px; flex-wrap:wrap;">
+                    {% for src_model in model.source_3d_models %}
+                    <button class="btn btn-sm provider-tab{% if loop.first %} provider-tab-active{% endif %}"
+                            data-group="source-3d"
+                            data-index="{{ loop.index0 }}"
+                            onclick="switchProviderTab('source-3d', {{ loop.index0 }}, this)"
+                            style="font-size:12px; padding:4px 12px; text-transform:capitalize; border:1px solid #dee2e6; background:{% if loop.first %}#0d6efd{% else %}#fff{% endif %}; color:{% if loop.first %}#fff{% else %}#495057{% endif %}; border-radius:4px; cursor:pointer;">
+                        {{ src_model.provider }}
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% for src_model in model.source_3d_models %}
+                <div class="provider-panel" data-group="source-3d" data-index="{{ loop.index0 }}" style="{% if not loop.first %}display:none;{% endif %}">
+                    <div style="background:#f8f9fa; border-radius:8px; height:300px; position:relative;">
+                        <model-viewer
+                            {% if loop.first %}src="/{{ src_model.path }}"{% else %}data-src="/{{ src_model.path }}"{% endif %}
+                            camera-controls
+                            auto-rotate
+                            shadow-intensity="1"
+                            environment-image="neutral"
+                            style="width:100%; height:100%;"
+                        ></model-viewer>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if model.source_image %}
+                <div style="margin-top:16px; display:flex; align-items:center; gap:12px;">
+                    <div>
+                        <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Source Image:</div>
+                        <img src="/{{ model.source_image }}" style="max-height:120px; border-radius:6px; border:1px solid #dee2e6;">
+                    </div>
+                    <button class="btn btn-sm" onclick="downloadFile('/{{ model.source_image }}', '{{ model.id }}_source.png')" title="Download Source Image" style="background:#17a2b8; color:#fff; border:none; padding:4px 8px; font-size:11px; align-self:flex-end;">DL</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if model.has_views %}
+        <div class="card mt-3">
+            <div class="card-header" style="font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Rendered Views</span>
+                <div style="display:flex; gap:4px; align-items:center;">
+                    <button class="btn btn-secondary btn-sm" onclick="renderViewsPrompt('{{ model.id }}', '{{ model.source_3d_models | map(attribute='provider') | join(",") }}')">Re-render</button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% set provider_ids = model.rendered_views_by_provider.keys() | list %}
+                {% if provider_ids | length > 1 %}
+                <div style="display:flex; gap:4px; margin-bottom:12px; flex-wrap:wrap;">
+                    {% for pid in provider_ids %}
+                    {% set pname = model.rendered_views_by_provider[pid][0].provider if model.rendered_views_by_provider[pid] else pid %}
+                    <button class="btn btn-sm provider-tab{% if loop.first %} provider-tab-active{% endif %}"
+                            data-group="views"
+                            data-index="{{ loop.index0 }}"
+                            data-provider-id="{{ pid }}"
+                            onclick="switchViewsProviderTab('{{ pid }}', {{ loop.index0 }}, this)"
+                            style="font-size:12px; padding:4px 12px; text-transform:capitalize; border:1px solid #dee2e6; background:{% if loop.first %}#0d6efd{% else %}#fff{% endif %}; color:{% if loop.first %}#fff{% else %}#495057{% endif %}; border-radius:4px; cursor:pointer;">
+                        {{ pname }}
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% for pid, pviews in model.rendered_views_by_provider.items() %}
+                <div class="views-provider-panel" data-provider-id="{{ pid }}" style="{% if not loop.first %}display:none;{% endif %}">
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+                        {% for view in pviews %}
+                        <div style="position:relative; cursor:pointer;" onclick="showViewModal('{{ model.id }}', '{{ view.name }}', '/{{ view.path }}?v={{ view.cache_key }}')">
+                            <img src="/{{ view.path }}?v={{ view.cache_key }}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:6px; border:1px solid #dee2e6;">
+                            <div style="font-size:11px; text-align:center; color:#6c757d; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:3px; position:absolute; bottom:4px; left:50%; transform:translateX(-50%); font-weight:500;">{{ view.name }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div style="margin-top:12px;">
+                        <button class="btn btn-primary btn-sm" onclick="showBatchEditModal('{{ model.id }}', '{{ pid }}')">
+                            Edit Views ({{ pid }})
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card mt-3">
+            <div class="card-body" style="text-align:center; padding:40px;">
+                <div style="color:#6c757d; margin-bottom:12px;">No rendered views yet</div>
+                <button class="btn btn-primary" onclick="renderViewsPrompt('{{ model.id }}', '{{ model.source_3d_models | map(attribute="provider") | join(",") }}')">
+                    Render Views
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-header" style="font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Edited Versions ({{ model.edited_batches|length if model.edited_batches else 0 }})</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    {% if has_refreshable_dreamsim_targets %}
+                    <button class="btn btn-secondary btn-sm" onclick="refreshModelLpips('{{ model.id }}', this)" title="Show backend CLI to recompute Stage2 LPIPS for this model">
+                        Update LPIPS
+                    </button>
+                    {% endif %}
+                    {% if has_any_edit_batches %}
+                    <button class="btn btn-secondary btn-sm" onclick="generateMissingMasksForModel('{{ model.id }}', this)" title="Show backend CLI to generate missing mask artifacts for this model">
+                        Generate Missing Masks
+                    </button>
+                    {% endif %}
+                    {% if model.has_views %}
+                    <button class="btn btn-primary btn-sm" onclick="showBatchEditModal('{{ model.id }}', '{{ default_views_provider_id }}')">+ New Edit</button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body" style="max-height:calc(100vh - 200px); overflow-y:auto;">
+                {% if model.has_edits %}
+                    {% for batch in model.edited_batches %}
+                    {{ render_edit_batch(model, batch, loop.index, False) }}
+                    {% endfor %}
+                {% else %}
+                <div style="background:#f8f9fa; border-radius:8px; padding:40px; text-align:center; color:#6c757d;">
+                    <div style="margin-bottom:12px;">No edited versions yet</div>
+                    {% if model.has_views %}
+                    <button class="btn btn-primary btn-sm" onclick="showBatchEditModal('{{ model.id }}', '{{ default_views_provider_id }}')">
+                        Create First Edit
+                    </button>
+                    {% else %}
+                    <div style="font-size:12px; color:#999;">Render views first to enable editing</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header" style="font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Failed Editing ({{ model.failed_edit_batches|length if model.failed_edit_batches else 0 }})</span>
+            </div>
+            <div class="card-body" style="max-height:420px; overflow-y:auto;">
+                {% if model.has_failed_edits %}
+                    {% for batch in model.failed_edit_batches %}
+                    {{ render_edit_batch(model, batch, loop.index, True) }}
+                    {% endfor %}
+                {% else %}
+                <div style="background:#f8f9fa; border-radius:8px; padding:24px; text-align:center; color:#6c757d; font-size:12px;">
+                    No failed editing batches
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'model_detail_modals.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentModelId = '{{ model.id }}';
+let currentViewName = null;
+
+{% include 'model_detail_scripts.html' %}
+</script>
+{% endblock %}
